@@ -5,6 +5,6 @@
     <%= f.check_box :subscribable, class: 'form-control' %>
   <% end %>
 </div>
-<div id="subscribable_options" style="display: <%= @product.subscribable? ? "block" : "none" %>">
+<div id="subscribable_options" class=<%= f.object.subscribable? ? '' : 'hidden' %>>
   <%= f.collection_check_boxes :subscription_frequency_ids, Spree::SubscriptionFrequency.all, :id, :title %>
 </div>
