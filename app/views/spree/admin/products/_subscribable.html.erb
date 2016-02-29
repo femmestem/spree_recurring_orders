@@ -1,0 +1,10 @@
+<div data-hook="admin_product_form_subscribable">
+  <%= f.field_container :subscribable, class: ['form-group'] do %>
+    <%= f.label :subscribable, Spree.t(:subscribable) %>
+    <%= f.error_message_on :subscribable %>
+    <%= f.check_box :subscribable, class: 'form-control' %>
+  <% end %>
+</div>
+<div id="subscribable_options" style="display: <%= @product.subscribable? ? "block" : "none" %>">
+  <%= f.collection_check_boxes :subscription_frequency_ids, Spree::SubscriptionFrequency.all, :id, :title %>
+</div>
