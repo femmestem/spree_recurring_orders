@@ -9,4 +9,14 @@ Spree::Product.class_eval do
   scope :subscribable, -> { where(subscribable: true) }
   scope :unsubscribable, -> { where(subscribable: false) }
 
+  validate :ensure_atleast_one_frequency, if: :subscribable?
+
+  private
+
+    def ensure_atleast_one_frequency
+      if subscription_frequencies.count == 0
+        errors.add(:subscribable, "needs to be selected with atleast one frequency")
+      end
+    end
+
 end
