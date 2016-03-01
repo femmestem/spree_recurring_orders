@@ -9,16 +9,18 @@ module Spree
     has_many :order_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
     has_many :orders, through: :order_subscriptions, dependent: :destroy
 
-    with_options presence: true do
-      validates :quantity, :end_date, :price, :last_occurrence_at
-      validates :ship_address, :bill_address, :variant, :parent_order
-    end
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
+      validates :parent_order, uniqueness: { scope: :variant }
+    end
+    with_options presence: true do
+      validates :quantity, :end_date, :price
+      validates :variant, :parent_order, :frequency
+      validates :ship_address, :bill_address, :last_recurrence_at, :source, if: :enabled?
     end
 
-    before_validation :set_last_occurrence_at
+    before_validation :set_last_recurrence_at, if: :enabled?
 
     private
 
