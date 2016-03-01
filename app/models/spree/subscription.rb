@@ -10,7 +10,7 @@ module Spree
     has_many :orders, through: :order_subscriptions, dependent: :destroy
 
     with_options presence: true do
-      validates :quantity, :end_date, :price, :last_recurrence_at
+      validates :quantity, :end_date, :price, :last_occurrence_at
       validates :ship_address, :bill_address, :variant, :parent_order
     end
     with_options allow_blank: true do
@@ -18,12 +18,12 @@ module Spree
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
     end
 
-    before_validation :set_last_recurrence_at
+    before_validation :set_last_occurrence_at
 
     private
 
-      def set_last_recurrence_at
-        self.last_recurrence_at = Time.current
+      def set_last_occurrence_at
+        self.last_occurrence_at = Time.current
       end
 
   end
