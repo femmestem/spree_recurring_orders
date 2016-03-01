@@ -6,8 +6,8 @@ module Spree
     belongs_to :parent_order, class_name: "Spree::Order"
     belongs_to :variant, inverse_of: :subscriptions
 
-    has_many :order_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
-    has_many :orders, through: :order_subscriptions, dependent: :destroy
+    has_many :orders_subscriptions, class_name: "Spree::OrdersSubscription", dependent: :destroy
+    has_many :orders, through: :order_subscriptions
 
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
