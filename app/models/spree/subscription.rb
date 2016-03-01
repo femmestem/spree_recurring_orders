@@ -3,7 +3,7 @@ module Spree
 
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
-    belongs_to :parent_order, class_name: "Spree::Order", inverse_of: :parent_subscription
+    belongs_to :parent_order, class_name: "Spree::Order"
     belongs_to :variant, inverse_of: :subscriptions
 
     has_many :order_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
