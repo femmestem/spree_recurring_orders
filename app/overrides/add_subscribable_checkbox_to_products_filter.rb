@@ -4,7 +4,7 @@ Deface::Override.new(
   insert_bottom: "[data-hook='admin_products_index_search'] .col-md-12",
   text: "<div class='field checkbox'>
           <label>
-            <%= f.check_box :subscribable_eq, { :checked => params[:q][:subscribable_eq] == '1' }, '1', '0' %>
+            <%= f.check_box :subscribable_eq, { :checked => params[:q][:subscribable_eq] == '1' }, '1', nil %>
             <%= Spree.t(:show_subscribable ) %>
           </label>
          </div>"
