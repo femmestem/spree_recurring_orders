@@ -17,10 +17,10 @@ module Spree
     with_options presence: true do
       validates :quantity, :end_date, :price
       validates :variant, :parent_order, :frequency
-      validates :ship_address, :bill_address, :last_recurrence_at, :source, if: :enabled?
+      validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
-    before_validation :set_last_recurrence_at, if: :enabled?
+    before_validation :set_last_occurrence_at, if: :enabled?
 
     private
 
