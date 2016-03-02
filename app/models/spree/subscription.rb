@@ -15,6 +15,7 @@ module Spree
 
     self.whitelisted_ransackable_associations = %w( parent_order )
 
+    scope :disbaled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
 
     with_options allow_blank: true do
