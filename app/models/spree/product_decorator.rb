@@ -10,6 +10,6 @@ Spree::Product.class_eval do
 
   scope :subscribable, -> { where(subscribable: true) }
 
-  validates :subscription_frequencies, length: { minimum: 1, message: "are atleast one required" }
+  validates :subscription_frequencies, presence: true
 
 end
