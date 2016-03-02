@@ -8,8 +8,10 @@ module Spree
       def cancel
         @subscription.cancel = true
         if @subscription.update(permitted_cancel_subscription_attributes)
-          redirect_to collection_url, success: "Subscription is deleted"
+          flash[:success] = "Subscription is cancelled"
+          redirect_to collection_url
         else
+          flash[:error] = @subscription.errors.full_messages.join(", ")
           render :cancellation
         end
       end
