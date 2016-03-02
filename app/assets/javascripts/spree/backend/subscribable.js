@@ -15,19 +15,19 @@ Subscribable.prototype.bindParentCheckboxEvent = function() {
   var _this = this;
   this.$parentCheckbox.on("change", function() {
     if ($(this).prop("checked")) {
-      _this.checkedParentCheckbox();
+      _this.enableChildCheckboxes();
     } else {
-      _this.uncheckedParentCheckbox();
+      _this.disableChildCheckboxes();
     }
   });
 };
 
-Subscribable.prototype.checkedParentCheckbox = function() {
+Subscribable.prototype.enableChildCheckboxes = function() {
   this.$childCheckboxesDiv.removeClass("hidden");
   this.$childCheckboxesDiv.find("input").removeAttr("disabled");
 };
 
-Subscribable.prototype.uncheckedParentCheckbox = function() {
+Subscribable.prototype.disableChildCheckboxes = function() {
   this.$childCheckboxesDiv.addClass("hidden");
   this.$childCheckboxesDiv.find("input").attr("disabled", "disabled");
 }
