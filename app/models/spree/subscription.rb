@@ -31,9 +31,13 @@ module Spree
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
-    before_validation :set_last_occurrence_at, if: :enabled?
+    before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
     before_validation :set_number, on: :create
     before_validation :set_cancelled_at, if: -> { cancel.present? }
+
+    def process
+      recreate_order if eligible_for_subscription?
+    end
 
     private
 
@@ -47,6 +51,26 @@ module Spree
 
       def set_number
         self.number = parent_order.number + "SR"
+      end
+
+      def last_occurence_at_settable?
+        enabled? && last_occurrence_at.nil?
+      end
+
+      def recreate_order
+
+      end
+
+      def eligible_for_subscription?
+        subscription_time? && end_date_not_exceeded?
+      end
+
+      def subscription_time?
+        (last_occurrence_at + frequency.time_in_months.month).to_date == Date.today
+      end
+
+      def end_date_not_exceeded?
+        end_date.to_date >= Date.today
       end
 
   end
