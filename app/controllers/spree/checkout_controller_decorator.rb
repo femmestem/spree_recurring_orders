@@ -1,6 +1,6 @@
 Spree::CheckoutController.class_eval do
 
-  after_action :enable_subscriptions, only: :update, if: -> { @order.completed? }
+  # after_action :enable_subscriptions, only: :update, if: -> { @order.completed? }
 
   private
 
