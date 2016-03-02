@@ -4,8 +4,15 @@
   <td class="text-center"><%= subscription.price %></td>
   <td class="text-center"><%= subscription.frequency.title %></td>
   <td class="text-center"><%= subscription.end_date.to_date.to_formatted_s(:rfc822) %></td>
+  <td class="text-center">
+    <% if subscription.cancelled_at %>
+      Cancelled
+    <% else %>
+      <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
+    <% end %>
+  </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
     <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
-    <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
+
   </td>
 </tr>

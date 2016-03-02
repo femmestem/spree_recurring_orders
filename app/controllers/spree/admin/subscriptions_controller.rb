@@ -6,7 +6,6 @@ module Spree
       end
 
       def cancel
-        debugger
         @subscription.cancel = true
         if @subscription.update(permitted_cancel_subscription_attributes)
           redirect_to collection_url, success: "Subscription is deleted"

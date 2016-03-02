@@ -1,5 +1,5 @@
 <% content_for :page_title do %>
-  <%= plural_resource_name(Spree::Subscription) %>
+  Subscriptions
 <% end %>
 
 <% content_for :table_filter do %>
@@ -30,6 +30,7 @@
         <th><%= Spree.t(:price) %></th>
         <th class="text-center"><%= Spree.t(:subscription_frequency) %></th>
         <th class="text-center"><%= Spree.t(:end_date) %></th>
+        <th class="text-center"><%= Spree.t(:cancel_status) %></th>
         <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
       </tr>
     </thead>
