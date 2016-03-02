@@ -1,0 +1,21 @@
+<% content_for :page_title do %>
+  Cancel <%= Spree::Subscription.model_name.human %> <%= @subscription.number %>
+<% end %>
+
+<%= render :partial => 'spree/admin/shared/error_messages', :locals => { :target => @subscription } %>
+
+<%= form_for @subscription, url: cancel_admin_subscription_path(@subscription) do |f| %>
+  <div data-hook="admin_subscription_cancellation_reasons_form">
+    <%= f.field_container :cancellation_reasons, class: ["form-group"] do %>
+      <%= f.label :cancellation_reasons, Spree.t(:cancellation_reasons) %><span class="required">*</span>
+      <%= f.text_area :cancellation_reasons, class: "form-control" %>
+      <%= f.error_message_on :cancellation_reasons %>
+    <% end %>
+  </div>
+  <br>
+  <div class="form-actions" data-hook="buttons">
+    <%= button Spree.t(:submit), 'ok', 'submit', {class: 'btn-success'} %>
+    <span class="or"><%= Spree.t(:or) %></span>
+    <%= button_link_to Spree.t('actions.cancel'), collection_url, :icon => 'remove' %>
+  </div>
+<% end %>

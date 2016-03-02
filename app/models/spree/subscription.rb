@@ -1,6 +1,8 @@
 module Spree
   class Subscription < Spree::Base
 
+    attr_accessor :cancel
+
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
     belongs_to :parent_order, class_name: "Spree::Order"
@@ -24,13 +26,19 @@ module Spree
     with_options presence: true do
       validates :quantity, :end_date, :price, :number
       validates :variant, :parent_order, :frequency
+      validates :cancellation_reasons, :cancelled_at, if: -> { cancel.present? }
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
     before_validation :set_last_occurrence_at, if: :enabled?
     before_validation :set_number, on: :create
+    before_validation :set_cancelled_at, if: -> { cancel.present? }
 
     private
+
+      def set_cancelled_at
+        self.cancelled_at = Time.current
+      end
 
       def set_last_occurrence_at
         self.last_occurrence_at = Time.current

@@ -2,22 +2,29 @@ module Spree
   module Admin
     class SubscriptionsController < Spree::Admin::ResourceController
 
-      before_action :build_ransackable_search, only: :index
-
-      def enable
-      end
-
-      def disable
+      def cancellation
       end
 
       def cancel
+        debugger
+        @subscription.cancel = true
+        if @subscription.update(permitted_cancel_subscription_attributes)
+          redirect_to collection_url, success: "Subscription is deleted"
+        else
+          render :cancellation
+        end
       end
 
       private
 
-        def build_ransackable_search
-          @search = @subscriptions.ransack(params[:q])
-          @subscriptions = @search.result.active
+        def permitted_cancel_subscription_attributes
+          params.require(:subscription).permit(:cancellation_reasons)
+        end
+
+        def collection
+          @collection = super
+          @search = @collection.ransack(params[:q])
+          @collection = @search.result.active
         end
 
     end
