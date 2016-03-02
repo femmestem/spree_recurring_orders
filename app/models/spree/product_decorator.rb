@@ -6,7 +6,7 @@ Spree::Product.class_eval do
 
   alias_attribute :subscribable, :is_subscribable
 
-  self.whitelisted_ransackable_attributes += %w( subscribable )
+  self.whitelisted_ransackable_attributes += %w( is_subscribable )
 
   scope :subscribable, -> { where(subscribable: true) }
 

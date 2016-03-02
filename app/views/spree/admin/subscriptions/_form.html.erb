@@ -1,0 +1,30 @@
+<div data-hook="admin_subscription_form">
+  <div data-hook="admin_subscription_quantity_form">
+    <%= f.field_container :quantity, class: ["form-group"] do %>
+      <%= f.label :quantity, Spree.t(:quantity) %><span class="required">*</span>
+      <%= number_field :subscription, :quantity, { min: 1 } %>
+      <%= f.error_message_on :quantity %>
+    <% end %>
+  </div>
+  <div data-hook="admin_subscription_end_date_form">
+    <%= f.field_container :end_date, class: ["form-group"] do %>
+      <%= f.label :end_date, Spree.t(:end_date) %><span class="required">*</span>
+      <%= f.date_select :end_date %>
+      <%= f.error_message_on :end_date %>
+    <% end %>
+  </div>
+  <div data-hook="admin_subscription_price_form">
+    <%= f.field_container :price, class: ["form-group"] do %>
+      <%= f.label :price, Spree.t(:price) %><span class="required">*</span>
+      <%= f.text_field :price, class: "form-control" %>
+      <%= f.error_message_on :price %>
+    <% end %>
+  </div>
+  <div data-hook="admin_subscription_frequency_form">
+    <%= f.field_container :frequency, class: ["form-group"] do %>
+      <%= f.label :frequency, Spree.t(:subscription_frequency) %><span class="required">*</span>
+      <%= f.collection_select :subscription_frequency_id, @subscription.variant.product.subscription_frequencies, :id, :title %>
+      <%= f.error_message_on :frequency %>
+    <% end %>
+  </div>
+</div>
