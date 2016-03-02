@@ -36,4 +36,7 @@ require 'spree_items_subscriptions/factories'
 ```
 
 Copyright (c) 2016 [name of extension creator], released under the New BSD License
+<<<<<<< HEAD
 >>>>>>> initial gem commit
+=======
+>>>>>>> 3392dc3350aecc69368166e7348d34dbbc3de84a
