@@ -41,6 +41,11 @@ module Spree
       update(last_occurrence_at: Time.current) if recreation_successfull?
     end
 
+    def cancel_with_reason(attributes)
+      self.cancel = true
+      update(attributes)
+    end
+
     private
 
       def recreation_successfull?

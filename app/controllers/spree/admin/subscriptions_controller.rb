@@ -6,8 +6,7 @@ module Spree
       end
 
       def cancel
-        @subscription.cancel = true
-        if @subscription.update(permitted_cancel_subscription_attributes)
+        if @subscription.cancel_with_reason(permitted_cancel_subscription_attributes)
           flash[:success] = "Subscription is cancelled"
           redirect_to collection_url
         else
@@ -25,7 +24,7 @@ module Spree
         def collection
           @collection = super
           @search = @collection.ransack(params[:q])
-          @collection = @search.result.active
+          @collection = @search.result.active.order(created_at: :desc)
         end
 
     end
