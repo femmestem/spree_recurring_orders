@@ -8,7 +8,7 @@ module Spree
     belongs_to :parent_order, class_name: "Spree::Order"
     belongs_to :variant, inverse_of: :subscriptions
     belongs_to :frequency, foreign_key: :subscription_frequency_id, class_name: "Spree::SubscriptionFrequency"
-    belongs_to :source, class_name: "Spree::CreditCard"
+    belongs_to :source, polymorphic: true
 
     has_many :orders_subscriptions, class_name: "Spree::OrdersSubscription", dependent: :destroy
     has_many :orders, through: :orders_subscriptions
