@@ -71,7 +71,7 @@ module Spree
         new_order.bill_address = bill_address
         new_order.next
         new_order.next
-        new_order.payments.update(source: source)
+        new_order.payments.first.update(source: source)
         new_order.next
         new_order.next
       end
@@ -86,7 +86,7 @@ module Spree
       end
 
       def subscription_time?
-        (last_occurrence_at + frequency.time_in_months.month).to_date == Date.today
+        (last_occurrence_at + frequency.months_count.month).to_date == Date.today
       end
 
       def end_date_not_exceeded?
