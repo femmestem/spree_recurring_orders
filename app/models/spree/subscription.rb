@@ -38,10 +38,14 @@ module Spree
     after_update :notify_user, if: -> { enabled? && enabled_changed? }
 
     def process
-      recreate_order if eligible_for_subscription?
+      update(last_occurrence_at: Time.current) if recreation_successfull?
     end
 
     private
+
+      def recreation_successfull?
+        recreate_order if eligible_for_subscription?
+      end
 
       def set_cancelled_at
         self.cancelled_at = Time.current
@@ -60,7 +64,21 @@ module Spree
       end
 
       def recreate_order
+        new_order = orders.create(order_params)
+        new_order.contents.add(variant, quantity)
+        new_order.next
+        new_order.ship_address = ship_address
+        new_order.bill_address = bill_address
+        new_order.next
+        new_order.next
+        new_order.payments.update(source: source)
+        new_order.next
+        new_order.next
+      end
 
+      def order_params
+        { currency: parent_order.currency, guest_token: parent_order.guest_token, store: parent_order.store,
+          user: parent_order.user, created_by: parent_order.user, last_ip_address: parent_order.last_ip_address }
       end
 
       def eligible_for_subscription?
