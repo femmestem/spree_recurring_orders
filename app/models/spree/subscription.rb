@@ -3,6 +3,8 @@ module Spree
 
     attr_accessor :cancel
 
+    paginates_per 10
+
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
     belongs_to :parent_order, class_name: "Spree::Order"

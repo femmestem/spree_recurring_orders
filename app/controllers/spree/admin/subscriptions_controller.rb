@@ -22,8 +22,8 @@ module Spree
 
         def collection
           @collection = super
-          @search = @collection.ransack(params[:q])
-          @collection = @search.result.active.order(created_at: :desc)
+          @search = @collection.active.ransack(params[:q])
+          @collection = @search.result.order(created_at: :desc).page(params[:page])
         end
 
     end
