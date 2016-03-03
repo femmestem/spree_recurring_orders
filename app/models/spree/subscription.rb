@@ -35,6 +35,8 @@ module Spree
     before_validation :set_number, on: :create
     before_validation :set_cancelled_at, if: -> { cancel.present? }
 
+    after_update :notify_user, if: -> { enabled? && enabled_changed? }
+
     def process
       recreate_order if eligible_for_subscription?
     end
@@ -71,6 +73,10 @@ module Spree
 
       def end_date_not_exceeded?
         end_date.to_date >= Date.today
+      end
+
+      def notify_user
+        SubscriptionNotifier.notify_user(self).deliver
       end
 
   end
