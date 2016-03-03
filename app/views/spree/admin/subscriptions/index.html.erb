@@ -1,0 +1,45 @@
+<% content_for :page_title do %>
+  Subscriptions
+<% end %>
+
+<% content_for :table_filter do %>
+  <div data-hook="admin_subscriptions_index_search">
+    <%= search_form_for [:admin, @search] do |f| %>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :parent_order_email_cont, Spree.t(:customer_email) %>
+            <%= f.text_field :parent_order_email_cont, tabindex: 1, class: "form-control js-quick-search-target" %>
+          </div>
+        </div>
+      </div>
+
+      <div data-hook="admin_subscriptions_index_search_buttons" class="form-actions">
+        <%= button Spree.t(:filter_results), 'search' %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @subscriptions.present? %>
+  <table class="table sortable" id='listing_subscription' data-hook>
+    <thead>
+      <tr data-hook="admin_subscriptions_index_headers">
+        <th><%= Spree.t(:number) %></th>
+        <th><%= Spree.t(:product_name) %></th>
+        <th><%= Spree.t(:price) %></th>
+        <th class="text-center"><%= Spree.t(:subscription_frequency) %></th>
+        <th class="text-center"><%= Spree.t(:end_date) %></th>
+        <th class="text-center"><%= Spree.t(:cancel_status) %></th>
+        <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: 'spree/admin/subscriptions/subscription', collection: @subscriptions %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="alert alert-info no-objects-found">
+    <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::Subscription)) %>
+  </div>
+<% end %>

@@ -1,3 +1,12 @@
 Spree::Core::Engine.routes.draw do
-  # Add your extension routes here
+
+  namespace :admin do
+    resources :subscriptions do
+      member do
+        get 'cancellation'
+        patch 'cancel'
+      end
+    end
+  end
+
 end

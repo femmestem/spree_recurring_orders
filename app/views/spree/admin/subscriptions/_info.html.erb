@@ -1,0 +1,102 @@
+<div>
+  <strong>Parent Order Name:</strong><span><%= link_to @subscription.parent_order.number, edit_admin_order_path(@subscription.parent_order) %></span>
+</div>
+<div>
+  <strong>Variant: </strong><span><%= @subscription.variant.name %></span>
+</div>
+<div>
+  <strong>Quantity: </strong><span><%= @subscription.quantity %></span>
+</div>
+<div>
+  <strong>Credit Card: </strong><span><%= @subscription.source.inspect %></span>
+</div>
+<div>
+  <strong>Ship Address: </strong><span><%= @subscription.ship_address.inspect %></span>
+</div>
+<div>
+  <strong>Bill Address: </strong><span><%= @subscription.bill_address.inspect %></span>
+</div>
+<div>
+  <strong>Frequency: </strong><span><%= @subscription.frequency.title %></span>
+</div>
+<div>
+  <strong>Price: </strong><span><%= @subscription.price %></span>
+</div>
+<div>
+  <strong>Last Occurence At: </strong><span><%= @subscription.last_occurrence_at.to_formatted_s(:long) %></span>
+</div>
+<div>
+  <strong>End Date: </strong><span><%= @subscription.end_date.to_date.to_formatted_s(:rfc822) %></span>
+</div>
+<% if @subscription.cancelled_at %>
+  <div>
+    <strong>Cancelled At: </strong><span><%= @subscription.cancelled_at.to_date.to_formatted_s(:rfc822) %></span>
+  </div>
+  <div>
+    <strong>Cancellation Reasons: </strong><span><%= @subscription.cancellation_reasons %></span>
+  </div>
+<% end %>
+
+<div id="subscription_orders">
+  <% if @subscription.orders.present? %>
+    <table class="table" id="listing_orders" data-hook>
+      <thead>
+        <tr data-hook="admin_orders_index_headers">
+          <% if @show_only_completed %>
+            <th><%= Spree.t :completed_at %></th>
+          <% else %>
+            <th><%= Spree.t :created_at %></th>
+          <% end %>
+          <th><%= Spree.t :number %></th>
+          <th><%= Spree.t :considered_risky %></th>
+          <th><%= Spree.t :state %></th>
+          <th><%= Spree.t :payment_state %></th>
+           <% if Spree::Order.checkout_step_names.include?(:delivery) %>
+            <th><%= Spree.t :shipment_state %></th>
+           <% end %>
+          <th><%= Spree.t :total %></th>
+          <th data-hook="admin_orders_index_header_actions" class="actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @orders.each do |order| %>
+        <tr data-hook="admin_orders_index_rows" class="state-<%= order.state.downcase %> <%= cycle('odd', 'even') %>">
+          <td><%= l (@show_only_completed ? order.completed_at : order.created_at).try!(:to_date) %></td>
+          <td><%= link_to order.number, edit_admin_order_path(order) %></td>
+          <td>
+            <span class="label label-<%= order.considered_risky ? 'considered_risky' : 'considered_safe' %>">
+              <%= order.considered_risky ? Spree.t("risky") : Spree.t("safe") %>
+            </span>
+          </td>
+          <td>
+            <span class="label label-<%= order.state.downcase %>"><%= Spree.t("order_state.#{order.state.downcase}") %></span>
+            <span class="icon icon-filter filterable js-add-filter" data-ransack-field="q_state_eq" data-ransack-value="<%= order.state %>"></span>
+          </td>
+          <td>
+            <% if order.payment_state %>
+              <span class="label label-<%= order.payment_state %>"><%= link_to Spree.t("payment_states.#{order.payment_state}"), admin_order_payments_path(order) %></span>
+              <span class="icon icon-filter filterable js-add-filter" data-ransack-field="q_payment_state_eq" data-ransack-value="<%= order.payment_state %>"></span>
+            <% end %>
+          </td>
+          <% if Spree::Order.checkout_step_names.include?(:delivery) %>
+            <td>
+              <% if order.shipment_state %>
+                <span class="label label-<%= order.shipment_state %>"><%= Spree.t("shipment_states.#{order.shipment_state}") %></span>
+                <span class="icon icon-filter filterable js-add-filter" data-ransack-field="q_shipment_state_eq" data-ransack-value="<%= order.shipment_state %>"></span>
+              <% end %>
+            </td>
+          <% end %>
+          <td><%= order.display_total.to_html %></td>
+          <td class='actions actions-1' data-hook="admin_orders_index_row_actions">
+            <%= link_to_edit_url edit_admin_order_path(order), :title => "admin_edit_#{dom_id(order)}", :no_text => true %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alert alert-info no-objects-found">
+      <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::Order)) %>
+    </div>
+  <% end %>
+</div>
