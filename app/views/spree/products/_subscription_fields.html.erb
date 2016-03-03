@@ -8,7 +8,8 @@
   <br>
   <span>
     <%= label_tag :subscription, Spree.t(:end_date) %><span class="required">*</span>
-    <%= text_field :subscription, :end_date, class: "datepicker" %>
+    <br>
+    <%= date_select :subscription, :end_date, class: "form-control" %>
   </span>
   <br>
   <span class='input-group-btn'>

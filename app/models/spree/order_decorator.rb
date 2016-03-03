@@ -6,7 +6,7 @@ Spree::Order.class_eval do
                            foreign_key: :parent_order_id,
                            dependent: :restrict_with_error
 
-  after_update :enable_subscriptions, if: :complete_and_any_disabled_subscription
+  after_update :enable_subscriptions, if: :complete_and_any_disabled_subscription?
 
   def available_payment_methods
     payment_methods = Spree::PaymentMethod.where(active: true)
@@ -26,7 +26,7 @@ Spree::Order.class_eval do
       end
     end
 
-    def complete_and_any_disabled_subscription
+    def complete_and_any_disabled_subscription?
       complete? && subscriptions.disabled.any?
     end
 
