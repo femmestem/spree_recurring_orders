@@ -10,7 +10,6 @@ module Spree
           flash[:success] = "Subscription is cancelled"
           redirect_to collection_url
         else
-          flash[:error] = @subscription.errors.full_messages.join(", ")
           render :cancellation
         end
       end
