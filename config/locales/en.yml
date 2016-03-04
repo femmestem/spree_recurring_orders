@@ -4,6 +4,7 @@
 en:
   hello: "Hello world"
 
-  subscription_mailers:
-    notify_user:
-      subject: "Subscription Confirmation %{ number } %{ frequency }"
+  spree:
+    subscription_mailers:
+      notify_user:
+        subject: "Subscription Confirmation %{ number } %{ frequency }"
