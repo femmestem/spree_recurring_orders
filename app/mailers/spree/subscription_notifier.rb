@@ -4,6 +4,6 @@ class Spree::SubscriptionNotifier < ApplicationMailer
     @subscription = subscription
 
     mail to: subscription.parent_order.email, from: "spree-commerce@example.com", subject: t('.subject',
-     number: subscription.number, frequnecy: subscription.frequency.title)
+     number: subscription.number, frequency: subscription.frequency.title)
   end
 end
