@@ -1,0 +1,57 @@
+<div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h1 class="panel-title">
+        <%= Spree.t(:subscription_item) %>
+      </h1>
+    </div>
+    <table class="table table-bordered line-items" data-hook="line-items">
+      <thead>
+        <th colspan="2"><%= Spree.t(:name) %></th>
+        <th class="text-center">
+          <%= f.label :price, Spree.t(:price) %><span class="required">*</span>
+        </th>
+        <th class="text-center">
+          <%= f.label :quantity, Spree.t(:quantity) %><span class="required">*</span>
+        </th>
+        <th class="text-center">
+          <%= f.label :frequency, Spree.t(:subscription_frequency) %><span class="required">*</span>
+        </th>
+      </thead>
+      <tbody>
+        <tr class="line-item" id="line-item-<%= @subscription.id %>">
+          <td class="line-item-image image text-center">
+            <%= mini_image(@subscription.variant) %>
+          </td>
+          <td class="line-item-name text-center">
+            <%= @subscription.variant.name %><br><%= "(" + variant_options(@subscription.variant) + ")" unless @subscription.variant.option_values.empty? %>
+          </td>
+          <td class="line-item-price text-center">
+            <div data-hook="admin_subscription_price_form">
+              <%= f.field_container :price, class: ["form-group"] do %>
+                <%= f.text_field :price, class: "form-control", disabled: @subscription.cancelled? %>
+                <%= f.error_message_on :price %>
+              <% end %>
+            </div>
+          </td>
+          <td class="line-item-qty-show text-center">
+            <div data-hook="admin_subscription_quantity_form">
+              <%= f.field_container :quantity, class: ["form-group"] do %>
+                <%= number_field :subscription, :quantity, { min: 1, disabled: @subscription.cancelled? } %>
+                <%= f.error_message_on :quantity %>
+              <% end %>
+            </div>
+          </td>
+          <td class="line-item-qty-edit">
+            <div data-hook="admin_subscription_frequency_form">
+              <%= f.field_container :frequency, class: ["form-group"] do %>
+                <%= f.collection_select :subscription_frequency_id, @subscription.variant.product.subscription_frequencies, :id, :title, {}, { class: "form-control", disabled: @subscription.cancelled? } %>
+                <%= f.error_message_on :frequency %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

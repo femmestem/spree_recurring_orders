@@ -2,6 +2,8 @@ module Spree
   module Admin
     class SubscriptionsController < Spree::Admin::ResourceController
 
+      before_action :ensure_not_cancelled, only: :update
+
       def cancellation
       end
 
@@ -24,6 +26,12 @@ module Spree
           @collection = super
           @search = @collection.active.ransack(params[:q])
           @collection = @search.result.order(created_at: :desc).page(params[:page])
+        end
+
+        def ensure_not_cancelled
+          if @subscription.cancelled?
+            redirect_to collection_url, error: "Cancelled Subscription can not be updated."
+          end
         end
 
     end

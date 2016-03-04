@@ -12,6 +12,8 @@ module Spree
     belongs_to :frequency, foreign_key: :subscription_frequency_id, class_name: "Spree::SubscriptionFrequency"
     belongs_to :source, polymorphic: true
 
+    accepts_nested_attributes_for :ship_address, :bill_address
+
     has_many :orders_subscriptions, class_name: "Spree::OrdersSubscription", dependent: :destroy
     has_many :orders, through: :orders_subscriptions
 
@@ -38,6 +40,7 @@ module Spree
     before_validation :set_cancelled_at, if: -> { cancel.present? }
 
     after_update :notify_user, if: -> { enabled? && enabled_changed? }
+    before_update :not_cancelled?
 
     def process
       update(last_occurrence_at: Time.current) if recreation_successfull?
@@ -46,6 +49,10 @@ module Spree
     def cancel_with_reason(attributes)
       self.cancel = true
       update(attributes)
+    end
+
+    def cancelled?
+      !!cancelled_at
     end
 
     private
@@ -71,16 +78,40 @@ module Spree
       end
 
       def recreate_order
-        new_order = orders.create(order_params)
-        new_order.contents.add(variant, quantity)
-        new_order.next
-        new_order.ship_address = ship_address
-        new_order.bill_address = bill_address
-        new_order.next
-        new_order.next
-        new_order.payments.first.update(source: source)
-        new_order.next
-        new_order.next
+        make_new_order
+        add_variant_to_order
+        add_shipping_address
+        add_delivery_method_to_order
+        add_payment_method_to_order
+        confirm_order
+      end
+
+      def make_new_order
+        @new_order = orders.create(order_params)
+      end
+
+      def add_variant_to_order
+        @new_order.contents.add(variant, quantity)
+        @new_order.next
+      end
+
+      def add_shipping_address
+        @new_order.ship_address = ship_address
+        @new_order.bill_address = bill_address
+        @new_order.next
+      end
+
+      def add_delivery_method_to_order
+        @new_order.next
+      end
+
+      def add_payment_method_to_order
+        @new_order.payments.first.update(source: source)
+        @new_order.next
+      end
+
+      def confirm_order
+        @new_order.next
       end
 
       def order_params
@@ -89,7 +120,7 @@ module Spree
       end
 
       def eligible_for_subscription?
-        subscription_time? && end_date_not_exceeded?
+        !cancelled? && subscription_time? && end_date_not_exceeded?
       end
 
       def subscription_time?
@@ -102,6 +133,10 @@ module Spree
 
       def notify_user
         SubscriptionNotifier.notify_user(self).deliver
+      end
+
+      def not_cancelled?
+        !cancelled?
       end
 
   end

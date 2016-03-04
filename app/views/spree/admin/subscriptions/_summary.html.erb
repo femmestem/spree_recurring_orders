@@ -1,0 +1,59 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= Spree.t(:subscription_summary) %></h3>
+  </div>
+
+  <table class="table table-condensed table-bordered" id="subscription_tab_summary" data-hook>
+    <tbody class="additional-info">
+      <tr>
+        <td  width="35%" data-hook>
+          <strong><%= Spree.t(:parent_order) %>:</strong>
+        </td>
+        <td>
+          <span>
+            <%= link_to @subscription.parent_order.number, edit_admin_order_path(@subscription.parent_order) %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong><%= Spree.t(:last_occurence_at) %>:</strong>
+        </td>
+        <td id="last_occurence_at">
+          <%= @subscription.last_occurrence_at %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong><%= f.label :end_date, Spree.t(:end_date) %></strong>
+        </td>
+        <td>
+          <div data-hook="admin_subscription_end_date_form">
+            <%= f.field_container :end_date, class: ["form-group"] do %>
+              <%= f.text_field :end_date, class: "datepicker form-control", disabled: @subscription.cancelled? %>
+              <%= f.error_message_on :end_date %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <% if @subscription.cancelled? %>
+        <tr id="cancellation_fields">
+          <td>
+            <strong><%= Spree.t(:cancelled_at) %></strong>
+          </td>
+          <td>
+            <span><%= @subscription.cancelled_at.to_formatted_s(:long) %></span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong><%= Spree.t(:cancellation_reasons) %></strong>
+          </td>
+          <td>
+            <span><%= @subscription.cancellation_reasons.html_safe %></span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

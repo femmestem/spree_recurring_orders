@@ -8,7 +8,7 @@
     <% if subscription.cancelled_at %>
       Cancelled
     <% else %>
-      <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription), class: 'btn-danger btn btn-sm') if can? :delete, subscription %>
+      <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
     <% end %>
   </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
