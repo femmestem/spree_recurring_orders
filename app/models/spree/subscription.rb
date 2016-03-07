@@ -23,7 +23,7 @@ module Spree
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
     scope :end_date_not_exceeded, -> { where("end_date >= ?", Date.today) }
-    scope :eligible_for_subscription, -> { not_cancelled.end_date_not_exceeded }
+    scope :eligible_for_subscription, -> { active.not_cancelled.end_date_not_exceeded }
 
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
@@ -38,10 +38,10 @@ module Spree
     end
 
     before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
-    before_validation :set_cancelled_at, if: -> { cancel.present? }
+    before_validation :set_cancelled_at, if: :cancelled_at_settable?
 
-    after_update :notify_user, if: -> { enabled? && enabled_changed? }
     before_update :not_cancelled?
+    after_update :notify_user, if: -> { enabled? && enabled_changed? }
 
     def generate_number(options = {})
       options[:prefix] ||= 'S'
@@ -58,7 +58,7 @@ module Spree
     end
 
     def cancelled?
-      !!cancelled_at
+      !!cancelled_at_was
     end
 
     private
@@ -131,6 +131,10 @@ module Spree
 
       def not_cancelled?
         !cancelled?
+      end
+
+      def cancelled_at_settable?
+        cancel.present? && cancellation_reasons.present?
       end
 
   end
