@@ -10,9 +10,8 @@ Spree::LineItem.class_eval do
   private
 
     def save_subscription
-      subscription_end_date = Date.parse("#{ end_date[3] }-#{ end_date[2] }-#{ end_date[1] }")
       subscription_attributes = { subscription_frequency_id: subscription_frequency_id,
-        end_date: subscription_end_date, variant: variant, parent_order: order, quantity: quantity,
+        end_date: end_date, variant: variant, parent_order: order, quantity: quantity,
         price: variant.price }
       subscription = Spree::Subscription.create subscription_attributes
     end

@@ -8,3 +8,11 @@ en:
     subscription_notifier:
       notify_user:
         subject: "Subscription Confirmation %{number} %{frequency}"
+
+    admin:
+      subscriptions:
+        cancel:
+          success: "Subscription is cancelled"
+        cancellation:
+          confirm: "Once cancelled, subscription can not be enabled again"
+        error_on_already_cancelled: "Cancelled Subscription can not be updated."

@@ -3,7 +3,7 @@ module Spree
 
     attr_accessor :cancel
 
-    paginates_per 10
+    include Spree::NumberGenerator
 
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
@@ -21,11 +21,13 @@ module Spree
 
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
+    scope :not_cancelled, -> { where(cancelled_at: nil) }
+    scope :end_date_not_exceeded, -> { where("end_date >= ?", Date.today) }
+    scope :eligible_for_subscription, -> { not_cancelled.end_date_not_exceeded }
 
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
-      validates :number, uniqueness: { case_sensitive: false }
       validates :parent_order, uniqueness: { scope: :variant }
     end
     with_options presence: true do
@@ -36,14 +38,18 @@ module Spree
     end
 
     before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
-    before_validation :set_number, on: :create
     before_validation :set_cancelled_at, if: -> { cancel.present? }
 
     after_update :notify_user, if: -> { enabled? && enabled_changed? }
     before_update :not_cancelled?
 
+    def generate_number(options = {})
+      options[:prefix] ||= 'S'
+      super(options)
+    end
+
     def process
-      update(last_occurrence_at: Time.current) if recreation_successfull?
+      update(last_occurrence_at: Time.current) if recreation_successful?
     end
 
     def cancel_with_reason(attributes)
@@ -57,8 +63,8 @@ module Spree
 
     private
 
-      def recreation_successfull?
-        recreate_order if eligible_for_subscription?
+      def recreation_successful?
+        recreate_order if time_for_subscription?
       end
 
       def set_cancelled_at
@@ -67,10 +73,6 @@ module Spree
 
       def set_last_occurrence_at
         self.last_occurrence_at = Time.current
-      end
-
-      def set_number
-        self.number = parent_order.number + "SR"
       end
 
       def last_occurence_at_settable?
@@ -96,8 +98,8 @@ module Spree
       end
 
       def add_shipping_address
-        @new_order.ship_address = ship_address
-        @new_order.bill_address = bill_address
+        @new_order.ship_address = ship_address.clone
+        @new_order.bill_address = bill_address.clone
         @new_order.next
       end
 
@@ -119,16 +121,8 @@ module Spree
           user: parent_order.user, created_by: parent_order.user, last_ip_address: parent_order.last_ip_address }
       end
 
-      def eligible_for_subscription?
-        !cancelled? && subscription_time? && end_date_not_exceeded?
-      end
-
-      def subscription_time?
-        (last_occurrence_at + frequency.months_count.month).to_date == Date.today
-      end
-
-      def end_date_not_exceeded?
-        end_date.to_date >= Date.today
+      def time_for_subscription?
+        (last_occurrence_at + frequency.months_count.months) >= Time.current
       end
 
       def notify_user

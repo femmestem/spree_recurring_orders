@@ -9,9 +9,9 @@ Spree::Order.class_eval do
   after_update :enable_subscriptions, if: :complete_and_any_disabled_subscription?
 
   def available_payment_methods
-    payment_methods = Spree::PaymentMethod.where(active: true)
+    payment_methods = Spree::PaymentMethod.active
     if subscriptions.count > 0
-      @available_payment_methods = payment_methods.where(type: "Spree::Gateway")
+      @available_payment_methods = payment_methods.credit_card_only
     else
       @available_payment_methods ||= payment_methods
     end
@@ -22,7 +22,7 @@ Spree::Order.class_eval do
     def enable_subscriptions
       subscriptions.each do |subscription|
         subscription.update(source: payments.from_credit_card.first.source,
-          enabled: true, ship_address: ship_address, bill_address: bill_address)
+          enabled: true, ship_address: ship_address.clone, bill_address: bill_address.clone)
       end
     end
 

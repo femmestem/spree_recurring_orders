@@ -18,7 +18,7 @@
   </div>
   <br>
   <div class="form-actions" data-hook="buttons">
-    <%= button Spree.t(:submit), 'ok', 'submit', { class: 'btn-success', data: { confirm: "Once cancelled, subscription can not be enabled again" } } %>
+    <%= button Spree.t(:submit), 'ok', 'submit', { class: 'btn-success', data: { confirm: t(".confirm") } } %>
     <span class="or"><%= Spree.t(:or) %></span>
     <%= button_link_to Spree.t('actions.cancel'), collection_url, :icon => 'remove' %>
   </div>

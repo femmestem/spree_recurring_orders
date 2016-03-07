@@ -9,7 +9,7 @@ module Spree
 
       def cancel
         if @subscription.cancel_with_reason(permitted_cancel_subscription_attributes)
-          flash[:success] = "Subscription is cancelled"
+          flash[:success] = t('.success')
           redirect_to collection_url
         else
           render :cancellation
@@ -30,7 +30,7 @@ module Spree
 
         def ensure_not_cancelled
           if @subscription.cancelled?
-            redirect_to collection_url, error: "Cancelled Subscription can not be updated."
+            redirect_to collection_url, error: t("spree.admin.subscriptions_controller.error_on_already_cancelled")
           end
         end
 
