@@ -25,7 +25,9 @@ module Spree
         def collection
           @collection = super
           @search = @collection.active.ransack(params[:q])
-          @collection = @search.result.order(created_at: :desc).page(params[:page])
+          @collection = @search.result.includes(:variant, :frequency)
+                                      .order(created_at: :desc)
+                                      .page(params[:page])
         end
 
         def ensure_not_cancelled
