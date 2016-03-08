@@ -4,6 +4,7 @@ Spree::LineItem.class_eval do
 
   after_create :create_subscription!, if: :subscribable?
   after_update :update_subscription_quantity, if: [:quantity_changed?, :subscription?]
+  after_destroy :destroy_associated_subscription
 
   private
 
@@ -29,7 +30,11 @@ Spree::LineItem.class_eval do
     end
 
     def subscription
-      order.subscriptions.find_by(variant_id: variant_id)
+      order.subscriptions.find_by(variant: variant)
+    end
+
+    def destroy_associated_subscription
+      order.subscriptions.find_by(variant: variant).destroy
     end
 
 end
