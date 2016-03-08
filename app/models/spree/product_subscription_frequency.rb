@@ -5,6 +5,7 @@ module Spree
     belongs_to :subscription_frequency, class_name: "Spree::SubscriptionFrequency"
 
     validates :product, :subscription_frequency, presence: true
+    validates :product, uniqueness: { scope: :subscription_frequency }
 
   end
 end
