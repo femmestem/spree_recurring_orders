@@ -44,6 +44,7 @@ module Spree
 
     before_update :not_cancelled?
     after_update :notify_user, if: -> { enabled? && enabled_changed? }
+    after_update :notify_cancellation, if: :cancellation_mail_sendable?
 
     def generate_number(options = {})
       options[:prefix] ||= 'S'
@@ -128,7 +129,7 @@ module Spree
       end
 
       def notify_user
-        SubscriptionNotifier.notify_user(self).deliver
+        SubscriptionNotifier.notify_confirmation(self).deliver
       end
 
       def not_cancelled?
@@ -136,7 +137,7 @@ module Spree
       end
 
       def cancelled_at_settable?
-        cancel.present? && cancellation_reasons.present?
+        cancel.present?
       end
 
       def end_date_should_be_more_than_one_frequency_cycle
@@ -147,6 +148,14 @@ module Spree
 
       def valid_end_date
         (created_at || Time.current) + frequency.months_count.months
+      end
+
+      def notify_cancellation
+        SubscriptionNotifier.notify_cancellation(self).deliver
+      end
+
+      def cancellation_mail_sendable?
+        cancelled_at.present? && cancelled_at_changed?
       end
 
   end

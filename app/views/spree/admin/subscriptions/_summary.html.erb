@@ -20,7 +20,7 @@
           <strong><%= Spree.t(:last_occurence_at) %>:</strong>
         </td>
         <td id="last_occurence_at">
-          <%= @subscription.last_occurrence_at %>
+          <%= @subscription.last_occurrence_at.to_formatted_s(:long) %>
         </td>
       </tr>
       <tr>

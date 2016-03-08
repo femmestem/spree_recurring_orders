@@ -6,8 +6,10 @@ en:
 
   spree:
     subscription_notifier:
-      notify_user:
+      notify_confirmation:
         subject: "Subscription Confirmation %{number} %{frequency}"
+      notify_cancellation:
+        subject: "Subscription Cancelled %{number} %{frequency}"
 
     admin:
       subscriptions:
