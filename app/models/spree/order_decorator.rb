@@ -9,11 +9,10 @@ Spree::Order.class_eval do
   self.state_machine.after_transition to: :complete, do: :enable_subscriptions, if: :any_disabled_subscription?
 
   def available_payment_methods
-    payment_methods = Spree::PaymentMethod.active
     if subscriptions.count > 0
-      @available_payment_methods = payment_methods.credit_card_only
+      @available_payment_methods = Spree::Gateway.active
     else
-      @available_payment_methods ||= payment_methods
+      @available_payment_methods ||= Spree::PaymentMethod.active
     end
   end
 
