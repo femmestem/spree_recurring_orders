@@ -37,7 +37,7 @@ module Spree
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
-    validate :end_date_should_be_more_than_one_frequency_cycle
+    validate :end_date_should_be_more_than_one_frequency_cycle, if: -> { end_date.present? }
 
     before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
     before_validation :set_cancelled_at, if: :cancelled_at_settable?
@@ -140,13 +140,13 @@ module Spree
       end
 
       def end_date_should_be_more_than_one_frequency_cycle
-        unless end_date >= Time.current + frequency.months_count.months
+        unless end_date >= valid_end_date
           errors.add(:end_date, " should be more than atleast 1 frequency")
         end
       end
 
       def valid_end_date
-        Date.today + frequency.months_count.months
+        (created_at || Time.current) + frequency.months_count.months
       end
 
   end
