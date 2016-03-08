@@ -1,12 +1,12 @@
 Spree::Order.class_eval do
 
   has_one :order_subscription, class_name: "Spree::OrdersSubscription", dependent: :destroy
-  has_one :subscription, through: :order_subscriptions
+  has_one :subscription, through: :order_subscription
   has_many :subscriptions, class_name: "Spree::Subscription",
                            foreign_key: :parent_order_id,
                            dependent: :restrict_with_error
 
-  after_update :enable_subscriptions, if: :complete_and_any_disabled_subscription?
+  self.state_machine.after_transition to: :complete, do: :enable_subscriptions, if: :any_disabled_subscription?
 
   def available_payment_methods
     payment_methods = Spree::PaymentMethod.active
@@ -26,8 +26,8 @@ Spree::Order.class_eval do
       end
     end
 
-    def complete_and_any_disabled_subscription?
-      complete? && subscriptions.disabled.any?
+    def any_disabled_subscription?
+      subscriptions.disabled.any?
     end
 
 end
