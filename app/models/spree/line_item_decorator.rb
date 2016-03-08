@@ -8,7 +8,7 @@ Spree::LineItem.class_eval do
   private
 
     def create_subscription!
-      @subscription = Spree::Subscription.create! subscription_attributes
+      Spree::Subscription.create! subscription_attributes
     end
 
     def subscription_attributes
