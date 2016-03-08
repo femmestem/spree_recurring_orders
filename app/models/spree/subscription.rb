@@ -14,7 +14,7 @@ module Spree
 
     accepts_nested_attributes_for :ship_address, :bill_address
 
-    has_many :orders_subscriptions, class_name: "Spree::OrdersSubscription", dependent: :destroy
+    has_many :orders_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
     has_many :orders, through: :orders_subscriptions
 
     self.whitelisted_ransackable_associations = %w( parent_order )
