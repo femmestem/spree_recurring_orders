@@ -1,7 +1,7 @@
 module Spree
   class OrderSubscription < Spree::Base
 
-    self.tablename = "spree_orders_subscription"
+    self.table_name = "spree_orders_subscriptions"
 
     belongs_to :order, class_name: "Spree::Order"
     belongs_to :subscription, class_name: "Spree::Subscription"

@@ -9,7 +9,7 @@ Spree::Order.class_eval do
   self.state_machine.after_transition to: :complete, do: :enable_subscriptions, if: :any_disabled_subscription?
 
   def available_payment_methods
-    if subscriptions.count > 0
+    if any_subscriptions?
       @available_payment_methods = Spree::Gateway.active
     else
       @available_payment_methods ||= Spree::PaymentMethod.active
@@ -27,6 +27,10 @@ Spree::Order.class_eval do
 
     def any_disabled_subscription?
       subscriptions.disabled.any?
+    end
+
+    def any_subscriptions?
+      line_items.where(variant_id: subscriptions.pluck(:variant_id)).count > 0
     end
 
 end
