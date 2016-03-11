@@ -1,9 +1,9 @@
 require "spec_helper"
 
-describe Spree::SubscriptionFrequency do
+RSpec.describe Spree::SubscriptionFrequency do
 
-  let(:monthly_subscription_frequency) { create(:monthly_subscription_frequency) }
-  let(:subscription_frequency) { build(:monthly_subscription_frequency) }
+  let!(:subscription_frequency_1) { create(:monthly_subscription_frequency) }
+  let(:subscription_frequency_2) { build(:monthly_subscription_frequency, months_count: 3) }
 
   describe "associations" do
     it { expect(subject).to have_many(:product_subscription_frequencies).class_name("Spree::ProductSubscriptionFrequency").dependent(:destroy) }

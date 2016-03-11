@@ -34,6 +34,11 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.raise_errors_for_deprecations!
 
+  config.before do
+    # https://github.com/thoughtbot/factory_girl/issues/793
+    FactoryGirl.find_definitions
+  end
+
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
   end
