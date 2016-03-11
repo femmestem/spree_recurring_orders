@@ -25,7 +25,7 @@
       </tr>
       <tr>
         <td>
-          <strong><%= f.label :delivery_number, Spree.t(:recurring_delivery_number) %></strong>
+          <strong><%= Spree.t(:recurring_delivery_number) %></strong>
         </td>
         <td>
           <div data-hook="admin_subscription_delivery_number_form">
@@ -38,7 +38,7 @@
       </tr>
       <tr>
         <td><strong><%= Spree.t(:number_of_deliveries_left) %></strong></td>
-        <td class="text-center"><%= @subscription.number_of_deliveries_left %></td>
+        <td><%= @subscription.number_of_deliveries_left %></td>
       </tr>
       <% if @subscription.cancelled? %>
         <tr id="cancellation_fields">
