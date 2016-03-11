@@ -1,5 +1,5 @@
+<% subscription = @order.subscriptions.find_by(variant: variant) %>
 <td class='cart-item-subscription text-center' data-hook='cart_item_subscription'>
-  <% subscription = @order.subscriptions.find_by(variant: variant) %>
   <% if subscription %>
     <%= subscription.frequency.title.capitalize %>
   <% else %>
@@ -7,5 +7,9 @@
   <% end %>
 </td>
 <td class="text-center">
-  <%= subscription.delivery_number %>
+  <% if subscription %>
+    <%= subscription.delivery_number %>
+  <% else %>
+    None
+  <% end %>
 </td>

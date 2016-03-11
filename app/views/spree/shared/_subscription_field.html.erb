@@ -7,5 +7,9 @@
   <% end %>
 </td>
 <td class="text-center">
-  <%= subscription.delivery_number %>
+  <% if subscription %>
+    <%= subscription.delivery_number %>
+  <% else %>
+    None
+  <% end %>
 </td>
