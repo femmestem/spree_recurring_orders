@@ -25,16 +25,20 @@
       </tr>
       <tr>
         <td>
-          <strong><%= f.label :end_date, Spree.t(:end_date) %></strong>
+          <strong><%= f.label :delivery_number, Spree.t(:recurring_delivery_number) %></strong>
         </td>
         <td>
-          <div data-hook="admin_subscription_end_date_form">
-            <%= f.field_container :end_date, class: ["form-group"] do %>
-              <%= f.text_field :end_date, class: "datepicker form-control", disabled: @subscription.cancelled? %>
-              <%= f.error_message_on :end_date %>
+          <div data-hook="admin_subscription_delivery_number_form">
+            <%= f.field_container :delivery_number, class: ["form-group"] do %>
+              <%= number_field :subscription, :delivery_number, class: "form-control", disabled: @subscription.cancelled? %>
+              <%= f.error_message_on :delivery_number %>
             <% end %>
           </div>
         </td>
+      </tr>
+      <tr>
+        <td><strong><%= Spree.t(:number_of_deliveries_left) %></strong></td>
+        <td class="text-center"><%= @subscription.number_of_deliveries_left %></td>
       </tr>
       <% if @subscription.cancelled? %>
         <tr id="cancellation_fields">

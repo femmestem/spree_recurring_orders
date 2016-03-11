@@ -1,6 +1,6 @@
 Spree::LineItem.class_eval do
 
-  attr_accessor :subscription_frequency_id, :end_date, :subscribe
+  attr_accessor :subscription_frequency_id, :delivery_number, :subscribe
 
   after_create :create_subscription!, if: :subscribable?
   after_update :update_subscription_quantity, if: [:quantity_changed?, :subscription?]
@@ -14,7 +14,7 @@ Spree::LineItem.class_eval do
 
     def subscription_attributes
       { subscription_frequency_id: subscription_frequency_id, price: variant.price,
-        end_date: end_date, variant: variant, parent_order: order, quantity: quantity }
+        delivery_number: delivery_number, variant: variant, parent_order: order, quantity: quantity }
     end
 
     def update_subscription_quantity

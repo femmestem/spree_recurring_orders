@@ -22,22 +22,20 @@ module Spree
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
-    scope :end_date_not_exceeded, -> { where("end_date >= ?", Date.today) }
-    scope :eligible_for_subscription, -> { active.not_cancelled.end_date_not_exceeded }
+    scope :eligible_for_subscription, -> { active.not_cancelled }
 
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
+      validates :delivery_number, numericality: { greater_than_or_equal_to: 1, only_integer: true }
       validates :parent_order, uniqueness: { scope: :variant }
     end
     with_options presence: true do
-      validates :quantity, :end_date, :price, :number
+      validates :quantity, :delivery_number, :price, :number
       validates :variant, :parent_order, :frequency
       validates :cancellation_reasons, :cancelled_at, if: -> { cancel.present? }
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
-
-    validate :end_date_should_be_more_than_one_frequency_cycle, if: -> { end_date.present? }
 
     before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
     before_validation :set_cancelled_at, if: :cancelled_at_settable?
@@ -64,10 +62,14 @@ module Spree
       !!cancelled_at_was
     end
 
+    def number_of_deliveries_left
+      delivery_number - orders.size
+    end
+
     private
 
       def recreation_successful?
-        recreate_order if time_for_subscription?
+        recreate_order if time_for_subscription? && deliveries_remaining?
       end
 
       def set_cancelled_at
@@ -128,6 +130,10 @@ module Spree
         (last_occurrence_at + frequency.months_count.months) >= Time.current
       end
 
+      def deliveries_remaining?
+        number_of_deliveries_left > 0
+      end
+
       def notify_user
         SubscriptionNotifier.notify_confirmation(self).deliver
       end
@@ -138,16 +144,6 @@ module Spree
 
       def cancelled_at_settable?
         cancel.present?
-      end
-
-      def end_date_should_be_more_than_one_frequency_cycle
-        unless end_date >= valid_end_date
-          errors.add(:end_date, " should be more than atleast 1 frequency")
-        end
-      end
-
-      def valid_end_date
-        (created_at || Time.current) + frequency.months_count.months
       end
 
       def notify_cancellation

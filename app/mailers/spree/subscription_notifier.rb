@@ -6,13 +6,13 @@ class Spree::SubscriptionNotifier < ApplicationMailer
     @subscription = subscription
 
     mail to: subscription.parent_order.email, subject: t('.subject',
-     number: subscription.number, frequency: subscription.frequency.title)
+     number: subscription.number, frequency: subscription.frequency.title.capitalize)
   end
 
   def notify_cancellation(subscription)
     @subscription = subscription
 
     mail to: subscription.parent_order.email, subject: t('.subject',
-     number: subscription.number, frequency: subscription.frequency.title)
+     number: subscription.number, frequency: subscription.frequency.title.capitalize)
   end
 end
