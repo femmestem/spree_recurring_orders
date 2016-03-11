@@ -15,4 +15,11 @@ class Spree::SubscriptionNotifier < ApplicationMailer
     mail to: subscription.parent_order.email, subject: t('.subject',
      number: subscription.number, frequency: subscription.frequency.title.capitalize)
   end
+
+  def notify_reoccurrence(subscription)
+    @subscription = subscription
+
+    mail to: subscription.parent_order.email, subject: t('.subject',
+     number: subscription.number, frequency: subscription.frequency.title.capitalize)
+  end
 end

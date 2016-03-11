@@ -43,6 +43,7 @@ module Spree
     before_update :not_cancelled?
     after_update :notify_user, if: -> { enabled? && enabled_changed? }
     after_update :notify_cancellation, if: :cancellation_mail_sendable?
+    after_update :notify_reoccurrence, if: :reoccurrence_notifiable?
 
     def generate_number(options = {})
       options[:prefix] ||= 'S'
@@ -152,6 +153,14 @@ module Spree
 
       def cancellation_mail_sendable?
         cancelled_at.present? && cancelled_at_changed?
+      end
+
+      def reoccurence_notifiable?
+        last_occurrence_at_changed? && last_occurrence_at_was
+      end
+
+      def notify_reoccurrence
+        SubscriptionNotifier.notify_reoccurrence(self).deliver
       end
 
   end

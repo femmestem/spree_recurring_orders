@@ -10,6 +10,8 @@ en:
         subject: "%{frequency} %{number} Subscription Confirmation"
       notify_cancellation:
         subject: "%{frequency} %{number} Subscription Cancelled"
+      notify_reoccurrence:
+        subject: "%{frequency} %{number} Subscription Reoccurrence"
 
     admin:
       subscriptions:
