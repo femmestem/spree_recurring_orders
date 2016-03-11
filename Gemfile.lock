@@ -357,7 +357,7 @@ DEPENDENCIES
   sass-rails (~> 5.0.0.beta1)
   selenium-webdriver
   simplecov
-  spree (~> 3.0)
+  spree (= 3.0.7)
   spree_auth_devise!
   spree_items_subscriptions!
   sqlite3
