@@ -14,8 +14,10 @@ describe Spree::SubscriptionFrequency do
     it { expect(subject).to validate_presence_of(:months_count) }
     it { expect(subject).to validate_numericality_of(:months_count).is_greater_than(0).only_integer }
     context "uniqueness of title" do
-      subscription_frequency.save
-      it { expect(subject).to validate_uniqueness_of(:title).case_insensitive.allow_blank }
+      before do
+        subscription_frequency.save
+      end
+      it { expect(subscription_frequency.errors[:title]).to include "has been already taken" }
     end
   end
 
