@@ -24,7 +24,7 @@ Spree::LineItem.class_eval do
 
     def subscription_attributes
       { subscription_frequency_id: subscription_frequency_id, price: variant.price,
-        delivery_number: delivery_number , variant: variant, parent_order: order, quantity: quantity }
+        delivery_number: delivery_number, variant: variant, parent_order: order, quantity: quantity }
     end
 
     def update_subscription_quantity
