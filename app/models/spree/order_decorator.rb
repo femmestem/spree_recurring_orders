@@ -8,6 +8,8 @@ Spree::Order.class_eval do
 
   self.state_machine.after_transition to: :complete, do: :enable_subscriptions, if: :any_disabled_subscription?
 
+  after_update :update_subscriptions
+
   def available_payment_methods
     if subscriptions.exists?
       @available_payment_methods = Spree::Gateway.active
@@ -27,6 +29,14 @@ Spree::Order.class_eval do
 
     def any_disabled_subscription?
       subscriptions.disabled.any?
+    end
+
+    def update_subscriptions
+      line_items.each do |line_item|
+        if line_item.subscription_attributes_present?
+          subscriptions.find_by(variant: line_item.variant).update(line_item.updatable_subscription_attributes)
+        end
+      end
     end
 
 end
