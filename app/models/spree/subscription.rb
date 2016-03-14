@@ -155,7 +155,7 @@ module Spree
         cancelled_at.present? && cancelled_at_changed?
       end
 
-      def reoccurence_notifiable?
+      def reoccurrence_notifiable?
         last_occurrence_at_changed? && last_occurrence_at_was
       end
 
