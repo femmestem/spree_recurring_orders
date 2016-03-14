@@ -27,7 +27,7 @@ module Spree
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
-      validates :delivery_number, numericality: { greater_than_or_equal_to: 1, only_integer: true }
+      validates :delivery_number, numericality: { greater_than_or_equal_to: :recurring_orders_size, only_integer: true }
       validates :parent_order, uniqueness: { scope: :variant }
     end
     with_options presence: true do
@@ -64,7 +64,7 @@ module Spree
     end
 
     def number_of_deliveries_left
-      delivery_number - orders.size
+      delivery_number - orders.size - 1
     end
 
     private
@@ -161,6 +161,10 @@ module Spree
 
       def notify_reoccurrence
         SubscriptionNotifier.notify_reoccurrence(self).deliver
+      end
+
+      def recurring_orders_size
+        orders.size + 1
       end
 
   end
