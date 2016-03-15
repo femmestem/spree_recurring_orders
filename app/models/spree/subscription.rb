@@ -1,7 +1,7 @@
 module Spree
   class Subscription < Spree::Base
 
-    attr_accessor :cancel
+    attr_accessor :cancelled
 
     include Spree::NumberGenerator
 
@@ -33,7 +33,7 @@ module Spree
     with_options presence: true do
       validates :quantity, :delivery_number, :price, :number
       validates :variant, :parent_order, :frequency
-      validates :cancellation_reasons, :cancelled_at, if: -> { cancel.present? }
+      validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
@@ -55,7 +55,7 @@ module Spree
     end
 
     def cancel_with_reason(attributes)
-      self.cancel = true
+      self.cancelled = true
       update(attributes)
     end
 
@@ -144,7 +144,7 @@ module Spree
       end
 
       def cancelled_at_settable?
-        cancel.present?
+        cancelled.present?
       end
 
       def notify_cancellation
