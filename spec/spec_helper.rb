@@ -23,6 +23,7 @@ require 'pry'
 require "spree/testing_support/factories"
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/shoulda_matcher_configuration'
+require 'spree_items_subscriptions/factories'
 
 RSpec.configure do |config|
   config.mock_with :rspec
@@ -33,12 +34,6 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.infer_spec_type_from_file_location!
   config.raise_errors_for_deprecations!
-
-  config.before do
-    # https://github.com/thoughtbot/factory_girl/issues/793
-    FactoryGirl.definition_file_paths = [File.expand_path('../factories', __FILE__)]
-  end
-
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
   end

@@ -40,7 +40,6 @@ module Spree
 
     before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
-
     before_update :not_cancelled?
     after_update :notify_user, if: [:enabled?, :enabled_changed?]
     after_update :notify_cancellation, if: :cancellation_notifiable?

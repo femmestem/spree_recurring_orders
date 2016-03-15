@@ -2,7 +2,6 @@ require "spec_helper"
 
 describe Spree::Product do
 
-
   describe "associations" do
     it { expect(subject).to have_many(:subscriptions).through(:variants_including_master).source(:subscriptions).dependent(:restrict_with_error) }
     it { expect(subject).to have_many(:product_subscription_frequencies).class_name("Spree::ProductSubscriptionFrequency").dependent(:destroy) }
@@ -10,7 +9,10 @@ describe Spree::Product do
   end
 
   describe "validations" do
-    it { expect(subject).to validate_presence_of(:subscription_frequencies) }
+    context "if subscribable" do
+      before { subject.subscribable = true }
+      it { expect(subject).to validate_presence_of(:subscription_frequencies) }
+    end
   end
 
   # describe "scopes" do
