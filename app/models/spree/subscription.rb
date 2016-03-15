@@ -15,7 +15,7 @@ module Spree
     accepts_nested_attributes_for :ship_address, :bill_address
 
     has_many :orders_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
-    has_many :orders, through: :orders_subscriptions
+    has_many :orders, -> { complete }, through: :orders_subscriptions
 
     self.whitelisted_ransackable_associations = %w( parent_order )
 
@@ -50,7 +50,8 @@ module Spree
     end
 
     def process
-      update(last_occurrence_at: Time.current) if order_recreated?
+      new_order = recreate_order if time_for_subscription? && deliveries_remaining?
+      update(last_occurrence_at: Time.current) if new_order.completed?
     end
 
     def cancel_with_reason(attributes)
@@ -67,10 +68,6 @@ module Spree
     end
 
     private
-
-      def order_recreated?
-        recreate_order if time_for_subscription? && deliveries_remaining?
-      end
 
       def set_cancelled_at
         self.cancelled_at = Time.current
@@ -91,6 +88,7 @@ module Spree
         add_delivery_method_to_order(order)
         add_payment_method_to_order(order)
         confirm_order(order)
+        order
       end
 
       def make_new_order
