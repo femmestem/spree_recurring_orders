@@ -15,7 +15,7 @@ module Spree
     accepts_nested_attributes_for :ship_address, :bill_address
 
     has_many :orders_subscriptions, class_name: "Spree::OrderSubscription", dependent: :destroy
-    has_many :orders, -> { complete }, through: :orders_subscriptions
+    has_many :orders, through: :orders_subscriptions
 
     self.whitelisted_ransackable_associations = %w( parent_order )
 
@@ -64,7 +64,7 @@ module Spree
     end
 
     def number_of_deliveries_left
-      delivery_number - orders.size - 1
+      delivery_number - orders.complete.size - 1
     end
 
     private
