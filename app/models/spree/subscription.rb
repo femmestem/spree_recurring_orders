@@ -36,12 +36,12 @@ module Spree
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
 
-    before_validation :set_last_occurrence_at, if: :last_occurence_at_settable?
-    before_validation :set_cancelled_at, if: :cancelled_at_settable?
+    before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
+    before_validation :set_cancelled_at, if: :can_set_cancelled_at?
 
     before_update :not_cancelled?
-    after_update :notify_user, if: -> { enabled? && enabled_changed? }
-    after_update :notify_cancellation, if: :cancellation_mail_sendable?
+    after_update :notify_user, if: [:enabled?, :enabled_changed?]
+    after_update :notify_cancellation, if: :cancellation_notifiable?
     after_update :notify_reoccurrence, if: :reoccurrence_notifiable?
 
     def generate_number(options = {})
@@ -77,7 +77,7 @@ module Spree
         self.last_occurrence_at = Time.current
       end
 
-      def last_occurence_at_settable?
+      def can_set_last_occurence_at?
         enabled? && last_occurrence_at.nil?
       end
 
@@ -146,7 +146,7 @@ module Spree
         !cancelled?
       end
 
-      def cancelled_at_settable?
+      def can_set_cancelled_at?
         cancelled.present?
       end
 
@@ -154,7 +154,7 @@ module Spree
         SubscriptionNotifier.notify_cancellation(self).deliver
       end
 
-      def cancellation_mail_sendable?
+      def cancellation_notifiable?
         cancelled_at.present? && cancelled_at_changed?
       end
 
