@@ -19,12 +19,12 @@ Spree::LineItem.class_eval do
   private
 
     def create_subscription!
-      Spree::Subscription.create! subscription_attributes
+      order.subscriptions.create! subscription_attributes
     end
 
     def subscription_attributes
       { subscription_frequency_id: subscription_frequency_id, price: variant.price,
-        delivery_number: delivery_number, variant: variant, parent_order: order, quantity: quantity }
+        delivery_number: delivery_number, variant: variant, quantity: quantity }
     end
 
     def update_subscription_quantity

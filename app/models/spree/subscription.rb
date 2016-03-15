@@ -51,7 +51,7 @@ module Spree
     end
 
     def process
-      update(last_occurrence_at: Time.current) if recreation_successful?
+      update(last_occurrence_at: Time.current) if order_recreated?
     end
 
     def cancel_with_reason(attributes)
@@ -69,7 +69,7 @@ module Spree
 
     private
 
-      def recreation_successful?
+      def order_recreated?
         recreate_order if time_for_subscription? && deliveries_remaining?
       end
 
@@ -86,43 +86,43 @@ module Spree
       end
 
       def recreate_order
-        make_new_order
-        add_variant_to_order
-        add_shipping_address
-        add_delivery_method_to_order
-        add_payment_method_to_order
-        confirm_order
+        order = make_new_order
+        add_variant_to_order(order)
+        add_shipping_address(order)
+        add_delivery_method_to_order(order)
+        add_payment_method_to_order(order)
+        confirm_order(order)
       end
 
       def make_new_order
-        @new_order = orders.create(order_params)
+        orders.create(order_params)
       end
 
-      def add_variant_to_order
-        @new_order.contents.add(variant, quantity)
-        @new_order.next
+      def add_variant_to_order(order)
+        order.contents.add(variant, quantity)
+        order.next
       end
 
-      def add_shipping_address
-        @new_order.ship_address = ship_address.clone
-        @new_order.bill_address = bill_address.clone
-        @new_order.next
+      def add_shipping_address(order)
+        order.ship_address = ship_address.clone
+        order.bill_address = bill_address.clone
+        order.next
       end
 
-      def add_delivery_method_to_order
-        @new_order.next
+      def add_delivery_method_to_order(order)
+        order.next
       end
 
-      def add_payment_method_to_order
-        @new_order.payments.first.update(source: source)
-        @new_order.next
+      def add_payment_method_to_order(order)
+        order.payments.first.update(source: source)
+        order.next
       end
 
-      def confirm_order
-        @new_order.next
+      def confirm_order(order)
+        order.next
       end
 
-      def order_params
+      def order_attributes
         { currency: parent_order.currency, guest_token: parent_order.guest_token, store: parent_order.store,
           user: parent_order.user, created_by: parent_order.user, last_ip_address: parent_order.last_ip_address }
       end
