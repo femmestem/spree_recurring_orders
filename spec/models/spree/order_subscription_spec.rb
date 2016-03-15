@@ -10,7 +10,7 @@ describe Spree::OrderSubscription do
   describe "validations" do
     it { expect(subject).to validate_presence_of(:order) }
     it { expect(subject).to validate_presence_of(:subscription) }
-    it { expect(subject).to validate_uniqueness_of(:order).scoped_to(:subscription).case_insensitive }
+    it { expect(subject).to validate_uniqueness_of(:order_id).scoped_to(:subscription_id) }
   end
 
 end

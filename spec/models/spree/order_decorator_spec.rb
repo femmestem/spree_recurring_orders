@@ -8,6 +8,10 @@ describe Spree::Order do
     it { expect(subject).to have_many(:subscriptions).class_name("Spree::Subscription").with_foreign_key(:parent_order_id).dependent(:restrict_with_error) }
   end
 
+  describe "callbacks" do
+    it { expect(subject).to callback(:update_subscriptions).after(:update) }
+  end
+
   describe "methods" do
     context "#available_payment_methods" do
 
