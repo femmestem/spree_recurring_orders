@@ -1,7 +1,7 @@
 <div data-hook="admin_product_form_subscribable">
   <%= f.field_container :subscribable, class: ['form-group'] do %>
-    <%= f.label :subscribable, Spree.t(:subscribable) %>
-    <%= f.check_box :subscribable, class: 'form-control' %>
+    <%= f.check_box :subscribable, class: 'form-control', class: "subscribable-option subscribable_checkbox" %>
+    <%= f.label :subscribable, Spree.t(:subscribable), class: "subscribable_label" %>
     <%= f.error_message_on :subscribable %>
   <% end %>
 </div>
