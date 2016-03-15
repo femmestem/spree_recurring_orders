@@ -94,7 +94,7 @@ module Spree
       end
 
       def make_new_order
-        orders.create(order_params)
+        orders.create(order_attributes)
       end
 
       def add_variant_to_order(order)
