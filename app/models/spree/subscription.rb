@@ -31,8 +31,7 @@ module Spree
       validates :parent_order, uniqueness: { scope: :variant }
     end
     with_options presence: true do
-      validates :quantity, :delivery_number, :price, :number
-      validates :variant, :parent_order, :frequency
+      validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
       validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
       validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
     end
@@ -123,8 +122,14 @@ module Spree
       end
 
       def order_attributes
-        { currency: parent_order.currency, guest_token: parent_order.guest_token, store: parent_order.store,
-          user: parent_order.user, created_by: parent_order.user, last_ip_address: parent_order.last_ip_address }
+        {
+          currency: parent_order.currency,
+          guest_token: parent_order.guest_token,
+          store: parent_order.store,
+          user: parent_order.user,
+          created_by: parent_order.user,
+          last_ip_address: parent_order.last_ip_address
+        }
       end
 
       def time_for_subscription?

@@ -6,6 +6,10 @@
   <table class="table table-condensed table-bordered" id="subscription_tab_summary" data-hook>
     <tbody class="additional-info">
       <tr>
+        <td><strong><%= Spree.t(:customer_email) %></strong></td>
+        <td><span><%= @subscription.parent_order.email %></span></td>
+      </tr>
+      <tr>
         <td  width="35%" data-hook>
           <strong><%= Spree.t(:parent_order) %>:</strong>
         </td>
@@ -25,7 +29,7 @@
       </tr>
       <tr>
         <td>
-          <strong><%= Spree.t(:recurring_delivery_number) %></strong>
+          <strong><%= Spree.t(:total_deliveries) %></strong>
         </td>
         <td>
           <div data-hook="admin_subscription_delivery_number_form">
@@ -37,7 +41,7 @@
         </td>
       </tr>
       <tr>
-        <td><strong><%= Spree.t(:number_of_deliveries_left) %></strong></td>
+        <td><strong><%= Spree.t(:deliveries_left) %></strong></td>
         <td><%= @subscription.number_of_deliveries_left %></td>
       </tr>
       <% if @subscription.cancelled? %>

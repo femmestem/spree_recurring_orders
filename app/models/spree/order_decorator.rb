@@ -22,8 +22,12 @@ Spree::Order.class_eval do
 
     def enable_subscriptions
       subscriptions.each do |subscription|
-        subscription.update(source: payments.from_credit_card.first.source,
-          enabled: true, ship_address: ship_address.clone, bill_address: bill_address.clone)
+        subscription.update(
+          source: payments.from_credit_card.first.source,
+          enabled: true,
+          ship_address: ship_address.clone,
+          bill_address: bill_address.clone
+        )
       end
     end
 

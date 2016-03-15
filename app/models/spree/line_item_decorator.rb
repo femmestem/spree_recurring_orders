@@ -12,8 +12,10 @@ Spree::LineItem.class_eval do
   end
 
   def updatable_subscription_attributes
-    { subscription_frequency_id: subscription_frequency_id || subscription.subscription_frequency_id,
-      delivery_number: delivery_number || subscription.delivery_number }
+    {
+      subscription_frequency_id: subscription_frequency_id || subscription.subscription_frequency_id,
+      delivery_number: delivery_number || subscription.delivery_number
+    }
   end
 
   private
@@ -23,8 +25,13 @@ Spree::LineItem.class_eval do
     end
 
     def subscription_attributes
-      { subscription_frequency_id: subscription_frequency_id, price: variant.price,
-        delivery_number: delivery_number, variant: variant, quantity: quantity }
+      {
+        subscription_frequency_id: subscription_frequency_id,
+        price: variant.price,
+        delivery_number: delivery_number,
+        variant: variant,
+        quantity: quantity
+       }
     end
 
     def update_subscription_quantity
