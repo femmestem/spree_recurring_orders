@@ -13,7 +13,7 @@
         <th class="subscription-frequency"><%= Spree.t(:recurring_delivery_interval) %></th>
         <th class="subscription-delivery-number"><%= Spree.t(:total_deliveries) %></th>
         <th class="subscription-deliveries-left"><%= Spree.t(:deliveries_left) %></th>
-        <th class="subscription-cancelled-status"><%= Spree.t(:cancel_status) %></th>
+        <th class="subscription-cancelled-status"><%= Spree.t(:status) %></th>
       </tr>
       </thead>
       <tbody>
@@ -27,9 +27,9 @@
           <td class="text-center subscription-deliveries-left"><%= subscription.number_of_deliveries_left %></td>
           <td class="subscription-cancelled-status">
             <% if subscription.cancelled? %>
-              Cancelled At <%= subscription.cancelled_at.to_date.to_formatted_s(:rfc822) %>
+              Disabled
             <% else %>
-              Not Cancelled
+              Active
             <% end %>
           </td>
         </tr>
