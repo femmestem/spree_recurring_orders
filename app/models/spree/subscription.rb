@@ -168,7 +168,7 @@ module Spree
       end
 
       def recurring_orders_size
-        orders.size + 1
+        complete_orders.size + 1
       end
 
   end
