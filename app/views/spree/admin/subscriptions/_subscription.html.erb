@@ -2,8 +2,9 @@
   <td><%= link_to subscription.number, edit_admin_subscription_path(subscription) %></td>
   <td><%= subscription.variant.name %></td>
   <td class="text-center"><%= subscription.price %></td>
-  <td class="text-center"><%= subscription.frequency.title %></td>
-  <td class="text-center"><%= subscription.end_date.to_date.to_formatted_s(:rfc822) %></td>
+  <td class="text-center"><%= subscription.frequency.title.titleize %></td>
+  <td class="text-center"><%= subscription.delivery_number %></td>
+  <td class="text-center"><%= subscription.number_of_deliveries_left %></td>
   <td class="text-center">
     <% if subscription.cancelled_at %>
       Cancelled
@@ -13,6 +14,5 @@
   </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
     <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
-
   </td>
 </tr>

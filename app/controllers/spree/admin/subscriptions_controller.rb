@@ -2,16 +2,16 @@ module Spree
   module Admin
     class SubscriptionsController < Spree::Admin::ResourceController
 
+      before_action :ensure_not_cancelled, only: :update
+
       def cancellation
       end
 
       def cancel
-        @subscription.cancel = true
-        if @subscription.update(permitted_cancel_subscription_attributes)
-          flash[:success] = "Subscription is cancelled"
+        if @subscription.cancel_with_reason(permitted_cancel_subscription_attributes)
+          flash[:success] = t('.success')
           redirect_to collection_url
         else
-          flash[:error] = @subscription.errors.full_messages.join(", ")
           render :cancellation
         end
       end
@@ -24,8 +24,16 @@ module Spree
 
         def collection
           @collection = super
-          @search = @collection.ransack(params[:q])
-          @collection = @search.result.active
+          @search = @collection.active.ransack(params[:q])
+          @collection = @search.result.includes(:frequency, :orders, variant: :product)
+                                      .order(created_at: :desc)
+                                      .page(params[:page])
+        end
+
+        def ensure_not_cancelled
+          if @subscription.cancelled?
+            redirect_to collection_url, error: t("spree.admin.subscriptions_controller.error_on_already_cancelled")
+          end
         end
 
     end

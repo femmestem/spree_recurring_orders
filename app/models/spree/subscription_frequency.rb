@@ -4,20 +4,10 @@ module Spree
     has_many :product_subscription_frequencies, class_name: "Spree::ProductSubscriptionFrequency",
                                                 dependent: :destroy
 
-    validates :title, presence: true
-    validates :title, uniqueness: { case_sensitive: false }, allow_blank: true
-
-    def time_in_months
-      case title
-      when "monthly"
-        1
-      when "quarterly"
-        3
-      when "half yearly"
-        6
-      when "yearly"
-        12
-      end
+    validates :title, :months_count, presence: true
+    with_options allow_blank: true do
+      validates :months_count, numericality: { greater_than: 0, only_integer: true }
+      validates :title, uniqueness: { case_sensitive: false }
     end
 
   end

@@ -1,0 +1,67 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= Spree.t(:subscription_summary) %></h3>
+  </div>
+
+  <table class="table table-condensed table-bordered" id="subscription_tab_summary" data-hook>
+    <tbody class="additional-info">
+      <tr>
+        <td><strong><%= Spree.t(:customer_email) %></strong></td>
+        <td><span><%= @subscription.parent_order.email %></span></td>
+      </tr>
+      <tr>
+        <td  width="35%" data-hook>
+          <strong><%= Spree.t(:parent_order) %>:</strong>
+        </td>
+        <td>
+          <span>
+            <%= link_to @subscription.parent_order.number, edit_admin_order_path(@subscription.parent_order) %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong><%= Spree.t(:last_occurence_at) %>:</strong>
+        </td>
+        <td id="last_occurence_at">
+          <%= @subscription.last_occurrence_at.to_formatted_s(:long) %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong><%= Spree.t(:total_deliveries) %></strong>
+        </td>
+        <td>
+          <div data-hook="admin_subscription_delivery_number_form">
+            <%= f.field_container :delivery_number, class: ["form-group"] do %>
+              <%= number_field :subscription, :delivery_number, class: "form-control", disabled: @subscription.cancelled? %>
+              <%= f.error_message_on :delivery_number %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong><%= Spree.t(:deliveries_left) %></strong></td>
+        <td><%= @subscription.number_of_deliveries_left %></td>
+      </tr>
+      <% if @subscription.cancelled? %>
+        <tr id="cancellation_fields">
+          <td>
+            <strong><%= Spree.t(:cancelled_at) %></strong>
+          </td>
+          <td>
+            <span><%= @subscription.cancelled_at.to_formatted_s(:long) %></span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong><%= Spree.t(:cancellation_reasons) %></strong>
+          </td>
+          <td>
+            <span><%= @subscription.cancellation_reasons.html_safe %></span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

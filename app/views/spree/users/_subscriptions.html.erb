@@ -1,0 +1,44 @@
+<div data-hook="account_my_subscriptions" class="account-my-subscriptions">
+
+  <% subscriptions = Spree::Subscription.where(parent_order: spree_current_user.orders) %>
+
+  <h3><%= Spree.t(:my_subscriptions) %></h3>
+  <% if subscriptions.present? %>
+    <table class="table table-striped subscription-summary">
+      <thead class="active">
+      <tr>
+        <th class="subscription-number"><%= Spree::Subscription.human_attribute_name(:number) %></th>
+        <th class="subscription-product-name"><%= Spree.t(:product_name) %></th>
+        <th class="subscription-price"><%= Spree.t(:price) %></th>
+        <th class="subscription-frequency"><%= Spree.t(:recurring_delivery_interval) %></th>
+        <th class="subscription-delivery-number"><%= Spree.t(:total_deliveries) %></th>
+        <th class="subscription-deliveries-left"><%= Spree.t(:deliveries_left) %></th>
+        <th class="subscription-cancelled-status"><%= Spree.t(:status) %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% subscriptions.each do |subscription| %>
+        <tr>
+          <td class="subscription-number"><%= subscription.number %></td>
+          <td class="subscription-product-name"><%= subscription.variant.product.name %></td>
+          <td class="text-center subscription-price"><%= subscription.price %></td>
+          <td class="text-center subscription-frequency"><%= subscription.frequency.title.titleize %></td>
+          <td class="text-center subscription-delivery-number"><%= subscription.delivery_number %></td>
+          <td class="text-center subscription-deliveries-left"><%= subscription.number_of_deliveries_left %></td>
+          <td class="subscription-cancelled-status">
+            <% if subscription.cancelled? %>
+              Disabled
+            <% else %>
+              Active
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alert alert-info"><%= Spree.t(:you_have_no_subscriptions_yet) %></div>
+  <% end %>
+  <br />
+
+</div>

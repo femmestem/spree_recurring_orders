@@ -1,8 +1,15 @@
-<td class='cart-item-subscription' data-hook='cart_item_subscription'>
-  <% subscription = @order.subscriptions.find_by(variant: variant) %>
+<% subscription = @order.subscriptions.find_by(variant: variant) %>
+<td class='cart-item-subscription text-center' data-hook='cart_item_subscription'>
   <% if subscription %>
-    Subscribed <%= @order.subscriptions.find_by(variant: variant).frequency.title %>
+      <%= item_form.collection_select :subscription_frequency_id, variant.product.subscription_frequencies, :id, :title, { selected: subscription.subscription_frequency_id }, { class: "form-control" } %>
   <% else %>
     Not Subscribed
+  <% end %>
+</td>
+<td class="text-center">
+  <% if subscription %>
+    <%= item_form.number_field :delivery_number, class: "form-control", min: 1, value: subscription.delivery_number %>
+  <% else %>
+    None
   <% end %>
 </td>

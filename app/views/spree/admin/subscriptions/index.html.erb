@@ -28,8 +28,9 @@
         <th><%= Spree.t(:number) %></th>
         <th><%= Spree.t(:product_name) %></th>
         <th><%= Spree.t(:price) %></th>
-        <th class="text-center"><%= Spree.t(:subscription_frequency) %></th>
-        <th class="text-center"><%= Spree.t(:end_date) %></th>
+        <th class="text-center"><%= Spree.t(:recurring_delivery_interval) %></th>
+        <th class="text-center"><%= Spree.t(:total_deliveries) %></th>
+        <th class="text-center"><%= Spree.t(:deliveries_left) %></th>
         <th class="text-center"><%= Spree.t(:cancel_status) %></th>
         <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
       </tr>
@@ -38,6 +39,7 @@
       <%= render partial: 'spree/admin/subscriptions/subscription', collection: @subscriptions %>
     </tbody>
   </table>
+  <%= paginate @subscriptions %>
 <% else %>
   <div class="alert alert-info no-objects-found">
     <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::Subscription)) %>

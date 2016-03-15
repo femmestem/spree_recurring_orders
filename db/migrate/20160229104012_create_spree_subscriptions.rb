@@ -1,7 +1,7 @@
 class CreateSpreeSubscriptions < ActiveRecord::Migration
   def change
     create_table :spree_subscriptions do |t|
-      t.references :variant, index: true, foreign_key: true
+      t.references :variant, index: true
       t.integer :quantity
       t.string :frequency
       t.references :parent_order, index: true

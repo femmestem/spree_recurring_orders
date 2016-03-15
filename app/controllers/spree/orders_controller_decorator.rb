@@ -6,6 +6,7 @@ Spree::OrdersController.class_eval do
 
     def add_subscription_fields
       params[:options] ||= {}
+      params[:subscription][:subscribe] = params[:subscribe].present?
       params[:options].merge! params[:subscription]
     end
 

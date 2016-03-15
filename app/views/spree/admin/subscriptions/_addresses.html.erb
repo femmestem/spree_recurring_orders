@@ -1,0 +1,37 @@
+<div>
+  <div class="row">
+  <div data-hook="bill_address_wrapper" class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title"><%= Spree.t(:billing_address) %></h1>
+      </div>
+
+      <div class="panel-body">
+        <% if @subscription.cancelled? %>
+          <%= render partial: 'spree/admin/shared/address', locals: { address: @subscription.bill_address } %>
+        <% else %>
+          <%= f.fields_for :bill_address do |ba_form| %>
+            <%= render partial: 'spree/admin/shared/address_form', locals: { f: ba_form, type: "billing" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" data-hook="ship_address_wrapper">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title"><%= Spree.t(:shipping_address) %></h1>
+      </div>
+      <div class="panel-body">
+        <% if @subscription.cancelled? %>
+          <%= render partial: 'spree/admin/shared/address', locals: { address: @subscription.ship_address } %>
+        <% else %>
+          <%= f.fields_for :ship_address do |sa_form| %>
+            <%= render partial: 'spree/admin/shared/address_form', locals: { f: sa_form, type: 'shipping' } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

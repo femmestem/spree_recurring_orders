@@ -1,5 +1,5 @@
 <p>Hi <%= @subscription.parent_order.email %></p>
-<p>Your <%= @subscription.frequency.title %> order is confirmed</p>
+<p>Your <%= @subscription.frequency.title %> subscription is confirmed</p>
 <div>
   <p>
     <%= Spree.t('order_mailer.confirm_email.order_summary', number: @subscription.parent_order.number) %>
@@ -71,5 +71,5 @@
   </table>
 </div>
 
-<p>Your <%= @subscription.frequency.title %> will end on <%= @subscription.end_date.to_date.to_formatted_s(:rfc822) %></p>
+<p>Your <%= @subscription.frequency.title.capitalize %> subscription has <%= @subscription.number_of_deliveries_left %> deliveries left</p>
 <p>Regards</p>
