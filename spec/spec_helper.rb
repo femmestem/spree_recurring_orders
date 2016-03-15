@@ -36,7 +36,7 @@ RSpec.configure do |config|
 
   config.before do
     # https://github.com/thoughtbot/factory_girl/issues/793
-    FactoryGirl.find_definitions
+    FactoryGirl.definition_file_paths = [File.expand_path('../factories', __FILE__)]
   end
 
   config.expect_with :rspec do |expectations|
