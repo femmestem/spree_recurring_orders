@@ -56,6 +56,29 @@ describe Spree::Subscription do
   end
 
   describe "scopes" do
+    let(:active_subscription) { create(:valid_subscription, enabled: true) }
+    let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
+    let(:cancelled_subscription) { create(:valid_subscription, cancelled_at: Time.current, cancellation_reasons: "Test") }
+    context ".disabled" do
+      it { expect(Spree::Subscription.disabled).to include disabled_subscription }
+      it { expect(Spree::Subscription.disabled).to_not include active_subscription }
+    end
+
+    context ".active" do
+      it { expect(Spree::Subscription.active).to include active_subscription }
+      it { expect(Spree::Subscription.active).to_not include disabled_subscription }
+    end
+
+    context ".not_cancelled" do
+      it { expect(Spree::Subscription.not_cancelled).to include active_subscription }
+      it { expect(Spree::Subscription.not_cancelled).to_not include cancelled_subscription }
+    end
+
+    context ".eligible_for_subscription" do
+      it { expect(Spree::Subscription.eligible_for_subscription).to include active_subscription }
+      it { expect(Spree::Subscription.eligible_for_subscription).to_not include disabled_subscription }
+      it { expect(Spree::Subscription.eligible_for_subscription).to_not include cancelled_subscription }
+    end
   end
 
   describe "methods" do

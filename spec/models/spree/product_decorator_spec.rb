@@ -16,7 +16,7 @@ describe Spree::Product do
   end
 
   describe "scopes" do
-    context "subscribable" do
+    context ".subscribable" do
       let(:subscription_frequencies) { [create(:monthly_subscription_frequency)] }
       let(:subscribable_product) { create(:product, subscribable: true, subscription_frequencies: subscription_frequencies) }
       let(:unsubscribable_product) { create(:product) }
