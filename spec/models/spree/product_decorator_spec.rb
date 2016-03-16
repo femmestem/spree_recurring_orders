@@ -15,13 +15,14 @@ describe Spree::Product do
     end
   end
 
-  # describe "scopes" do
-  #   context "subscribable" do
-  #     let(:subscription_frequencies) { [create(:subscription_frequency)] }
-  #     let(:subscribable_product) { create(:product, subscribable: true, subscription_frequencies: ) }
-
-  #     it { expect(Spree::Product.subscribable).to include subscribable_product }
-  #   end
-  # end
+  describe "scopes" do
+    context "subscribable" do
+      let(:subscription_frequencies) { [create(:monthly_subscription_frequency)] }
+      let(:subscribable_product) { create(:product, subscribable: true, subscription_frequencies: subscription_frequencies) }
+      let(:unsubscribable_product) { create(:product) }
+      it { expect(Spree::Product.subscribable).to include subscribable_product }
+      it { expect(Spree::Product.subscribable).to_not include unsubscribable_product }
+    end
+  end
 
 end

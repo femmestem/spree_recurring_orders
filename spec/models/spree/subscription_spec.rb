@@ -47,7 +47,12 @@ describe Spree::Subscription do
     it { expect(subject).to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
     it { expect(subject).to callback(:notify_reoccurrence).after(:update).if(:reoccurrence_notifiable?) }
     it { expect(subject).to callback(:not_cancelled?).before(:update) }
-    it { expect(subject).to callback(:notify_user).after(:update).if(-> { enabled? && enabled_changed? }) }
+    it { expect(subject).to callback(:notify_user).after(:update).if(:user_notifiable?) }
+  end
+
+  describe "attr_accessors" do
+    it { expect(subject).to respond_to :cancelled }
+    it { expect(subject).to respond_to :cancelled= }
   end
 
   describe "scopes" do
