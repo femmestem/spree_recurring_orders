@@ -1,6 +1,6 @@
 <div data-hook="account_my_subscriptions" class="account-my-subscriptions">
 
-  <% subscriptions = Spree::Subscription.where(parent_order: spree_current_user.orders) %>
+  <% subscriptions = Spree::Subscription.where(parent_order: spree_current_user.orders).active %>
 
   <h3><%= Spree.t(:my_subscriptions) %></h3>
   <% if subscriptions.present? %>
