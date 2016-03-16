@@ -24,6 +24,7 @@ module Spree
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
     scope :eligible_for_subscription, -> { active.not_cancelled }
+    scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }

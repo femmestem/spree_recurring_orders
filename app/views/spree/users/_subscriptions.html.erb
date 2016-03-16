@@ -1,9 +1,7 @@
 <div data-hook="account_my_subscriptions" class="account-my-subscriptions">
 
-  <% subscriptions = Spree::Subscription.where(parent_order: spree_current_user.orders) %>
-
   <h3><%= Spree.t(:my_subscriptions) %></h3>
-  <% if subscriptions.present? %>
+  <% if @subscriptions.present? %>
     <table class="table table-striped subscription-summary">
       <thead class="active">
       <tr>
@@ -17,7 +15,7 @@
       </tr>
       </thead>
       <tbody>
-      <% subscriptions.each do |subscription| %>
+      <% @subscriptions.each do |subscription| %>
         <tr>
           <td class="subscription-number"><%= subscription.number %></td>
           <td class="subscription-product-name"><%= subscription.variant.product.name %></td>
