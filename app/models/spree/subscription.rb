@@ -41,7 +41,7 @@ module Spree
     before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
-    after_update :notify_user, if: [:enabled?, :enabled_changed?]
+    after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
     after_update :notify_reoccurrence, if: :reoccurrence_notifiable?
 
@@ -169,6 +169,10 @@ module Spree
 
       def recurring_orders_size
         complete_orders.size + 1
+      end
+
+      def user_notifiable?
+        enabled? && enabled_changed?
       end
 
   end
