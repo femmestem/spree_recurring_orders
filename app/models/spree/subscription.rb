@@ -160,7 +160,7 @@ module Spree
       end
 
       def reoccurrence_notifiable?
-        last_occurrence_at_changed? && last_occurrence_at_was
+        last_occurrence_at_changed? && !!last_occurrence_at_was
       end
 
       def notify_reoccurrence

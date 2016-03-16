@@ -2,9 +2,8 @@ require 'spec_helper'
 
 describe Spree::Order do
 
-  let(:enabled_subscription) { create(:valid_subscription, enabled: true) }
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
-  let(:subscriptions) { [enabled_subscription, disabled_subscription] }
+  let(:subscriptions) { [disabled_subscription] }
   let(:order_with_subscriptions) { create(:order_with_line_items, subscriptions: subscriptions) }
 
   describe "associations" do
@@ -34,7 +33,7 @@ describe Spree::Order do
     end
 
     context "#any_disabled_subscription?" do
-      it { expect(order_with_subscriptions).to be_any_disabled_subscription  }
+      it { expect(order_with_subscriptions.send :any_disabled_subscription?).to eq true  }
     end
   end
 
