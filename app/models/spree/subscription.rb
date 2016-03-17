@@ -133,7 +133,7 @@ module Spree
       end
 
       def time_for_subscription?
-        (last_occurrence_at + frequency.months_count.months) >= Time.current
+        (last_occurrence_at + frequency.months_count.months) <= Time.current
       end
 
       def deliveries_remaining?
