@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Spree::Subscription do
+describe Spree::Subscription, type: :model do
 
   let(:order) { create(:completed_order_with_totals) }
   let(:orders) { [create(:completed_order_with_totals)] }

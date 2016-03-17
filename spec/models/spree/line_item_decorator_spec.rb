@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Spree::LineItem do
+describe Spree::LineItem, type: :model do
 
   let(:order) { create(:completed_order_with_totals) }
   let(:active_subscription) { create(:valid_subscription, enabled: true, parent_order: order) }

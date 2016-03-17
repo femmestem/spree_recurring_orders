@@ -7,6 +7,8 @@ gem 'spree_auth_devise', github: 'spree/spree_auth_devise', branch: '3-0-stable'
 gem 'shoulda-matchers'
 gem 'shoulda-callback-matchers'
 
+gem 'rspec-activemodel-mocks'
+
 gem 'sqlite3'
 gem 'pry-rails'
 

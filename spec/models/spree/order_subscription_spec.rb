@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Spree::OrderSubscription do
+describe Spree::OrderSubscription, type: :model do
 
   describe "associations" do
     it { expect(subject).to belong_to(:order).class_name("Spree::Order") }

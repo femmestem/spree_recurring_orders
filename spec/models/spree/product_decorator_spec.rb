@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Spree::Product do
+describe Spree::Product, type: :model do
 
   describe "associations" do
     it { expect(subject).to have_many(:subscriptions).through(:variants_including_master).source(:subscriptions).dependent(:restrict_with_error) }

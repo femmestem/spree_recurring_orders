@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Spree::SubscriptionFrequency do
+RSpec.describe Spree::SubscriptionFrequency, type: :model do
 
 
 

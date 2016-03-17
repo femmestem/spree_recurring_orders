@@ -12,7 +12,7 @@ describe Spree::UsersController, type: :controller do
 
       let(:orders) { double(ActiveRecord::Relation) }
       let(:subscriptions) { double(ActiveRecord::Relation) }
-      let(:user) { create(:admin_user) }
+      let(:user) { mock_model(Spree::User, id: 1) }
 
       before do
         allow(controller).to receive(:spree_current_user).and_return(user)

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Spree::PaymentMethod do
+describe Spree::PaymentMethod, type: :model do
 
   describe "scopes" do
     context ".active" do

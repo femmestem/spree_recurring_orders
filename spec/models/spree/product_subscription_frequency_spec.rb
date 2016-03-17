@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Spree::ProductSubscriptionFrequency do
+describe Spree::ProductSubscriptionFrequency, type: :model do
 
   describe "associations" do
     it { expect(subject).to belong_to(:product).class_name("Spree::Product") }

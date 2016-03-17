@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Spree::Order do
+describe Spree::Order, type: :model do
 
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
   let(:subscriptions) { [disabled_subscription] }
