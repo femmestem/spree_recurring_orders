@@ -22,6 +22,9 @@ require 'rspec/rails'
 require 'ffaker'
 require 'pry'
 require "spree/testing_support/factories"
+require 'spree/testing_support/url_helpers'
+require "spree/testing_support/authorization_helpers"
+require "spree/testing_support/controller_requests"
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/shoulda_matcher_configuration'
 require 'spree_items_subscriptions/factories'
@@ -54,6 +57,9 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean
   end
+  config.include Spree::TestingSupport::ControllerRequests, type: :controller
+  config.include Spree::TestingSupport::UrlHelpers
+  config.include Devise::TestHelpers
 
 end
 

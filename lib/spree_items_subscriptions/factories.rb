@@ -13,7 +13,7 @@ FactoryGirl.define do
     delivery_number 6
     association :variant, factory: :base_variant
     association :frequency, factory: :monthly_subscription_frequency
-    association :parent_order, factory: :order_with_line_items
+    association :parent_order, factory: :completed_order_with_totals
     association :ship_address, factory: :address
     association :bill_address, factory: :address
     association :source, factory: :credit_card
