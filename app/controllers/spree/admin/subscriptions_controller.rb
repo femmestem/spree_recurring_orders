@@ -2,7 +2,7 @@ module Spree
   module Admin
     class SubscriptionsController < Spree::Admin::ResourceController
 
-      before_action :ensure_not_cancelled, only: :update
+      before_action :ensure_not_cancelled, only: [:update, :cancel, :cancellation]
 
       def cancellation
       end
@@ -33,7 +33,8 @@ module Spree
 
         def ensure_not_cancelled
           if @subscription.cancelled?
-            redirect_to collection_url, error: t("spree.admin.subscriptions_controller.error_on_already_cancelled")
+            flash[:error] = t("spree.admin.subscriptions.error_on_already_cancelled")
+            redirect_to collection_url
           end
         end
 

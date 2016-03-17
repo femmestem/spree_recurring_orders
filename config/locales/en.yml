@@ -19,4 +19,4 @@ en:
           success: "Subscription is cancelled"
         cancellation:
           confirm: "Once cancelled, subscription can not be enabled again"
-        error_on_already_cancelled: "Cancelled Subscription can not be updated."
+        error_on_already_cancelled: "Cancelled Subscription can not be processed."
