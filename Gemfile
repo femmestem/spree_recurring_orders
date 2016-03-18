@@ -8,6 +8,7 @@ gem 'shoulda-matchers'
 gem 'shoulda-callback-matchers'
 
 gem 'rspec-activemodel-mocks'
+gem 'byebug'
 
 gem 'sqlite3'
 gem 'pry-rails'

@@ -4,7 +4,7 @@ describe Spree::Order, type: :model do
 
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
   let(:subscriptions) { [disabled_subscription] }
-  let(:order_with_subscriptions) { create(:order_with_line_items, subscriptions: subscriptions) }
+  let(:order_with_subscriptions) { create(:completed_order_with_pending_payment, subscriptions: subscriptions) }
 
   describe "associations" do
     it { expect(subject).to have_one(:order_subscription).class_name("Spree::OrderSubscription").dependent(:destroy) }
@@ -34,6 +34,28 @@ describe Spree::Order, type: :model do
 
     context "#any_disabled_subscription?" do
       it { expect(order_with_subscriptions.send :any_disabled_subscription?).to eq true  }
+    end
+
+    context "#enable_subscriptions" do
+      before { order_with_subscriptions.send :enable_subscriptions }
+      it { expect(order_with_subscriptions.subscriptions.disabled.count).to eq 0 }
+    end
+
+    context "#update_subscriptions" do
+      context "when subscription attributes present" do
+        let(:line_item) { create(:line_item, variant: disabled_subscription.variant) }
+        before do
+          line_item.delivery_number = 6
+          order_with_subscriptions.line_items << line_item
+          order_with_subscriptions.send :update_subscriptions
+        end
+        it { expect(disabled_subscription.reload.delivery_number).to eq 6 }
+      end
+
+      context "when subscription attributes not present" do
+        before { order_with_subscriptions.send :update_subscriptions }
+        it { expect(disabled_subscription.reload.delivery_number).to eq 4 }
+      end
     end
   end
 

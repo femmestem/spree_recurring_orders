@@ -176,8 +176,8 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#number_of_deliveries_left" do
-      it { expect(subscription_with_recreated_orders.number_of_deliveries_left).to eq 4 }
-      it { expect(active_subscription.number_of_deliveries_left).to eq 5 }
+      it { expect(subscription_with_recreated_orders.number_of_deliveries_left).to eq 2 }
+      it { expect(active_subscription.number_of_deliveries_left).to eq 3 }
     end
 
     context "#cancellation_notifiable?" do

@@ -9,8 +9,6 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
   describe "Get#cancellation" do
     def do_cancellation
-      p active_subscription.id
-      p active_subscription.inspect
       spree_get :cancellation, id: active_subscription.id
     end
 
@@ -67,7 +65,26 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
     end
 
     describe "#collection" do
+      def do_index
+        spree_get :index
+      end
+
       let(:subscriptions) { double(ActiveRecord::Relation) }
+      let(:search_subscriptions) { double(Ransack::Search) }
+      let(:result_subscriptions) { double(ActiveRecord::Relation) }
+
+      before do
+        allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+        allow(subscriptions).to receive(:ransack).and_return(search_subscriptions)
+        allow(search_subscriptions).to receive(:result).and_return(result_subscriptions)
+        allow(result_subscriptions).to receive(:includes).and_return(result_subscriptions)
+        allow(result_subscriptions).to receive(:references).and_return(result_subscriptions)
+        allow(result_subscriptions).to receive(:order).and_return(result_subscriptions)
+        allow(result_subscriptions).to receive(:page).and_return(result_subscriptions)
+        do_index
+      end
+      it { expect(assigns(:search)).to eq search_subscriptions }
+      it { expect(assigns(:collection)).to eq result_subscriptions }
     end
 
     describe "#permitted_cancel_subscription_attributes" do
