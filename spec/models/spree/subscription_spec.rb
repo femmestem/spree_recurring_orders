@@ -14,7 +14,10 @@ describe Spree::Subscription, type: :model do
     it { expect(subject).to validate_presence_of(:quantity) }
     it { expect(subject).to validate_presence_of(:delivery_number) }
     it { expect(subject).to validate_presence_of(:price) }
-    it { expect(subject).to validate_presence_of(:number) }
+    context "validates presence of number" do
+      before { nil_attributes_subscription.save }
+      it { expect(nil_attributes_subscription.errors[:number]).to include "can't be blank" }
+    end
     it { expect(subject).to validate_presence_of(:variant) }
     it { expect(subject).to validate_presence_of(:parent_order) }
     it { expect(subject).to validate_presence_of(:frequency) }

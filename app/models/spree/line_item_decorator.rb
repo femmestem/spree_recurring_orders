@@ -51,6 +51,8 @@ Spree::LineItem.class_eval do
     end
 
     def subscription
+      p order
+      p order.subscriptions
       order.subscriptions.find_by(variant: variant)
     end
 

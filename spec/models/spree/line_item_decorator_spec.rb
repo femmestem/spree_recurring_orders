@@ -3,9 +3,12 @@ require 'spec_helper'
 describe Spree::LineItem, type: :model do
 
   let(:order) { create(:completed_order_with_totals) }
-  let(:active_subscription) { create(:valid_subscription, enabled: true, parent_order: order) }
-  let(:line_item_without_subscription_attributes) { create(:line_item, order: order) }
+  let(:frequency) { create(:monthly_subscription_frequency, title: "monthly1") }
+  let(:variant) { create(:base_variant) }
+  let(:line_item_without_subscription_attributes) { create(:line_item, order: order, variant: variant) }
   let(:line_item_with_subscription_attributes) { create(:line_item, order: order, subscription_frequency_id: 1, delivery_number: 6) }
+  let(:active_subscription) { create(:valid_subscription, enabled: true, variant: line_item_with_subscription_attributes.variant, subscription_frequency_id: 1, delivery_number: 6, parent_order: order) }
+  let(:line_item_without_subscription) { create(:line_item) }
 
   describe "callbacks" do
     it { expect(subject).to callback(:create_subscription!).after(:create).if(:subscribable?) }
@@ -25,8 +28,111 @@ describe Spree::LineItem, type: :model do
 
   describe "methods" do
     context "#subscription_attributes_present?" do
-      it { expect(line_item_without_subscription_attributes).to be_subscription_attributes_present }
-      it { expect(line_item_with_subscription_attributes).to_not be_subscription_attributes_present }
+      it { expect(line_item_with_subscription_attributes).to be_subscription_attributes_present }
+      it { expect(line_item_without_subscription_attributes).to_not be_subscription_attributes_present }
+    end
+
+    context "#updatable_subscription_attributes" do
+      it { expect(line_item_with_subscription_attributes.updatable_subscription_attributes).to eq({ subscription_frequency_id: 1, delivery_number: 6 }) }
+    end
+
+    context "#subscription" do
+      it { expect(line_item_with_subscription_attributes.send :subscription).to eq active_subscription }
+      it { expect(line_item_without_subscription.send :subscription).to be_nil }
+    end
+
+    context "#subscription?" do
+      it { expect(line_item_without_subscription.send :subscription?).to eq false }
+      it { expect(line_item_with_subscription_attributes.send :subscription?).to eq true }
+    end
+
+    context "#can_update_subscription_attributes?" do
+      it { expect(line_item_without_subscription_attributes.send :can_update_subscription_attributes?).to eq false }
+      it { expect(line_item_with_subscription_attributes.send :can_update_subscription_attributes?).to eq true }
+    end
+
+    context "#can_update_subscription_quantity?" do
+      context "when subscription not present" do
+        it { expect(line_item_without_subscription.send :can_update_subscription_quantity?).to eq false }
+      end
+
+      context "when subscription is present but quantity not changed" do
+        it { expect(line_item_with_subscription_attributes.send :can_update_subscription_quantity?).to eq false }
+      end
+
+      context "when subscription is present and quantity is changed" do
+        before { line_item_with_subscription_attributes.quantity = 5 }
+        it { expect(line_item_with_subscription_attributes.send :can_update_subscription_quantity?).to eq true }
+      end
+    end
+
+    context "#destroy_associated_subscription!" do
+      it { expect(line_item_with_subscription_attributes.send :destroy_associated_subscription!).to eq active_subscription }
+    end
+
+    context "#update_subscription_quantity" do
+      context "when quantity is not changed" do
+        before do
+          line_item_with_subscription_attributes.quantity = 4
+          line_item_with_subscription_attributes.send :update_subscription_quantity
+        end
+        it { expect(active_subscription.quantity_changed?).to eq true }
+      end
+
+      context "when quantity is not changed" do
+        before do
+          line_item_with_subscription_attributes.quantity = 4
+          line_item_with_subscription_attributes.send :update_subscription_quantity
+        end
+        it { expect(active_subscription.quantity_changed?).to eq false }
+      end
+    end
+
+    context "#update_subscription_attributes" do
+      context "when subscription attributes are changed" do
+        before do
+          line_item_with_subscription_attributes.delivery_number = 8
+          line_item_with_subscription_attributes.subscription_frequency_id = frequency.id
+          line_item_with_subscription_attributes.send :update_subscription_attributes
+        end
+        it { expect(active_subscription.delivery_number_changed?).to eq true }
+        it { expect(active_subscription.subscription_frequency_id_changed?).to eq true }
+      end
+
+      context "when subscription attributes are not changed" do
+        before { line_item_with_subscription_attributes.send :update_subscription_attributes }
+        it { expect(active_subscription.delivery_number_changed?).to eq false }
+        it { expect(active_subscription.subscription_frequency_id_changed?).to eq false }
+      end
+    end
+
+    context "#subscribable?" do
+      context "when subscribe is present" do
+        before { line_item_with_subscription_attributes.subscribe = true }
+        it { expect(line_item_with_subscription_attributes.send :subscribable?).to eq true }
+      end
+      context "when subscribe is not present" do
+        it { expect(line_item_without_subscription_attributes.send :subscribable?).to eq false }
+      end
+    end
+
+    context "#subscription_attributes" do
+      it { expect(line_item_with_subscription_attributes.send :subscription_attributes).to eq({
+        subscription_frequency_id: 1,
+        delivery_number: 6,
+        variant: active_subscription.variant,
+        quantity: 1,
+        price: active_subscription.variant.price
+        }) }
+    end
+
+    context "#create_subscription!" do
+      before do
+        line_item_without_subscription_attributes.subscription_frequency_id = frequency.id
+        line_item_without_subscription_attributes.delivery_number = 5
+        line_item_without_subscription_attributes.send :create_subscription!
+      end
+      it { expect(order.subscriptions.count).to eq 2 }
     end
   end
 

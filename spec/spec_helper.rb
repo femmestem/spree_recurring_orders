@@ -59,7 +59,7 @@ RSpec.configure do |config|
   end
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
-  config.include Devise::TestHelpers
+  config.include Devise::TestHelpers, type: :controller
 
 end
 
