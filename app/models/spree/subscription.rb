@@ -52,7 +52,7 @@ module Spree
 
     def process
       new_order = recreate_order if time_for_subscription? && deliveries_remaining?
-      update(last_occurrence_at: Time.current) if new_order.completed?
+      update(last_occurrence_at: Time.current) if new_order.try :completed?
     end
 
     def cancel_with_reason(attributes)
@@ -112,7 +112,11 @@ module Spree
       end
 
       def add_payment_method_to_order(order)
-        order.payments.first.update(source: source)
+        if order.payments.exists?
+          order.payments.first.update(source: source, payment_method: source.payment_method)
+        else
+          order.payments.create(source: source, payment_method: source.payment_method)
+        end
         order.next
       end
 

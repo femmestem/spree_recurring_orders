@@ -86,10 +86,6 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
       it { expect(assigns(:search)).to eq search_subscriptions }
       it { expect(assigns(:collection)).to eq result_subscriptions }
     end
-
-    describe "#permitted_cancel_subscription_attributes" do
-      it { expect(do_cancel({ id: active_subscription.id })).to raise_error("ActionController::ParameterMissing") }
-    end
   end
 
 end
