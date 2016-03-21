@@ -23,7 +23,7 @@ describe Spree::UsersController, type: :controller do
         allow(subscriptions).to receive(:with_parent_orders).and_return(subscriptions)
       end
 
-      context "method flow" do
+      context "expects to receive" do
         after { do_show }
         it { expect(controller).to receive(:spree_current_user).and_return(user) }
         it { expect(user).to receive(:orders).and_return(orders) }
