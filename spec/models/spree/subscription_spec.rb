@@ -12,9 +12,9 @@ describe Spree::Subscription, type: :model do
   let(:subscription_with_recreated_orders) { create(:valid_subscription, orders: orders, last_occurrence_at: Time.current) }
 
   describe "validations" do
-    it { expect(subject).to validate_presence_of(:quantity) }
-    it { expect(subject).to validate_presence_of(:delivery_number) }
-    it { expect(subject).to validate_presence_of(:price) }
+    it { is_expected.to validate_presence_of(:quantity) }
+    it { is_expected.to validate_presence_of(:delivery_number) }
+    it { is_expected.to validate_presence_of(:price) }
     context "validates presence of number" do
       context "when number is absent" do
         before { nil_attributes_subscription.save }
@@ -29,9 +29,9 @@ describe Spree::Subscription, type: :model do
         it { expect(nil_attributes_subscription.number).to be_present }
       end
     end
-    it { expect(subject).to validate_presence_of(:variant) }
-    it { expect(subject).to validate_presence_of(:parent_order) }
-    it { expect(subject).to validate_presence_of(:frequency) }
+    it { is_expected.to validate_presence_of(:variant) }
+    it { is_expected.to validate_presence_of(:parent_order) }
+    it { is_expected.to validate_presence_of(:frequency) }
     context "if cancelled present" do
       before { subject.cancelled = true }
       it { expect(subject).to validate_presence_of(:cancellation_reasons) }
@@ -78,37 +78,37 @@ describe Spree::Subscription, type: :model do
       end
       it { expect(subject).to validate_presence_of(:source) }
     end
-    it { expect(subject).to validate_numericality_of(:price).is_greater_than_or_equal_to(0).allow_nil }
-    it { expect(subject).to validate_numericality_of(:quantity).is_greater_than(0).only_integer.allow_nil }
-    it { expect(subject).to validate_numericality_of(:delivery_number).is_greater_than_or_equal_to(subject.send :recurring_orders_size).only_integer.allow_nil }
+    it { is_expected.to validate_numericality_of(:price).is_greater_than_or_equal_to(0).allow_nil }
+    it { is_expected.to validate_numericality_of(:quantity).is_greater_than(0).only_integer.allow_nil }
+    it { is_expected.to validate_numericality_of(:delivery_number).is_greater_than_or_equal_to(subject.send :recurring_orders_size).only_integer.allow_nil }
   end
 
   describe "associations" do
-    it { expect(subject).to belong_to(:ship_address).class_name("Spree::Address") }
-    it { expect(subject).to belong_to(:bill_address).class_name("Spree::Address") }
-    it { expect(subject).to belong_to(:parent_order).class_name("Spree::Order") }
-    it { expect(subject).to belong_to(:variant).inverse_of(:subscriptions) }
-    it { expect(subject).to belong_to(:frequency).class_name("Spree::SubscriptionFrequency").with_foreign_key(:subscription_frequency_id) }
-    it { expect(subject).to belong_to(:source) }
-    it { expect(subject).to have_many(:orders_subscriptions).class_name("Spree::OrderSubscription").dependent(:destroy) }
-    it { expect(subject).to have_many(:orders).through(:orders_subscriptions) }
-    it { expect(subject).to have_many(:complete_orders).conditions(:complete).through(:orders_subscriptions).source(:order) }
-    it { expect(subject).to accept_nested_attributes_for(:ship_address) }
-    it { expect(subject).to accept_nested_attributes_for(:bill_address) }
+    it { is_expected.to belong_to(:ship_address).class_name("Spree::Address") }
+    it { is_expected.to belong_to(:bill_address).class_name("Spree::Address") }
+    it { is_expected.to belong_to(:parent_order).class_name("Spree::Order") }
+    it { is_expected.to belong_to(:variant).inverse_of(:subscriptions) }
+    it { is_expected.to belong_to(:frequency).class_name("Spree::SubscriptionFrequency").with_foreign_key(:subscription_frequency_id) }
+    it { is_expected.to belong_to(:source) }
+    it { is_expected.to have_many(:orders_subscriptions).class_name("Spree::OrderSubscription").dependent(:destroy) }
+    it { is_expected.to have_many(:orders).through(:orders_subscriptions) }
+    it { is_expected.to have_many(:complete_orders).conditions(:complete).through(:orders_subscriptions).source(:order) }
+    it { is_expected.to accept_nested_attributes_for(:ship_address) }
+    it { is_expected.to accept_nested_attributes_for(:bill_address) }
   end
 
   describe "callbacks" do
-    it { expect(subject).to callback(:set_last_occurrence_at).before(:validation).if(:can_set_last_occurence_at?) }
-    it { expect(subject).to callback(:set_cancelled_at).before(:validation).if(:can_set_cancelled_at?) }
-    it { expect(subject).to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
-    it { expect(subject).to callback(:notify_reoccurrence).after(:update).if(:reoccurrence_notifiable?) }
-    it { expect(subject).to callback(:not_cancelled?).before(:update) }
-    it { expect(subject).to callback(:notify_user).after(:update).if(:user_notifiable?) }
+    it { is_expected.to callback(:set_last_occurrence_at).before(:validation).if(:can_set_last_occurence_at?) }
+    it { is_expected.to callback(:set_cancelled_at).before(:validation).if(:can_set_cancelled_at?) }
+    it { is_expected.to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
+    it { is_expected.to callback(:notify_reoccurrence).after(:update).if(:reoccurrence_notifiable?) }
+    it { is_expected.to callback(:not_cancelled?).before(:update) }
+    it { is_expected.to callback(:notify_user).after(:update).if(:user_notifiable?) }
   end
 
   describe "attr_accessors" do
-    it { expect(subject).to respond_to :cancelled }
-    it { expect(subject).to respond_to :cancelled= }
+    it { is_expected.to respond_to :cancelled }
+    it { is_expected.to respond_to :cancelled= }
   end
 
   describe "scopes" do

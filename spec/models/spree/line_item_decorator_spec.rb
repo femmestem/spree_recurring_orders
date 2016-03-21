@@ -11,19 +11,19 @@ describe Spree::LineItem, type: :model do
   let!(:line_item_without_subscription) { create(:line_item) }
 
   describe "callbacks" do
-    it { expect(subject).to callback(:create_subscription!).after(:create).if(:subscribable?) }
-    it { expect(subject).to callback(:update_subscription_quantity).after(:update).if(:can_update_subscription_quantity?) }
-    it { expect(subject).to callback(:update_subscription_attributes).after(:update).if(:can_update_subscription_attributes?) }
-    it { expect(subject).to callback(:destroy_associated_subscription!).after(:destroy).if(:subscription?) }
+    it { is_expected.to callback(:create_subscription!).after(:create).if(:subscribable?) }
+    it { is_expected.to callback(:update_subscription_quantity).after(:update).if(:can_update_subscription_quantity?) }
+    it { is_expected.to callback(:update_subscription_attributes).after(:update).if(:can_update_subscription_attributes?) }
+    it { is_expected.to callback(:destroy_associated_subscription!).after(:destroy).if(:subscription?) }
   end
 
   describe "attr_accessors" do
-    it { expect(subject).to respond_to :delivery_number }
-    it { expect(subject).to respond_to :delivery_number= }
-    it { expect(subject).to respond_to :subscribe }
-    it { expect(subject).to respond_to :subscribe= }
-    it { expect(subject).to respond_to :subscription_frequency_id }
-    it { expect(subject).to respond_to :subscription_frequency_id= }
+    it { is_expected.to respond_to :delivery_number }
+    it { is_expected.to respond_to :delivery_number= }
+    it { is_expected.to respond_to :subscribe }
+    it { is_expected.to respond_to :subscribe= }
+    it { is_expected.to respond_to :subscription_frequency_id }
+    it { is_expected.to respond_to :subscription_frequency_id= }
   end
 
   describe "methods" do

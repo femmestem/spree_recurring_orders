@@ -5,16 +5,16 @@ describe Spree::Order, type: :model do
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
   let(:subscriptions) { [disabled_subscription] }
   let(:order_with_subscriptions) { create(:completed_order_with_pending_payment, subscriptions: subscriptions) }
-  let(:uncompleted_order) { create(:order_with_line_items, subscriptions: subscriptions, state: "confirm", payments: order_with_subscriptions.payments) }
+  let(:incompleted_order) { create(:order_with_line_items, subscriptions: subscriptions, state: "confirm", payments: order_with_subscriptions.payments) }
 
   describe "associations" do
-    it { expect(subject).to have_one(:order_subscription).class_name("Spree::OrderSubscription").dependent(:destroy) }
-    it { expect(subject).to have_one(:parent_subscription).through(:order_subscription).source(:subscription) }
-    it { expect(subject).to have_many(:subscriptions).class_name("Spree::Subscription").with_foreign_key(:parent_order_id).dependent(:restrict_with_error) }
+    it { is_expected.to have_one(:order_subscription).class_name("Spree::OrderSubscription").dependent(:destroy) }
+    it { is_expected.to have_one(:parent_subscription).through(:order_subscription).source(:subscription) }
+    it { is_expected.to have_many(:subscriptions).class_name("Spree::Subscription").with_foreign_key(:parent_order_id).dependent(:restrict_with_error) }
   end
 
   describe "callbacks" do
-    it { expect(subject).to callback(:update_subscriptions).after(:update) }
+    it { is_expected.to callback(:update_subscriptions).after(:update) }
   end
 
   describe "methods" do
@@ -58,7 +58,7 @@ describe Spree::Order, type: :model do
     end
 
     context "state machine" do
-      it { expect { uncompleted_order.next }.to change { uncompleted_order.subscriptions.disabled.count }.by -1 }
+      it { expect { incompleted_order.next }.to change { incompleted_order.subscriptions.disabled.count }.by -1 }
     end
   end
 end

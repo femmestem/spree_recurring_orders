@@ -3,15 +3,15 @@ require "spec_helper"
 describe Spree::Product, type: :model do
 
   describe "associations" do
-    it { expect(subject).to have_many(:subscriptions).through(:variants_including_master).source(:subscriptions).dependent(:restrict_with_error) }
-    it { expect(subject).to have_many(:product_subscription_frequencies).class_name("Spree::ProductSubscriptionFrequency").dependent(:destroy) }
-    it { expect(subject).to have_many(:subscription_frequencies).through(:product_subscription_frequencies).dependent(:destroy) }
+    it { is_expected.to have_many(:subscriptions).through(:variants_including_master).source(:subscriptions).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:product_subscription_frequencies).class_name("Spree::ProductSubscriptionFrequency").dependent(:destroy) }
+    it { is_expected.to have_many(:subscription_frequencies).through(:product_subscription_frequencies).dependent(:destroy) }
   end
 
   describe "validations" do
     context "if subscribable" do
       before { subject.subscribable = true }
-      it { expect(subject).to validate_presence_of(:subscription_frequencies) }
+      it { is_expected.to validate_presence_of(:subscription_frequencies) }
     end
   end
 
