@@ -144,7 +144,7 @@ module Spree
       end
 
       def notify_user
-        SubscriptionNotifier.notify_confirmation(self).deliver_now
+        SubscriptionNotifier.notify_confirmation(self).deliver_later
       end
 
       def not_cancelled?
@@ -156,7 +156,7 @@ module Spree
       end
 
       def notify_cancellation
-        SubscriptionNotifier.notify_cancellation(self).deliver_now
+        SubscriptionNotifier.notify_cancellation(self).deliver_later
       end
 
       def cancellation_notifiable?
@@ -168,7 +168,7 @@ module Spree
       end
 
       def notify_reoccurrence
-        SubscriptionNotifier.notify_reoccurrence(self).deliver_now
+        SubscriptionNotifier.notify_reoccurrence(self).deliver_later
       end
 
       def recurring_orders_size

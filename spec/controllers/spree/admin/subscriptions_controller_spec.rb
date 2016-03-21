@@ -4,16 +4,29 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
   stub_authorization!
 
-  let(:active_subscription) { create(:valid_subscription, enabled: true) }
-  let(:cancelled_subscription) { create(:valid_subscription, cancelled_at: Time.current, cancellation_reasons: "Test") }
+  let(:active_subscription) { mock_model(Spree::Subscription, id: 1, enabled: true) }
+  let(:cancelled_subscription) { mock_model(Spree::Subscription, id: 2, cancelled_at: Time.current, cancellation_reasons: "Test") }
 
-  describe "Get#cancellation" do
-    def do_cancellation
-      spree_get :cancellation, id: active_subscription.id
+  describe "#cancellation" do
+    def do_cancellation params
+      spree_get :cancellation, params
+    end
+
+    let(:params) { { id: active_subscription.id } }
+
+    before do
+      allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+      allow(active_subscription).to receive(:cancelled?).and_return(false)
+    end
+
+    context "expects to receive" do
+      after { do_cancellation params }
+      it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
+      it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
     end
 
     context "response" do
-      before { do_cancellation }
+      before { do_cancellation params }
       it { expect(response).to have_http_status 200 }
       it { expect(response).to render_template :cancellation }
     end
@@ -23,21 +36,24 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
     spree_post :cancel, params
   end
 
-  describe "Patch#Cancel" do
+  describe "#Cancel" do
     context "when cancel_with_reason returns true" do
 
       let(:params) { { id: active_subscription.id, subscription: { cancellation_reasons: "Test" } } }
 
       before do
-        allow(controller).to receive(:permitted_cancel_subscription_attributes).and_return(params[:subscription])
         allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+        allow(controller).to receive(:permitted_cancel_subscription_attributes).and_return(params[:subscription])
+        allow(active_subscription).to receive(:cancel_with_reason).and_return(true)
+        allow(active_subscription).to receive(:cancelled?).and_return(false)
       end
 
       context "expects to receive" do
         after { do_cancel params }
         it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
         it { expect(controller).to receive(:permitted_cancel_subscription_attributes).and_call_original }
-        it { expect(active_subscription).to receive(:cancel_with_reason).and_return(true) }
+        it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :permitted_cancel_subscription_attributes).and_return(true) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
       end
 
       context "response" do
@@ -54,12 +70,15 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
       before do
         allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+        allow(active_subscription).to receive(:cancelled?).and_return(false)
         allow(controller).to receive(:permitted_cancel_subscription_attributes).and_return(params[:subscription])
+        allow(active_subscription).to receive(:cancel_with_reason).and_return(false)
       end
 
       context "expects to receive" do
         after { do_cancel params }
         it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
         it { expect(controller).to receive(:permitted_cancel_subscription_attributes).and_call_original }
         it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :permitted_cancel_subscription_attributes).and_return(false) }
       end
@@ -74,21 +93,52 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
   describe "callbacks" do
     describe "#ensure_not_cancelled" do
-      def do_update(params)
-        spree_put :update, params
+      def do_cancellation params
+        spree_get :cancellation, params
       end
 
       context "when subscription is cancelled" do
-        before { do_update({ id: cancelled_subscription.id }) }
-        it { expect(response).to have_http_status 302 }
-        it { expect(response).to redirect_to controller.send :collection_url }
-        it { expect(flash[:error]).to eq I18n.t("spree.admin.subscriptions.error_on_already_cancelled") }
+
+        let(:params) { { id: cancelled_subscription.id } }
+
+        before do
+          allow(Spree::Subscription).to receive(:find).and_return(cancelled_subscription)
+          allow(cancelled_subscription).to receive(:cancelled?).and_return(true)
+        end
+
+        context "expects to receive" do
+          after { do_cancellation params }
+          it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(cancelled_subscription) }
+          it { expect(cancelled_subscription).to receive(:cancelled?).and_return(true) }
+        end
+
+        context "response" do
+          before { do_cancellation params }
+          it { expect(response).to have_http_status 302 }
+          it { expect(response).to redirect_to controller.send :collection_url }
+          it { expect(flash[:error]).to eq I18n.t("spree.admin.subscriptions.error_on_already_cancelled") }
+        end
       end
 
       context "when subscription is not cancelled" do
-        before { do_update({ id: active_subscription.id }) }
-        it { expect(response).to have_http_status 302 }
-        it { expect(response).to redirect_to controller.send :collection_url }
+        let(:params) { { id: active_subscription.id } }
+
+        before do
+          allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+          allow(active_subscription).to receive(:cancelled?).and_return(false)
+        end
+
+        context "expects to receive" do
+          after { do_cancellation params }
+          it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
+          it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
+        end
+
+        context "response" do
+          before { do_cancellation params }
+          it { expect(response).to have_http_status 200 }
+          it { expect(response).to render_template :cancellation }
+        end
       end
     end
 

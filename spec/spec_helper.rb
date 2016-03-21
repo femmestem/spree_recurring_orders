@@ -16,10 +16,12 @@ rescue LoadError
   exit
 end
 
+require 'rspec/rails'
 require 'database_cleaner'
 require 'factory_girl'
-require 'rspec/rails'
 require 'ffaker'
+require 'shoulda-matchers'
+require 'shoulda-callback-matchers'
 require 'pry'
 require "spree/testing_support/factories"
 require 'spree/testing_support/url_helpers'
@@ -27,6 +29,7 @@ require "spree/testing_support/authorization_helpers"
 require "spree/testing_support/controller_requests"
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/shoulda_matcher_configuration'
+require 'rspec/active_model/mocks'
 require 'spree_items_subscriptions/factories'
 
 RSpec.configure do |config|

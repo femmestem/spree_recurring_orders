@@ -72,7 +72,6 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     builder (3.2.2)
-    byebug (8.2.2)
     camertron-eprun (1.1.0)
     cancancan (1.10.1)
     canonical-rails (0.0.11)
@@ -366,7 +365,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  byebug
   capybara (~> 2.4)
   coffee-rails
   database_cleaner
