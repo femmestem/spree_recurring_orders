@@ -2,8 +2,6 @@ require "spec_helper"
 
 RSpec.describe Spree::SubscriptionFrequency, type: :model do
 
-
-
   describe "associations" do
     it { expect(subject).to have_many(:product_subscription_frequencies).class_name("Spree::ProductSubscriptionFrequency").dependent(:destroy) }
   end
@@ -16,7 +14,7 @@ RSpec.describe Spree::SubscriptionFrequency, type: :model do
       let!(:subscription_frequency_1) { create(:monthly_subscription_frequency) }
       let(:subscription_frequency_2) { build(:monthly_subscription_frequency) }
       before { subscription_frequency_2.save }
-      it { expect(subscription_frequency_2.errors[:title]).to include "has already been taken" }
+      it { expect(subscription_frequency_2.errors[:title]).to include I18n.t "errors.messages.taken" }
     end
   end
 

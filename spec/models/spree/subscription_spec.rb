@@ -139,7 +139,7 @@ describe Spree::Subscription, type: :model do
     end
   end
 
-  describe "whitelisted ransackable attributes" do
+  describe "ransackable" do
     context "whitelisted ransackable associations" do
       it { expect(Spree::Subscription.whitelisted_ransackable_associations).to include "parent_order" }
     end
@@ -227,8 +227,8 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#number_of_deliveries_left" do
-      it { expect(subscription_with_recreated_orders.number_of_deliveries_left).to eq 2 }
-      it { expect(active_subscription.number_of_deliveries_left).to eq 3 }
+      let(:completed_order) { create(:completed_order_with_totals) }
+      it { expect { active_subscription.complete_orders << completed_order }.to change { active_subscription.number_of_deliveries_left }.by -1 }
     end
 
     context "#cancellation_notifiable?" do
@@ -247,8 +247,8 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#recurring_orders_size" do
-      it { expect(subscription_with_recreated_orders.send :recurring_orders_size).to eq 2 }
-      it { expect(active_subscription.send :recurring_orders_size).to eq 1 }
+      let(:completed_order) { create(:completed_order_with_totals) }
+      it { expect { active_subscription.complete_orders << completed_order }.to change { active_subscription.send :recurring_orders_size }.by 1 }
     end
 
     context "#user_notifiable?" do
@@ -353,7 +353,6 @@ describe Spree::Subscription, type: :model do
         it { expect(recreated_order.ship_address).to eq created_order_with_confirmation.ship_address }
         it { expect(recreated_order.payments.first.source).to eq active_subscription.source }
         it { expect(recreated_order).to be_completed }
-        it { expect(recreated_order.state).to eq "complete" }
       end
     end
 
@@ -366,7 +365,6 @@ describe Spree::Subscription, type: :model do
         end
         it { expect(active_subscription.reload.complete_orders.count).to eq 0 }
         it { expect(active_subscription).to_not be_last_occurrence_at_changed }
-        it { expect(active_subscription.number_of_deliveries_left).to eq 0 }
       end
 
       context "#deliveries remaining but not appropriate time for subscription" do
@@ -374,7 +372,6 @@ describe Spree::Subscription, type: :model do
           active_subscription.process
         end
         it { expect(active_subscription.reload.complete_orders.count).to eq 0 }
-        it { expect(active_subscription.number_of_deliveries_left).to eq 3 }
         it { expect(active_subscription).to_not be_last_occurrence_at_changed }
       end
 

@@ -38,24 +38,22 @@ describe Spree::Order, type: :model do
     end
 
     context "#enable_subscriptions" do
-      before { order_with_subscriptions.send :enable_subscriptions }
-      it { expect(order_with_subscriptions.subscriptions.disabled.count).to eq 0 }
+      it { expect { order_with_subscriptions.send :enable_subscriptions }.to change { order_with_subscriptions.subscriptions.disabled.count }.by -1 }
     end
 
     context "#update_subscriptions" do
       context "when subscription attributes present" do
         let(:line_item) { create(:line_item, variant: disabled_subscription.variant) }
-        before do
+        def add_new_line_item
           line_item.delivery_number = 6
           order_with_subscriptions.line_items << line_item
           order_with_subscriptions.send :update_subscriptions
         end
-        it { expect(disabled_subscription.reload.delivery_number).to eq 6 }
+        it { expect { add_new_line_item }.to change { disabled_subscription.reload.delivery_number }.from(4).to(6) }
       end
 
       context "when subscription attributes not present" do
-        before { order_with_subscriptions.send :update_subscriptions }
-        it { expect(disabled_subscription.reload.delivery_number).to eq 4 }
+        it { expect { order_with_subscriptions.send :update_subscriptions }.to change { disabled_subscription.delivery_number }.by 0 }
       end
     end
 

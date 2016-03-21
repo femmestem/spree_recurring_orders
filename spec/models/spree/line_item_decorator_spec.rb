@@ -71,22 +71,22 @@ describe Spree::LineItem, type: :model do
     end
 
     context "#update_subscription_quantity" do
-      before do
+      def update_line_item_subscription_quantity
         line_item_with_subscription_attributes.quantity = 9
         line_item_with_subscription_attributes.send :update_subscription_quantity
       end
-      it { expect(active_subscription.reload.quantity).to eq 9 }
+      it { expect { update_line_item_subscription_quantity }.to change { active_subscription.reload.quantity }.from(2).to(9) }
     end
 
     context "#update_subscription_attributes" do
       context "when subscription attributes are changed" do
-        before do
+        def update_line_item_subscription_attributes
           line_item_with_subscription_attributes.delivery_number = 8
           line_item_with_subscription_attributes.subscription_frequency_id = 2
           line_item_with_subscription_attributes.send :update_subscription_attributes
         end
-        it { expect(active_subscription.reload.delivery_number).to eq 8 }
-        it { expect(active_subscription.reload.subscription_frequency_id).to eq 2 }
+        it { expect { update_line_item_subscription_attributes }.to change { active_subscription.reload.delivery_number }.from(6).to(8) }
+        it { expect { update_line_item_subscription_attributes }.to change{ active_subscription.reload.subscription_frequency_id }.from(1).to(2) }
       end
     end
 
@@ -111,12 +111,12 @@ describe Spree::LineItem, type: :model do
     end
 
     context "#create_subscription!" do
-      before do
+      def create_subscription
         line_item_without_subscription_attributes.subscription_frequency_id = frequency.id
         line_item_without_subscription_attributes.delivery_number = 5
         line_item_without_subscription_attributes.send :create_subscription!
       end
-      it { expect(order.subscriptions.count).to eq 2 }
+      it { expect { create_subscription }.to change { order.subscriptions.count }.by 1 }
     end
   end
 
