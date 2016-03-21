@@ -81,10 +81,24 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
         allow(result_subscriptions).to receive(:references).and_return(result_subscriptions)
         allow(result_subscriptions).to receive(:order).and_return(result_subscriptions)
         allow(result_subscriptions).to receive(:page).and_return(result_subscriptions)
-        do_index
       end
-      it { expect(assigns(:search)).to eq search_subscriptions }
-      it { expect(assigns(:collection)).to eq result_subscriptions }
+
+      context "method flow" do
+        after { do_index }
+        it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+        it { expect(subscriptions).to receive(:ransack).with(controller.params[:q]).and_return(search_subscriptions) }
+        it { expect(search_subscriptions).to receive(:result).and_return(result_subscriptions) }
+        it { expect(result_subscriptions).to receive(:includes).with(:frequency, :complete_orders, variant: :product).and_return(result_subscriptions) }
+        it { expect(result_subscriptions).to receive(:references).with(:complete_orders).and_return(result_subscriptions) }
+        it { expect(result_subscriptions).to receive(:order).with(created_at: :desc).and_return(result_subscriptions) }
+        it { expect(result_subscriptions).to receive(:page).with(controller.params[:page]).and_return(result_subscriptions) }
+      end
+
+      context "assigns" do
+        before { do_index }
+        it { expect(assigns(:search)).to eq search_subscriptions }
+        it { expect(assigns(:collection)).to eq result_subscriptions }
+      end
     end
   end
 
