@@ -139,6 +139,12 @@ describe Spree::Subscription, type: :model do
     end
   end
 
+  describe "whitelisted ransackable attributes" do
+    context "whitelisted ransackable associations" do
+      it { expect(Spree::Subscription.whitelisted_ransackable_associations).to include "parent_order" }
+    end
+  end
+
   describe "methods" do
     context "#cancelled?" do
       it { expect(active_subscription).to_not be_cancelled }
@@ -379,6 +385,20 @@ describe Spree::Subscription, type: :model do
         end
         it { expect(active_subscription.last_occurrence_at_changed?).to_not eq last_occurrence_at_time }
         it { expect(active_subscription.reload.complete_orders.count).to eq 1 }
+      end
+    end
+
+    context "mail sending methods" do
+      context "#notify_reoccurrence" do
+        it { expect { active_subscription.send :notify_reoccurrence }.to change { ActionMailer::Base.deliveries.count }.by 1 }
+      end
+
+      context "#notify_cancellation" do
+        it { expect { active_subscription.send :notify_cancellation }.to change { ActionMailer::Base.deliveries.count }.by 1 }
+      end
+
+      context "#notify_user" do
+        it { expect { active_subscription.send :notify_user }.to change { ActionMailer::Base.deliveries.count }.by 1 }
       end
     end
   end

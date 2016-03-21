@@ -25,4 +25,10 @@ describe Spree::Product, type: :model do
     end
   end
 
+  describe "whitelisted ransackable attributes" do
+    context "whitelisted_ransackable_attributes" do
+      it { expect(Spree::Product.whitelisted_ransackable_attributes).to include "is_subscribable" }
+    end
+  end
+
 end

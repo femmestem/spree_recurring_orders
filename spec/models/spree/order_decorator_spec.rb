@@ -5,6 +5,7 @@ describe Spree::Order, type: :model do
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
   let(:subscriptions) { [disabled_subscription] }
   let(:order_with_subscriptions) { create(:completed_order_with_pending_payment, subscriptions: subscriptions) }
+  let(:uncompleted_order) { create(:order_with_line_items, subscriptions: subscriptions, state: "confirm", payments: order_with_subscriptions.payments) }
 
   describe "associations" do
     it { expect(subject).to have_one(:order_subscription).class_name("Spree::OrderSubscription").dependent(:destroy) }
@@ -57,6 +58,9 @@ describe Spree::Order, type: :model do
         it { expect(disabled_subscription.reload.delivery_number).to eq 4 }
       end
     end
-  end
 
+    context "state machine" do
+      it { expect { uncompleted_order.next }.to change { uncompleted_order.subscriptions.disabled.count }.by -1 }
+    end
+  end
 end
