@@ -38,6 +38,7 @@ build/
 .sass-cache
 nbproject
 Gemfile.lock
+.byebug_history
 pkg
 *.swp
 spec/dummy

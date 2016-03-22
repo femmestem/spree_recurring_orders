@@ -40,9 +40,8 @@ module Spree
 
     before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
-
     before_update :not_cancelled?
-    after_update :notify_user, if: [:enabled?, :enabled_changed?]
+    after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
     after_update :notify_reoccurrence, if: :reoccurrence_notifiable?
 
@@ -53,7 +52,7 @@ module Spree
 
     def process
       new_order = recreate_order if time_for_subscription? && deliveries_remaining?
-      update(last_occurrence_at: Time.current) if new_order.completed?
+      update(last_occurrence_at: Time.current) if new_order.try :completed?
     end
 
     def cancel_with_reason(attributes)
@@ -113,7 +112,11 @@ module Spree
       end
 
       def add_payment_method_to_order(order)
-        order.payments.first.update(source: source)
+        if order.payments.exists?
+          order.payments.first.update(source: source, payment_method: source.payment_method)
+        else
+          order.payments.create(source: source, payment_method: source.payment_method)
+        end
         order.next
       end
 
@@ -141,7 +144,7 @@ module Spree
       end
 
       def notify_user
-        SubscriptionNotifier.notify_confirmation(self).deliver
+        SubscriptionNotifier.notify_confirmation(self).deliver_later
       end
 
       def not_cancelled?
@@ -153,7 +156,7 @@ module Spree
       end
 
       def notify_cancellation
-        SubscriptionNotifier.notify_cancellation(self).deliver
+        SubscriptionNotifier.notify_cancellation(self).deliver_later
       end
 
       def cancellation_notifiable?
@@ -161,15 +164,19 @@ module Spree
       end
 
       def reoccurrence_notifiable?
-        last_occurrence_at_changed? && last_occurrence_at_was
+        last_occurrence_at_changed? && !!last_occurrence_at_was
       end
 
       def notify_reoccurrence
-        SubscriptionNotifier.notify_reoccurrence(self).deliver
+        SubscriptionNotifier.notify_reoccurrence(self).deliver_later
       end
 
       def recurring_orders_size
         complete_orders.size + 1
+      end
+
+      def user_notifiable?
+        enabled? && enabled_changed?
       end
 
   end
