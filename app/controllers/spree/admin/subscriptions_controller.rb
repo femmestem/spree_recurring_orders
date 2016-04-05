@@ -16,6 +16,22 @@ module Spree
         end
       end
 
+      def unpause
+        if @subscription.unpause
+          flash.now[:success] = t('.success')
+        else
+          flash.now[:error] = t('.success')
+        end
+      end
+
+      def pause
+        if @subscription.mark_pause
+          flash.now[:success] = t('.success')
+        else
+          flash.now[:error] = t('.failure')
+        end
+      end
+
       private
 
         def permitted_cancel_subscription_attributes

@@ -15,6 +15,12 @@ en:
 
     admin:
       subscriptions:
+        pause:
+          success: "Subscription is currently paused"
+          failure: "There was some failure in pausing subscription"
+        unpause:
+          success: "subscription is currently active"
+          failure: "There was some problem in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:

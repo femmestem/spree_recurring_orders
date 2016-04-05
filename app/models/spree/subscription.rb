@@ -20,10 +20,12 @@ module Spree
 
     self.whitelisted_ransackable_associations = %w( parent_order )
 
+    scope :paused, -> { where(pause: true) }
+    scope :unpaused, -> { where(pause: false) }
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
-    scope :eligible_for_subscription, -> { active.not_cancelled }
+    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -31,13 +33,20 @@ module Spree
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
       validates :delivery_number, numericality: { greater_than_or_equal_to: :recurring_orders_size, only_integer: true }
       validates :parent_order, uniqueness: { scope: :variant }
+      validates :delivery_day, numericality: { greater_than: 0, less_than: 32, only_integer: true }, if: :enabled?
     end
     with_options presence: true do
       validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
       validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
-      validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
+      validates :ship_address, :bill_address, :last_occurrence_at, :source, :delivery_day, if: :enabled?
     end
 
+    define_model_callbacks :mark_pause, only: [:before]
+    before_mark_pause :can_mark_pause?
+    define_model_callbacks :unpause, only: [:before]
+    before_unpause :can_unpause?
+
+    before_validation :set_delivery_day, if: :can_set_delivery_day?
     before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
@@ -68,6 +77,18 @@ module Spree
       delivery_number - complete_orders.size - 1
     end
 
+    def mark_pause
+      run_callbacks :mark_pause do
+        self.pause = true
+        save
+      end
+    end
+
+    def unpause
+      self.pause = false
+      save
+    end
+
     private
 
       def set_cancelled_at
@@ -80,6 +101,22 @@ module Spree
 
       def can_set_last_occurence_at?
         enabled? && last_occurrence_at.nil?
+      end
+
+      def set_delivery_day
+        self.delivery_day = parent_order.completed_at.day
+      end
+
+      def can_set_delivery_day?
+        enabled? && delivery_day.nil?
+      end
+
+      def can_mark_pause?
+        enabled? && !cancelled? && deliveries_remaining? && !pause?
+      end
+
+      def can_unpause?
+        enabled? && !cancelled? && deliveries_remaining? && pause?
       end
 
       def recreate_order

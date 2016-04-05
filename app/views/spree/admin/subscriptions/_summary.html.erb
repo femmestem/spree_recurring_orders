@@ -41,6 +41,17 @@
         </td>
       </tr>
       <tr>
+        <td>
+          <strong><%= Spree.t(:delivery_day) %></strong>
+        </td>
+        <td>
+          <%= f.field_container :delivery_day, class: ["form-group"] do %>
+            <%= number_field :subscription, :delivery_day, class: "form-control", disabled: @subscription.cancelled? %>
+            <%= f.error_message_on :delivery_day %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
         <td><strong><%= Spree.t(:deliveries_left) %></strong></td>
         <td><%= @subscription.number_of_deliveries_left %></td>
       </tr>
