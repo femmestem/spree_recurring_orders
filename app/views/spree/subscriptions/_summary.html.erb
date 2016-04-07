@@ -15,7 +15,7 @@
         </td>
         <td>
           <span>
-            <%= link_to @subscription.parent_order.number, edit_admin_order_path(@subscription.parent_order) %>
+            <%= link_to @subscription.parent_order.number, order_url(@subscription.parent_order) %>
           </span>
         </td>
       </tr>

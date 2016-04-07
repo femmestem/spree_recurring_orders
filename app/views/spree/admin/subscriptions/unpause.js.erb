@@ -1,2 +1,2 @@
-$("#pause_links").html("<%= j render 'pause_links' %>");
+$("[data-id='<%= @subscription.id %>'] #pause_links").html("<%= j render partial: 'pause_links' %>");
 <%= render 'spree/admin/shared/flash_messages' %>

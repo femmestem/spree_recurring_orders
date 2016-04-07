@@ -1,5 +1,5 @@
 <% if !@subscription.cancelled? && !@subscription.paused? %>
-  <%= button_link_to Spree.t(:pause), pause_admin_subscription_path(@subscription), class: 'btn-success', icon: 'hand', remote: true, method: :patch %>
+  <%= button_link_to Spree.t(:pause), pause_admin_subscription_path(@subscription), class: 'btn-warning', icon: 'pause', remote: true, method: :patch %>
 <% elsif @subscription.paused? && !@subscription.cancelled? %>
-  <%= button_link_to Spree.t(:activate), unpause_admin_subscription_path(@subscription), class: 'btn-success', icon: 'hand', remote: true, method: :patch %>
+  <%= button_link_to Spree.t(:activate), unpause_admin_subscription_path(@subscription), class: 'btn-success', icon: 'play', remote: true, method: :patch %>
 <% end %>

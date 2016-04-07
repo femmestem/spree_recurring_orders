@@ -1,27 +1,31 @@
-<span class="h3 pull-left">Subscription <%= @subscription.number %></span>
-
-<div class="pull-right" data-id="<%= @subscription.id %>">
-  <span id="pause_links">
-    <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
-  </span>
-  <span><%= button_link_to Spree.t(:delete), @subscription, method: :delete, class: 'btn-danger btn' %></span>
+<div class="row">
+  <div class="h3 col-sm-6">Subscription <%= @subscription.number %></div>
+  <div class="col-sm-6 text-right h3" data-id="<%= @subscription.id %>">
+    <span id="pause_links">
+      <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
+    </span>
+    <span>
+      <%= link_to Spree.t(:delete), @subscription, method: :delete, class: 'btn-danger btn' %>
+    </span>
+  </div>
 </div>
 
-<br />
 
-<%= render partial: 'spree/admin/shared/flash_messages' %>
-<%= render partial: 'spree/admin/shared/error_messages', locals: { target: @subscription } %>
+<div class="m-t-25">
+  <%= render partial: 'spree/admin/shared/flash_messages' %>
+  <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @subscription } %>
 
-<%= form_for @subscription do |f| %>
-  <%= render partial: 'payment_info', locals: { f: f } %>
-  <%= render partial: 'item', locals: { f: f } %>
-  <%= render partial: 'addresses', locals: { f: f } %>
-  <%= render partial: 'summary', locals: { f: f } %>
-  <%= render partial: 'orders' %>
-  <% unless @subscription.cancelled? %>
-    <div>
-      <%= f.submit Spree.t(:update), class: "btn btn-success btn-lg" %>
-      <%= link_to Spree.t(:cancel), account_path, class: "btn btn-default btn-lg" %>
-    </div>
+  <%= form_for @subscription do |f| %>
+    <%= render partial: 'payment_info', locals: { f: f } %>
+    <%= render partial: 'item', locals: { f: f } %>
+    <%= render partial: 'addresses', locals: { f: f } %>
+    <%= render partial: 'summary', locals: { f: f } %>
+    <%= render partial: 'orders' %>
+    <% unless @subscription.cancelled? %>
+      <div>
+        <%= f.submit Spree.t(:update), class: "btn btn-success btn-lg" %>
+        <%= link_to Spree.t(:cancel), account_path, class: "btn btn-default btn-lg" %>
+      </div>
+    <% end %>
   <% end %>
-<% end %>
+</div>

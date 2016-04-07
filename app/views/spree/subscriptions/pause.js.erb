@@ -1,2 +1,3 @@
-$("[data-id='<%= @subscription.id %>'] #pause_links").html("<%= j render 'pause_links', locals: { btn_class: 'btn-xs' } %>");
+<% btn_class = current_page?(account_path) ? "btn-xs" : "btn" %>
+$("[data-id='<%= @subscription.id %>'] #pause_links").html("<%= j render partial: 'pause_links', locals: { btn_class: btn_class } %>");
 <%= render 'spree/admin/shared/flash_messages' %>
