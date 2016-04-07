@@ -16,10 +16,14 @@ module Spree
     end
 
     def destroy
-      if @subscription.destroy
-        flash.now[:success] = t('.success')
-      else
-        flash.now[:error] = t('.error')
+      respond_to do |format|
+        if @subscription.destroy
+          format.js { flash.now[:success] = t('.success') }
+          format.html { redirect_to account_path, success: t('.success') }
+        else
+          format.js { flash.now[:error] = t('.error') }
+          format.html { redirect_to :back, error: t('.error') }
+        end
       end
     end
 

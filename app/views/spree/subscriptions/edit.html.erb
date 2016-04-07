@@ -1,11 +1,13 @@
-<h3><%= Spree::Subscription.model_name.human %> <%= @subscription.number %></h3>
+<span class="h3 pull-left">Subscription <%= @subscription.number %></span>
 
-<div>
-<span id="pause_links">
-  <%= render partial: 'pause_links' %>
-</span>
-<%= button_link_to Spree.t(:back_to_account), account_path, class: 'btn-success', icon: 'chevron-left' %>
+<div class="pull-right" data-id="<%= @subscription.id %>">
+  <span id="pause_links">
+    <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
+  </span>
+  <span><%= button_link_to Spree.t(:delete), @subscription, method: :delete, class: 'btn-danger btn' %></span>
 </div>
+
+<br />
 
 <%= render partial: 'spree/admin/shared/flash_messages' %>
 <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @subscription } %>

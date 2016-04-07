@@ -1,2 +1,2 @@
-$("[data-id='<%= @subscription.id %>'] #pause_links").html("<%= j render 'pause_links' %>");
+$("[data-id='<%= @subscription.id %>'] #pause_links").html("<%= j render 'pause_links', locals: { btn_class: 'btn-xs' } %>");
 <%= render 'spree/admin/shared/flash_messages' %>

@@ -4,3 +4,15 @@ the installer will append this file to the app vendored assets here: 'vendor/ass
 *= require jquery-ui/datepicker
 *= require spree/frontend/datepicker
 */
+
+.form-group {
+  &.withError {
+    label, .formError, .required {
+      color: red;
+    }
+
+    input {
+      border-color: red;
+    }
+  }
+}

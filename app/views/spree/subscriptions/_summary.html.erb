@@ -25,7 +25,7 @@
         </td>
         <td id="last_occurence_at">
           <%= f.field_container :next_occurrence_at, class: ["form-group"] do %>
-            <%= f.text_field :next_occurrence_at, class: "form-control datepicker", disabled: @subscription.not_changeable? %>
+            <%= f.text_field :next_occurrence_at, class: "form-control datepicker", disabled: @subscription.not_changeable?, value: @subscription.next_occurrence_at.to_date %>
             <%= f.error_message_on :next_occurrence_at %>
           <% end %>
         </td>
