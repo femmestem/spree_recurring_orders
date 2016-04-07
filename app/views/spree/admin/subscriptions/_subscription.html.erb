@@ -8,8 +8,10 @@
   <td class="text-center">
     <% if subscription.cancelled_at %>
       Cancelled
-    <% else %>
+    <% elsif subscription.deliveries_remaining? %>
       <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
+    <% else %>
+      Completed
     <% end %>
   </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">

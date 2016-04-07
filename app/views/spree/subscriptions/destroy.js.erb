@@ -1,0 +1,5 @@
+<% if @subscription.destroyed? %>
+  $("#user_subscriptions [data-id='<% @subscription.id %>']").remove();
+<% end %>
+
+<%= render 'spree/admin/shared/flash_messages' %>

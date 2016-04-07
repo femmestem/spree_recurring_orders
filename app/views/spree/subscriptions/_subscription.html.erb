@@ -1,0 +1,21 @@
+<tr data-id=<%= subscription.id %>>
+  <td class="subscription-number"><%= link_to subscription.number, edit_subscription_path(subscription) %></td>
+  <td class="subscription-product-name"><%= subscription.variant.product.name %></td>
+  <td class="text-center subscription-price"><%= subscription.price %></td>
+  <td class="text-center subscription-frequency"><%= subscription.frequency.title.titleize %></td>
+  <td class="text-center subscription-delivery-number"><%= subscription.delivery_number %></td>
+  <td class="text-center subscription-deliveries-left"><%= subscription.number_of_deliveries_left %></td>
+  <td class="subscription-cancelled-status">
+    <% if subscription.cancelled? %>
+      Disabled
+    <% else %>
+      Active
+    <% end %>
+  </td>
+  <td class="subscription-paused-status">
+    <% @subscription = subscription %>
+    <span id="pause_links"><%= render 'spree/subscriptions/pause_links' %></span>
+    <%= link_to Spree.t(:edit), edit_subscription_path(subscription), class: "btn btn-xs btn-default" %>
+    <%= link_to Spree.t(:delete), subscription_path(subscription), method: :delete, remote: true, class: "btn btn-xs btn-danger" %>
+  </td>
+</tr>

@@ -1,3 +1,6 @@
+$("#success_flash_message").addClass("hidden").html('');
+$("#error_flash_message").addClass("hidden").html('');
+
 <% if flash.now[:success] %>
   $('#success_flash_message').removeClass("hidden");
   $('#success_flash_message').html("<%= flash.now[:success] %>");

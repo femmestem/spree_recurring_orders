@@ -11,4 +11,11 @@ Spree::Core::Engine.routes.draw do
     end
   end
 
+  resources :subscriptions do
+    member do
+      patch 'pause'
+      patch 'unpause'
+    end
+  end
+
 end
