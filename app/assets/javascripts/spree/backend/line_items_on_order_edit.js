@@ -25,7 +25,7 @@ addVariant = function() {
   var quantity = $("input.quantity[data-variant-id='" + variant_id + "']").val();
   var subscribe = $("input.subscribe[data-variant-id='" + variant_id + "']:checked").val();
   var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']").val();
-  var frequency = $("select#frequency").val();
+  var frequency = $("select#frequency[data-variant-id='" + variant_id + "']").val();
 
   adjustLineItems(order_number, variant_id, quantity, subscribe, delivery_number, frequency);
   return 1
@@ -59,7 +59,7 @@ adjustLineItems = function(order_number, variant_id, quantity, subscribe, delive
 
 disableSubscriptionFieldsOnOneTimeOrder = function(variant_id) {
   var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']");
-  var frequency = $("select#frequency");
+  var frequency = $("select#frequency[data-variant-id='" + variant_id + "']");
   $("input.subscribe[data-variant-id='" + variant_id + "']").on("change", function() {
     if (!parseInt($(this).val())) {
       delivery_number.attr("disabled", "disabled");
