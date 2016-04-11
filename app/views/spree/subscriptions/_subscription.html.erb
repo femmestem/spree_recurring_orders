@@ -8,8 +8,8 @@
   <td class="subscription-action-links">
     <% @subscription = subscription %>
     <% if subscription.not_changeable? %>
-      <% if subscription.deleted? %>
-        Deleted At <%= subscription.deleted_at.to_date.to_formatted_s(:rfc822) %>
+      <% if subscription.archived? %>
+        Deleted
       <% else %>
         Cancelled Or Completed
       <% end %>

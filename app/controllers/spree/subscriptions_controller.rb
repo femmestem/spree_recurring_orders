@@ -17,7 +17,8 @@ module Spree
 
     def destroy
       respond_to do |format|
-        if @subscription.destroy
+        debugger
+        if @subscription.archive
           format.js { flash.now[:success] = t('.success') }
           format.html { redirect_to account_path, success: t('.success') }
         else
@@ -51,7 +52,7 @@ module Spree
       end
 
       def set_subscription
-        @subscription = Spree::Subscription.with_deleted.active.find_by(id: params[:id])
+        @subscription = Spree::Subscription.active.find_by(id: params[:id])
       end
 
       def ensure_subscription

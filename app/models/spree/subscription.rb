@@ -1,8 +1,6 @@
 module Spree
   class Subscription < Spree::Base
 
-    acts_as_paranoid
-
     attr_accessor :cancelled
 
     include Spree::NumberGenerator
@@ -21,14 +19,17 @@ module Spree
     has_many :complete_orders, -> { complete }, through: :orders_subscriptions, source: :order
 
     self.whitelisted_ransackable_associations = %w( parent_order )
+    self.whitelisted_ransackable_attributes = %w( archived )
 
+    scope :archived, -> { where(archived: true) }
+    scope :unarchived, -> { where(archived: false) }
     scope :paused, -> { where(paused: true) }
     scope :unpaused, -> { where(paused: false) }
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
     scope :appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
-    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled.appropriate_delivery_time }
+    scope :eligible_for_subscription, -> { unarchived.unpaused.active.not_cancelled.appropriate_delivery_time }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -47,6 +48,8 @@ module Spree
     before_pause :can_pause?
     define_model_callbacks :unpause, only: [:before]
     before_unpause :can_unpause?
+    define_model_callbacks :archive, only: [:before]
+    before_archive :can_archive?
 
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
@@ -90,12 +93,18 @@ module Spree
       end
     end
 
+    def archive
+      run_callbacks :archive do
+        update_attributes(archived: true)
+      end
+    end
+
     def deliveries_remaining?
       number_of_deliveries_left > 0
     end
 
     def not_changeable?
-      cancelled? && deliveries_remaining? && deleted?
+      cancelled? || !deliveries_remaining? || archived?
     end
 
     private
@@ -113,15 +122,19 @@ module Spree
       end
 
       def can_set_next_occurrence_at?
-        enabled? && next_occurrence_at.nil? && deliveries_remaining?
+        enabled? && next_occurrence_at.nil? && deliveries_remaining? && !archived?
       end
 
       def can_pause?
-        enabled? && !cancelled? && deliveries_remaining? && !paused?
+        enabled? && !cancelled? && deliveries_remaining? && !paused? && !archived?
       end
 
       def can_unpause?
-        enabled? && !cancelled? && deliveries_remaining? && paused?
+        enabled? && !cancelled? && deliveries_remaining? && paused? && !archived?
+      end
+
+      def can_archive?
+        enabled? && !cancelled? && deliveries_remaining?
       end
 
       def recreate_order
@@ -188,7 +201,7 @@ module Spree
       end
 
       def can_set_cancelled_at?
-        cancelled.present?
+        cancelled.present? && !archived? && deliveries_remaining?
       end
 
       def notify_cancellation

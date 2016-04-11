@@ -6,7 +6,8 @@ Spree::UsersController.class_eval do
 
     def load_subscriptions
       @orders = @user.orders.complete.order(completed_at: :desc)
-      @subscriptions = Spree::Subscription.with_deleted.active.with_parent_orders(@orders)
+      @subscriptions = Spree::Subscription.active.unarchived.with_parent_orders(@orders)
+      @archived_subscriptions = Spree::Subscription.active.archived.with_parent_orders(@orders)
     end
 
 end

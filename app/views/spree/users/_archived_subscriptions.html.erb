@@ -1,0 +1,22 @@
+<h3><%= Spree.t(:my_deleted_subscriptions) %></h3>
+<% if @archived_subscriptions.present? %>
+  <table class="table table-striped subscription-summary">
+    <thead class="active">
+    <tr>
+      <th class="subscription-number"><%= Spree::Subscription.human_attribute_name(:number) %></th>
+      <th class="subscription-product-name"><%= Spree.t(:product_name) %></th>
+      <th class="subscription-price"><%= Spree.t(:price) %></th>
+      <th class="subscription-frequency"><%= Spree.t(:recurring_delivery_interval) %></th>
+      <th class="subscription-delivery-number"><%= Spree.t(:total_deliveries) %></th>
+      <th class="subscription-deliveries-left"><%= Spree.t(:deliveries_left) %></th>
+      <th class="subscription-actions"><%= Spree.t(:deleted_status) %></th>
+    </tr>
+    </thead>
+    <tbody id="user_subscriptions">
+      <%= render @archived_subscriptions %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="alert alert-info"><%= Spree.t(:you_have_no_deleted_subscriptions_yet) %></div>
+<% end %>
+<br />
