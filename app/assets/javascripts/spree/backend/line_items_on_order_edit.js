@@ -14,6 +14,8 @@ $(document).ready(function () {
     $('#stock_details').show();
 
     $('button.add_variant').click(addVariant);
+
+    //Function added for susbcription orders
     disableSubscriptionFieldsOnOneTimeOrder(variant_id);
   });
 });
@@ -23,6 +25,7 @@ addVariant = function() {
 
   var variant_id = $('input.variant_autocomplete').val();
   var quantity = $("input.quantity[data-variant-id='" + variant_id + "']").val();
+  // fields added for making subscription order.
   var subscribe = $("input.subscribe[data-variant-id='" + variant_id + "']:checked").val();
   var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']").val();
   var frequency = $("select#frequency[data-variant-id='" + variant_id + "']").val();
@@ -31,6 +34,7 @@ addVariant = function() {
   return 1
 }
 
+// function modified for subscription order fields
 adjustLineItems = function(order_number, variant_id, quantity, subscribe, delivery_number, frequency){
   var url = Spree.routes.orders_api + "/" + order_number + '/line_items';
 
@@ -57,6 +61,7 @@ adjustLineItems = function(order_number, variant_id, quantity, subscribe, delive
 
 }
 
+// Function added for subscription fields
 disableSubscriptionFieldsOnOneTimeOrder = function(variant_id) {
   var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']");
   var frequency = $("select#frequency[data-variant-id='" + variant_id + "']");

@@ -16,9 +16,13 @@
   </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
     <% @subscription = subscription %>
-    <span id="pause_links">
-      <%= render 'pause_links' %>
-    </span>
-    <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
+    <% if subscription.not_changeable? %>
+      <span id="pause_links">
+        <%= render 'pause_links' %>
+      </span>
+      <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
+    <% else %>
+      Cancelled Or Completed
+    <% end %>
   </td>
 </tr>

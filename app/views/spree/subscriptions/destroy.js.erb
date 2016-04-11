@@ -1,5 +1,5 @@
-<% if @subscription.destroyed? %>
-  $("#user_subscriptions [data-id='<%= @subscription.id %>']").remove();
+<% if @subscription.deleted? %>
+  $("[data-id='<%= @subscription.id %>'] .subscription-action-links").html("Deleted At <%= @subscription.deleted_at.to_date.to_formatted_s(:rfc822) %>")
 <% end %>
 
 <%= render 'spree/admin/shared/flash_messages' %>

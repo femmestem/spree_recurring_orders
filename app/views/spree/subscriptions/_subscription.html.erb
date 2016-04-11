@@ -5,14 +5,18 @@
   <td class="text-center subscription-frequency"><%= subscription.frequency.title.titleize %></td>
   <td class="text-center subscription-delivery-number"><%= subscription.delivery_number %></td>
   <td class="text-center subscription-deliveries-left"><%= subscription.number_of_deliveries_left %></td>
-  <td class="subscription-paused-status">
+  <td class="subscription-action-links">
     <% @subscription = subscription %>
     <% if subscription.not_changeable? %>
-      Already Cancelled or deliveries done
+      <% if subscription.deleted? %>
+        Deleted At <%= subscription.deleted_at.to_date.to_formatted_s(:rfc822) %>
+      <% else %>
+        Cancelled Or Completed
+      <% end %>
     <% else %>
       <span id="pause_links"><%= render partial: 'spree/subscriptions/pause_links', locals: { btn_class: "btn-xs" } %></span>
       <%= link_to Spree.t(:edit), edit_subscription_path(subscription), class: "btn btn-xs btn-default" %>
-      <%= link_to Spree.t(:delete), subscription_path(subscription), method: :delete, remote: true, class: "btn btn-xs btn-danger" %>
+      <%= link_to Spree.t(:delete), subscription_path(subscription), method: :delete, remote: true, class: "btn btn-xs btn-danger", data: { confirm: "Are you sure you want to delete this subscription." } %>
     <% end %>
   </td>
 </tr>

@@ -1,6 +1,8 @@
 module Spree
   class Subscription < Spree::Base
 
+    acts_as_paranoid
+
     attr_accessor :cancelled
 
     include Spree::NumberGenerator
@@ -93,7 +95,7 @@ module Spree
     end
 
     def not_changeable?
-      cancelled? && deliveries_remaining?
+      cancelled? && deliveries_remaining? && deleted?
     end
 
     private
