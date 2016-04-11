@@ -25,7 +25,7 @@ module Spree
       end
 
       def pause
-        if @subscription.mark_pause
+        if @subscription.pause
           flash.now[:success] = t('.success')
         else
           flash.now[:error] = t('.failure')
@@ -41,7 +41,6 @@ module Spree
         def collection
           @search = super.active.ransack(params[:q])
           @collection = @search.result.includes(:frequency, :complete_orders, variant: :product)
-                                      .with_deleted
                                       .references(:complete_orders)
                                       .order(created_at: :desc)
                                       .page(params[:page])

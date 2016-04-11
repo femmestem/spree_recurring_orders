@@ -27,8 +27,8 @@ module Spree
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
-    scope :time_for_subscription, -> { where("next_occurrence_at <= ?", Time.current) }
-    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled.time_for_subscription }
+    scope :appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
+    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled.appropriate_delivery_time }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -43,8 +43,8 @@ module Spree
       validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
 
-    define_model_callbacks :mark_pause, only: [:before]
-    before_mark_pause :can_mark_pause?
+    define_model_callbacks :pause, only: [:before]
+    before_pause :can_pause?
     define_model_callbacks :unpause, only: [:before]
     before_unpause :can_unpause?
 
@@ -78,15 +78,15 @@ module Spree
       delivery_number - complete_orders.size - 1
     end
 
-    def mark_pause
-      run_callbacks :mark_pause do
-        update(paused: true)
+    def pause
+      run_callbacks :pause do
+        update_attributes(paused: true)
       end
     end
 
     def unpause
       run_callbacks :unpause do
-        update(paused: false)
+        update_attributes(paused: false)
       end
     end
 
@@ -116,7 +116,7 @@ module Spree
         enabled? && next_occurrence_at.nil? && deliveries_remaining?
       end
 
-      def can_mark_pause?
+      def can_pause?
         enabled? && !cancelled? && deliveries_remaining? && !paused?
       end
 

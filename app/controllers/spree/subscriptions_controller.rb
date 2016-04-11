@@ -28,7 +28,7 @@ module Spree
     end
 
     def pause
-      if @subscription.mark_pause
+      if @subscription.pause
         flash.now[:success] = t('.success')
       else
         flash.now[:error] = t('.error')
@@ -51,7 +51,7 @@ module Spree
       end
 
       def set_subscription
-        @subscription = Spree::Subscription.active.find_by(id: params[:id])
+        @subscription = Spree::Subscription.with_deleted.active.find_by(id: params[:id])
       end
 
       def ensure_subscription
