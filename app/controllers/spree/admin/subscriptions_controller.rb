@@ -16,19 +16,35 @@ module Spree
         end
       end
 
-      def unpause
-        if @subscription.unpause
-          flash.now[:success] = t('.success')
+      def pause
+        if @subscription.pause
+          render json: {
+            status: 200,
+            flash: t('.success'),
+            url: unpause_subscription_path(@subscription),
+            button_text: "Activate"
+          }
         else
-          flash.now[:error] = t('.success')
+          render json: {
+            status: 422,
+            flash: t('.error')
+          }
         end
       end
 
-      def pause
-        if @subscription.pause
-          flash.now[:success] = t('.success')
+      def unpause
+        if @subscription.unpause
+          render json: {
+            status: 200,
+            flash: t('.success'),
+            url: pause_subscription_path(@subscription),
+            button_text: "Pause"
+          }
         else
-          flash.now[:error] = t('.failure')
+          render json: {
+            status: 422,
+            flash: t('.error')
+          }
         end
       end
 
@@ -48,8 +64,7 @@ module Spree
 
         def ensure_not_cancelled
           if @subscription.cancelled?
-            flash[:error] = t("spree.admin.subscriptions.error_on_already_cancelled")
-            redirect_to collection_url
+            redirect_to collection_url, error: t("spree.admin.subscriptions.error_on_already_cancelled")
           end
         end
 

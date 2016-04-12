@@ -2,6 +2,8 @@
   Subscriptions
 <% end %>
 
+<%= render partial: 'spree/admin/shared/flash_messages' %>
+
 <% content_for :table_filter do %>
   <div data-hook="admin_subscriptions_index_search">
     <%= search_form_for [:admin, @search] do |f| %>

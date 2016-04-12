@@ -17,12 +17,20 @@ module Spree
 
     def destroy
       respond_to do |format|
-        debugger
         if @subscription.archive
-          format.js { flash.now[:success] = t('.success') }
+          format.json { render json: {
+              status: 200,
+              subscription_id: @subscription.id,
+              flash: t(".success")
+            }
+          }
           format.html { redirect_to account_path, success: t('.success') }
         else
-          format.js { flash.now[:error] = t('.error') }
+          format.json { render json: {
+              status: 422,
+              flash: t(".success")
+            }
+          }
           format.html { redirect_to :back, error: t('.error') }
         end
       end
@@ -30,17 +38,33 @@ module Spree
 
     def pause
       if @subscription.pause
-        flash.now[:success] = t('.success')
+        render json: {
+          status: 200,
+          flash: t('.success'),
+          url: unpause_subscription_path(@subscription),
+          button_text: "Activate"
+        }
       else
-        flash.now[:error] = t('.error')
+        render json: {
+          status: 422,
+          flash: t('.error')
+        }
       end
     end
 
     def unpause
       if @subscription.unpause
-        flash.now[:success] = t('.success')
+        render json: {
+          status: 200,
+          flash: t('.success'),
+          url: pause_subscription_path(@subscription),
+          button_text: "Pause"
+        }
       else
-        flash.now[:error] = t('.error')
+        render json: {
+          status: 422,
+          flash: t('.error')
+        }
       end
     end
 
@@ -57,8 +81,7 @@ module Spree
 
       def ensure_subscription
         unless @subscription
-          flash[:error] = t('spree.subscriptions.alert.missing')
-          redirect_to account_path
+          redirect_to account_path, error: Spree.t('subscriptions.alert.missing')
         end
       end
 
