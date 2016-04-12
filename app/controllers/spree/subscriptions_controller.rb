@@ -1,7 +1,7 @@
 module Spree
   class SubscriptionsController < Spree::BaseController
 
-    before_action :set_subscription, :ensure_subscription
+    before_action :ensure_subscription
     before_action :ensure_not_cancelled, only: [:update, :destroy, :pause, :unpause]
 
     def edit
@@ -75,11 +75,8 @@ module Spree
          :subscription_frequency_id, :ship_address_attributes, :bill_address_attributes)
       end
 
-      def set_subscription
-        @subscription = Spree::Subscription.active.find_by(id: params[:id])
-      end
-
       def ensure_subscription
+        @subscription = Spree::Subscription.active.find_by(id: params[:id])
         unless @subscription
           redirect_to account_path, error: Spree.t('subscriptions.alert.missing')
         end
