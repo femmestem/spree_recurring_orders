@@ -45,7 +45,13 @@ AjaxHandler.prototype.handle_patch_success = function($target, response) {
   $target.toggleClass("btn-success");
   $target.toggleClass("btn-warning");
   $("#success_flash_message").html(response.flash).removeClass("hidden");
-  $target.html(response.button_text);
+  var $symbol = $target.find(".icon");
+  $symbol.toggleClass("icon-pause").toggleClass("icon-play");
+  if ($target.find(".translation_missing").length) {
+    $target.find(".translation_missing").html(response.button_text);
+  } else {
+    $target.html(response.button_text);
+  }
 };
 
 AjaxHandler.prototype.handle_destroy_success = function($target, response) {
@@ -60,7 +66,9 @@ AjaxHandler.prototype.handle_error_response = function($target, response) {
 };
 
 AjaxHandler.prototype.hide_flash_divs = function() {
+  $("#html_error_flash_message").remove();
   $("#error_flash_message").addClass("hidden");
+  $("#html_success_flash_message").remove();
   $("#success_flash_message").addClass("hidden");
 };
 

@@ -24,7 +24,11 @@
       Deleted
     <% else %>
       <span id="pause_links">
-        <%= render 'pause_links' %>
+        <% if !@subscription.cancelled? && !@subscription.paused? %>
+          <%= button_link_to "", "javascript:void(0)", class: 'ajax_handler btn-warning btn-sm', icon: 'pause', data: { method: "PATCH", url: pause_admin_subscription_path(@subscription) }, title: "Pause" %>
+        <% elsif @subscription.paused? && !@subscription.cancelled? %>
+          <%= button_link_to "", "javascript:void(0)", class: 'btn-success ajax_handler btn-sm', icon: 'play', data: { method: "PATCH", url: unpause_admin_subscription_path(@subscription) }, title: "Activate" %>
+        <% end %>
       </span>
       <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
     <% end %>

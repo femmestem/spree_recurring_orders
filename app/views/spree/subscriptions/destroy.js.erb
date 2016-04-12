@@ -1,7 +1,0 @@
-<% if @subscription.archived? %>
-  <% @archived_subscriptions = Spree::Subscription.active.archived.with_parent_orders(spree_current_user.orders) %>
-  $("[data-id='<%= @subscription.id %>']").remove();
-  $("[data-hook='account_my_deleted_subscriptions']").html("<%= j render 'spree/users/archived_subscriptions' %>")
-<% end %>
-
-<%= render 'spree/admin/shared/flash_messages' %>

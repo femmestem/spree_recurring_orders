@@ -6,7 +6,7 @@
         <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
       </span>
       <span>
-        <%= link_to Spree.t(:delete), @subscription, method: :delete, class: 'btn-danger btn' %>
+        <%= link_to Spree.t(:delete), @subscription, method: :delete, class: 'btn-danger btn', data: { confirm: "Are you sure you want to delete this subscription." } %>
       </span>
     <% end %>
   </div>

@@ -64,7 +64,7 @@ module Spree
 
         def ensure_not_cancelled
           if @subscription.cancelled?
-            redirect_to collection_url, error: t("spree.admin.subscriptions.error_on_already_cancelled")
+            redirect_to collection_url, error: Spree.t("admin.subscriptions.error_on_already_cancelled")
           end
         end
 

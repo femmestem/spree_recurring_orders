@@ -88,8 +88,8 @@ module Spree
       def ensure_not_cancelled
         if @subscription.not_changeable?
           respond_to do |format|
-            format.html { redirect_to :back, error: t("spree.subscriptions.error.not_changeable") }
-            format.js { flash.now[:error] = t("spree.subscriptions.error.not_changeable") ; render partial: "spree/admin/shared/flash_messages" }
+            format.html { redirect_to :back, error: Spree.t("subscriptions.error.not_changeable") }
+            format.js { flash.now[:error] = Spree.t("subscriptions.error.not_changeable") ; render partial: "spree/admin/shared/flash_messages" }
           end
         end
       end
