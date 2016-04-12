@@ -46,17 +46,16 @@ AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   $("#success_flash_message").html(response.flash).removeClass("hidden");
   var $symbol = $target.find(".icon");
   $symbol.toggleClass("icon-pause").toggleClass("icon-play");
-  if ($target.find(".translation_missing").length) {
-    $target.find(".translation_missing").html(response.button_text);
-  } else {
+  if (!$target.find(".translation_missing").length && !$symbol.length) {
     $target.html(response.button_text);
   }
+  $target.find(".translation_missing").html(response.button_text);
 };
 
 AjaxHandler.prototype.handleDestroySucess = function($target, response) {
   this.hideFlashDivs();
   $("#success_flash_message").html(response.flash).removeClass("hidden");
-  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Deleted");
+  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Deactivated");
 };
 
 AjaxHandler.prototype.handleErrorResponse = function($target, response) {

@@ -1,11 +1,2 @@
 <div class="alert alert-success hidden" id="success_flash_message"></div>
 <div class="alert alert-danger hidden" id="error_flash_message"></div>
-
-<% if flash[:success] %>
-  <% debugger %>
-  <div class="alert alert-success" id="html_success_flash_message"><%= flash[:success] %></div>
-<% end %>
-
-<% if flash[:error] %>
-  <div class="alert alert-danger" id="html_error_flash_message"><%= flash[:error] %></div>
-<% end %>

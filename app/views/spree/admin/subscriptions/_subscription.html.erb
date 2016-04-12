@@ -9,7 +9,7 @@
     <% if subscription.cancelled? %>
       Cancelled
     <% elsif subscription.archived? %>
-      Deleted
+      Deactivated
     <% elsif subscription.deliveries_remaining? %>
       <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
     <% else %>
@@ -19,15 +19,17 @@
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
     <% @subscription = subscription %>
     <% if subscription.not_changeable? %>
-      Cancelled Or Completed
+      Completed
+    <% elsif subscription.cancelled? %>
+      Cancelled
     <% elsif @subscription.archived? %>
-      Deleted
+      Deactivated
     <% else %>
       <span id="pause_links">
         <% if !@subscription.cancelled? && !@subscription.paused? %>
-          <%= button_link_to "", "javascript:void(0)", class: 'ajax_handler btn-warning btn-sm', icon: 'pause', data: { method: "PATCH", url: pause_admin_subscription_path(@subscription) }, title: "Pause" %>
+          <%= button_link_to "", "javascript:void(0)", class: 'ajax_handler btn-warning btn-sm', icon: 'pause', data: { method: "PATCH", url: pause_admin_subscription_path(@subscription), confirm: "Are you sure you want to pause this subscription?" }, title: "Pause" %>
         <% elsif @subscription.paused? && !@subscription.cancelled? %>
-          <%= button_link_to "", "javascript:void(0)", class: 'btn-success ajax_handler btn-sm', icon: 'play', data: { method: "PATCH", url: unpause_admin_subscription_path(@subscription) }, title: "Activate" %>
+          <%= button_link_to "", "javascript:void(0)", class: 'btn-success ajax_handler btn-sm', icon: 'play', data: { method: "PATCH", url: unpause_admin_subscription_path(@subscription), confirm: "Are you sure you want to activate this subscription?" }, title: "Activate" %>
         <% end %>
       </span>
       <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
