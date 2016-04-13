@@ -20,6 +20,7 @@ describe Spree::UsersController, type: :controller do
         allow(orders).to receive(:complete).and_return(orders)
         allow(orders).to receive(:order).and_return(orders)
         allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+        allow(subscriptions).to receive(:order).and_return(subscriptions)
         allow(subscriptions).to receive(:with_parent_orders).and_return(subscriptions)
       end
 
@@ -30,6 +31,7 @@ describe Spree::UsersController, type: :controller do
         it { expect(orders).to receive(:complete).and_return(orders) }
         it { expect(orders).to receive(:order).with(completed_at: :desc).and_return(orders) }
         it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+        it { expect(subscriptions).to receive(:order).with(created_at: :desc).and_return(subscriptions) }
         it { expect(subscriptions).to receive(:with_parent_orders).with(orders).and_return(subscriptions) }
       end
 

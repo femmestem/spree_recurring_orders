@@ -78,7 +78,7 @@ module Spree
     end
 
     def number_of_deliveries_left
-      delivery_number - complete_orders.size - 1
+      delivery_number.to_i - complete_orders.size - 1
     end
 
     def pause
@@ -189,8 +189,6 @@ module Spree
           last_ip_address: parent_order.last_ip_address
         }
       end
-
-
 
       def notify_user
         SubscriptionNotifier.notify_confirmation(self).deliver_later
