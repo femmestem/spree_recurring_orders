@@ -9,7 +9,7 @@
     <% if subscription.cancelled? %>
       Cancelled
     <% elsif subscription.archived? %>
-      Deactivated
+      Archived
     <% elsif subscription.deliveries_remaining? %>
       <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
     <% else %>
@@ -23,7 +23,7 @@
     <% elsif subscription.cancelled? %>
       Cancelled
     <% elsif @subscription.archived? %>
-      Deactivated
+      Archived
     <% else %>
       <span id="pause_links">
         <% if !@subscription.cancelled? && !@subscription.paused? %>

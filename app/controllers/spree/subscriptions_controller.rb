@@ -9,7 +9,8 @@ module Spree
 
     def update
       if @subscription.update(subscription_attributes)
-        redirect_to edit_subscription_path(@subscription), notice: t(".success")
+        flash[:success] = t(".success")
+        redirect_to edit_subscription_path(@subscription)
       else
         render :edit
       end
@@ -19,19 +20,18 @@ module Spree
       respond_to do |format|
         if @subscription.archive
           format.json { render json: {
-              status: 200,
               subscription_id: @subscription.id,
               flash: t(".success")
-            }
+            }, status: 200
           }
-          format.html { redirect_to account_path, success: t('.success') }
+          format.html { flash[:success] = "Subscription is successfully archived"; redirect_to account_path }
+          debugger
         else
           format.json { render json: {
-              status: 422,
-              flash: t(".success")
-            }
+              flash: t(".error")
+            }, status: 422
           }
-          format.html { redirect_to :back, error: t('.error') }
+          format.html { flash[:error] = t('.error'); redirect_to :back }
         end
       end
     end
@@ -39,32 +39,28 @@ module Spree
     def pause
       if @subscription.pause
         render json: {
-          status: 200,
           flash: t('.success'),
           url: unpause_subscription_path(@subscription),
           button_text: "Activate"
-        }
+        }, status: 200
       else
         render json: {
-          status: 422,
           flash: t('.error')
-        }
+        }, status: 422
       end
     end
 
     def unpause
       if @subscription.unpause
         render json: {
-          status: 200,
           flash: t('.success'),
           url: pause_subscription_path(@subscription),
           button_text: "Pause"
-        }
+        }, status: 200
       else
         render json: {
-          status: 422,
           flash: t('.error')
-        }
+        }, status: 422
       end
     end
 
@@ -78,15 +74,16 @@ module Spree
       def ensure_subscription
         @subscription = Spree::Subscription.active.find_by(id: params[:id])
         unless @subscription
-          redirect_to account_path, error: Spree.t('subscriptions.alert.missing')
+          flash[:error] = Spree.t('subscriptions.alert.missing')
+          redirect_to account_path
         end
       end
 
       def ensure_not_cancelled
         if @subscription.not_changeable?
           respond_to do |format|
-            format.html { redirect_to :back, error: Spree.t("subscriptions.error.not_changeable") }
-            format.js { flash.now[:error] = Spree.t("subscriptions.error.not_changeable") ; render partial: "spree/admin/shared/flash_messages" }
+            format.html { flash[:error] = Spree.t("subscriptions.error.not_changeable"); redirect_to :back }
+            format.js { flash.now[:error] = Spree.t("subscriptions.error.not_changeable"); render partial: "spree/admin/shared/flash_messages" }
           end
         end
       end
