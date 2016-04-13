@@ -19,11 +19,17 @@ module Spree
     has_many :complete_orders, -> { complete }, through: :orders_subscriptions, source: :order
 
     self.whitelisted_ransackable_associations = %w( parent_order )
+    self.whitelisted_ransackable_attributes = %w( archived )
 
+    scope :archived, -> { where(archived: true) }
+    scope :unarchived, -> { where(archived: false) }
+    scope :paused, -> { where(paused: true) }
+    scope :unpaused, -> { where(paused: false) }
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
-    scope :eligible_for_subscription, -> { active.not_cancelled }
+    scope :appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
+    scope :eligible_for_subscription, -> { unarchived.unpaused.active.not_cancelled.appropriate_delivery_time }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -35,10 +41,17 @@ module Spree
     with_options presence: true do
       validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
       validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
-      validates :ship_address, :bill_address, :last_occurrence_at, :source, if: :enabled?
+      validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
 
-    before_validation :set_last_occurrence_at, if: :can_set_last_occurence_at?
+    define_model_callbacks :pause, only: [:before]
+    before_pause :can_pause?
+    define_model_callbacks :unpause, only: [:before]
+    before_unpause :can_unpause?
+    define_model_callbacks :archive, only: [:before]
+    before_archive :can_archive?
+
+    before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
     after_update :notify_user, if: :user_notifiable?
@@ -51,8 +64,8 @@ module Spree
     end
 
     def process
-      new_order = recreate_order if time_for_subscription? && deliveries_remaining?
-      update(last_occurrence_at: Time.current) if new_order.try :completed?
+      new_order = recreate_order if deliveries_remaining?
+      update(next_occurrence_at: next_occurrence_at_value) if new_order.try :completed?
     end
 
     def cancel_with_reason(attributes)
@@ -68,18 +81,60 @@ module Spree
       delivery_number - complete_orders.size - 1
     end
 
+    def pause
+      run_callbacks :pause do
+        update_attributes(paused: true)
+      end
+    end
+
+    def unpause
+      run_callbacks :unpause do
+        update_attributes(paused: false)
+      end
+    end
+
+    def archive
+      run_callbacks :archive do
+        update_attributes(archived: true)
+      end
+    end
+
+    def deliveries_remaining?
+      number_of_deliveries_left > 0
+    end
+
+    def not_changeable?
+      cancelled? || !deliveries_remaining? || archived?
+    end
+
     private
 
       def set_cancelled_at
         self.cancelled_at = Time.current
       end
 
-      def set_last_occurrence_at
-        self.last_occurrence_at = Time.current
+      def set_next_occurrence_at
+        self.next_occurrence_at = next_occurrence_at_value
       end
 
-      def can_set_last_occurence_at?
-        enabled? && last_occurrence_at.nil?
+      def next_occurrence_at_value
+        deliveries_remaining? ? Time.current + frequency.months_count.month : next_occurrence_at
+      end
+
+      def can_set_next_occurrence_at?
+        enabled? && next_occurrence_at.nil? && deliveries_remaining? && !archived?
+      end
+
+      def can_pause?
+        enabled? && !cancelled? && deliveries_remaining? && !paused? && !archived?
+      end
+
+      def can_unpause?
+        enabled? && !cancelled? && deliveries_remaining? && paused? && !archived?
+      end
+
+      def can_archive?
+        enabled? && !cancelled? && deliveries_remaining?
       end
 
       def recreate_order
@@ -135,13 +190,7 @@ module Spree
         }
       end
 
-      def time_for_subscription?
-        (last_occurrence_at + frequency.months_count.months) <= Time.current
-      end
 
-      def deliveries_remaining?
-        number_of_deliveries_left > 0
-      end
 
       def notify_user
         SubscriptionNotifier.notify_confirmation(self).deliver_later
@@ -152,7 +201,7 @@ module Spree
       end
 
       def can_set_cancelled_at?
-        cancelled.present?
+        cancelled.present? && !archived? && deliveries_remaining?
       end
 
       def notify_cancellation
@@ -164,7 +213,7 @@ module Spree
       end
 
       def reoccurrence_notifiable?
-        last_occurrence_at_changed? && !!last_occurrence_at_was
+        next_occurrence_at_changed? && !!next_occurrence_at_was
       end
 
       def notify_reoccurrence

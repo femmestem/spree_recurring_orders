@@ -43,7 +43,7 @@ Spree::LineItem.class_eval do
     end
 
     def subscribable?
-      subscribe.present?
+      subscribe.present? && subscribe != "0"
     end
 
     def subscription?

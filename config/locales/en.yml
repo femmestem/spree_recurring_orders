@@ -13,8 +13,31 @@ en:
       notify_reoccurrence:
         subject: "%{frequency} %{number} Subscription Reoccurrence"
 
+    subscriptions:
+      pause:
+        success: "Subscription is paused"
+        error: "There was some failure in pausing the subscription"
+      unpause:
+        success: "Subscription is active"
+        error: "There was some faiure in activating the subscription"
+      destroy:
+        success: "Subscription was successfully archived"
+        error: "There was some problem in archiving the subscription"
+      update:
+        success: "Subscription was successfully updated"
+      alert:
+        missing: "Subscription does not exist."
+      error:
+        not_changeable: "Subscription is either cancelled or all the deliveries are done."
+
     admin:
       subscriptions:
+        pause:
+          success: "Subscription is currently paused"
+          failure: "There was some failure in pausing subscription"
+        unpause:
+          success: "subscription is currently active"
+          failure: "There was some problem in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:

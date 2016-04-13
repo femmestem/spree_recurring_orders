@@ -2,6 +2,7 @@ module Spree
   module Admin
     class SubscriptionsController < Spree::Admin::ResourceController
 
+      add_flash_types :success, :error
       before_action :ensure_not_cancelled, only: [:update, :cancel, :cancellation]
 
       def cancellation
@@ -9,10 +10,37 @@ module Spree
 
       def cancel
         if @subscription.cancel_with_reason(permitted_cancel_subscription_attributes)
-          flash[:success] = t('.success')
-          redirect_to collection_url
+          redirect_to collection_url, success: t('.success')
         else
           render :cancellation
+        end
+      end
+
+      def pause
+        if @subscription.pause
+          render json: {
+            flash: t('.success'),
+            url: unpause_subscription_path(@subscription),
+            button_text: "Activate"
+          }, status: 200
+        else
+          render json: {
+            flash: t('.error')
+          }, status: 422
+        end
+      end
+
+      def unpause
+        if @subscription.unpause
+          render json: {
+            flash: t('.success'),
+            url: pause_subscription_path(@subscription),
+            button_text: "Pause"
+          }, status: 200
+        else
+          render json: {
+            flash: t('.error')
+          }, status: 422
         end
       end
 
@@ -32,8 +60,7 @@ module Spree
 
         def ensure_not_cancelled
           if @subscription.cancelled?
-            flash[:error] = t("spree.admin.subscriptions.error_on_already_cancelled")
-            redirect_to collection_url
+            redirect_to collection_url, error: Spree.t("admin.subscriptions.error_on_already_cancelled")
           end
         end
 

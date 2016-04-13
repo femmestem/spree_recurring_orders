@@ -1,0 +1,35 @@
+<h3>Orders</h3>
+<hr>
+<div id="subscription_orders">
+  <% if @subscription.orders.present? %>
+    <table class="table" id="listing_orders" data-hook>
+      <thead class="active">
+      <tr>
+        <th class="order-number"><%= Spree::Order.human_attribute_name(:number) %></th>
+        <th class="order-date"><%= Spree.t(:date) %></th>
+        <th class="order-status"><%= Spree.t(:status) %></th>
+        <th class="order-payment-state"><%= Spree.t(:payment_state) %></th>
+        <th class="order-shipment-state"><%= Spree.t(:shipment_state) %></th>
+        <th class="order-total"><%= Spree.t(:total) %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @subscription.orders.each do |order| %>
+        <tr>
+          <td class="order-number"><%= link_to order.number, order_url(order) %></td>
+          <td class="order-date"><%= l order.completed_at.to_date %></td>
+          <td class="order-status"><%= Spree.t("order_state.#{order.state}").titleize %></td>
+          <td class="order-payment-state"><%= Spree.t("payment_states.#{order.payment_state}").titleize if order.payment_state %></td>
+          <td class="order-shipment-state"><%= Spree.t("shipment_states.#{order.shipment_state}").titleize if order.shipment_state %></td>
+          <td class="lead text-primary order-total"><%= order.display_total %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alert alert-info no-objects-found">
+      <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::Order)) %>
+    </div>
+  <% end %>
+</div>
+<br>

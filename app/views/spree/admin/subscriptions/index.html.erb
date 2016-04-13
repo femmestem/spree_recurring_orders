@@ -2,6 +2,8 @@
   Subscriptions
 <% end %>
 
+<%= render partial: 'spree/admin/shared/flash_messages' %>
+
 <% content_for :table_filter do %>
   <div data-hook="admin_subscriptions_index_search">
     <%= search_form_for [:admin, @search] do |f| %>
@@ -10,6 +12,16 @@
           <div class="form-group">
             <%= f.label :parent_order_email_cont, Spree.t(:customer_email) %>
             <%= f.text_field :parent_order_email_cont, tabindex: 1, class: "form-control js-quick-search-target" %>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class='field checkbox'>
+            <label>
+              <%= f.check_box :archived_eq, {}, '1', nil %>
+              <%= Spree.t(:show_archived) %>
+            </label>
           </div>
         </div>
       </div>
