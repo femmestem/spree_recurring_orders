@@ -1,6 +1,7 @@
 module Spree
   class SubscriptionsController < Spree::BaseController
 
+    add_flash_types :success, :error
     before_action :ensure_subscription
     before_action :ensure_not_cancelled, only: [:update, :destroy, :pause, :unpause]
 
@@ -24,14 +25,13 @@ module Spree
               flash: t(".success")
             }, status: 200
           }
-          format.html { flash[:success] = "Subscription is successfully archived"; redirect_to account_path }
-          debugger
+          format.html { redirect_to account_path, success: t(".success") }
         else
           format.json { render json: {
               flash: t(".error")
             }, status: 422
           }
-          format.html { flash[:error] = t('.error'); redirect_to :back }
+          format.html { redirect_to :back, error: t(".error") }
         end
       end
     end
@@ -74,15 +74,14 @@ module Spree
       def ensure_subscription
         @subscription = Spree::Subscription.active.find_by(id: params[:id])
         unless @subscription
-          flash[:error] = Spree.t('subscriptions.alert.missing')
-          redirect_to account_path
+          redirect_to account_path, error: Spree.t('subscriptions.alert.missing')
         end
       end
 
       def ensure_not_cancelled
         if @subscription.not_changeable?
           respond_to do |format|
-            format.html { flash[:error] = Spree.t("subscriptions.error.not_changeable"); redirect_to :back }
+            format.html { redirect_to :back, error: Spree.t("subscriptions.error.not_changeable") }
             format.js { flash.now[:error] = Spree.t("subscriptions.error.not_changeable"); render partial: "spree/admin/shared/flash_messages" }
           end
         end

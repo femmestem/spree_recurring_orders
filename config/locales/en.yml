@@ -21,8 +21,8 @@ en:
         success: "Subscription is active"
         error: "There was some faiure in activating the subscription"
       destroy:
-        success: "Subscription was successfully deleted"
-        error: "There was some problem in deleting the subscription"
+        success: "Subscription was successfully archived"
+        error: "There was some problem in archiving the subscription"
       update:
         success: "Subscription was successfully updated"
       alert:
