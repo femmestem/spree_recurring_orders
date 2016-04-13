@@ -29,6 +29,9 @@ en:
         missing: "Subscription does not exist."
       error:
         not_changeable: "Subscription is either cancelled or all the deliveries are done."
+      confirm:
+        pause: "Are you sure you want to pause this subscription"
+        activate: "Are you sure you want to activate this subscription"
 
     admin:
       subscriptions:

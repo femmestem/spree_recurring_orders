@@ -21,7 +21,8 @@ module Spree
           render json: {
             flash: t('.success'),
             url: unpause_subscription_path(@subscription),
-            button_text: "Activate"
+            button_text: "Activate",
+            confirmation: Spree.t("subscriptions.confirm.activate")
           }, status: 200
         else
           render json: {
@@ -35,7 +36,8 @@ module Spree
           render json: {
             flash: t('.success'),
             url: pause_subscription_path(@subscription),
-            button_text: "Pause"
+            button_text: "Pause",
+            confirmation: Spree.t("subscriptions.confirm.pause")
           }, status: 200
         else
           render json: {

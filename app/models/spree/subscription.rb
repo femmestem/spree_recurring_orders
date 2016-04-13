@@ -50,13 +50,14 @@ module Spree
     before_unpause :can_unpause?
     define_model_callbacks :archive, only: [:before]
     before_archive :can_archive?
+    define_model_callbacks :process, only: [:after]
+    after_process :notify_reoccurrence, if: :reoccurrence_notifiable?
 
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
     after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
-    after_update :notify_reoccurrence, if: :reoccurrence_notifiable?
 
     def generate_number(options = {})
       options[:prefix] ||= 'S'
@@ -211,6 +212,7 @@ module Spree
       end
 
       def reoccurrence_notifiable?
+
         next_occurrence_at_changed? && !!next_occurrence_at_was
       end
 

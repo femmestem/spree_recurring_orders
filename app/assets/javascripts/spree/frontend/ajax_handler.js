@@ -10,9 +10,9 @@ AjaxHandler.prototype.bindEvents = function() {
   var _this = this;
   $.each(_this.targets, function(index, target) {
     var $target = $(target);
-    $target.on('click', function() {
+    $target.unbind('click').on('click', function() {
       var data = $target.data();
-      if(confirm(data.confirm)) {
+      if(confirm(data.confirmation)) {
         _this.sendRequest($target, data);
       }
     });
@@ -50,6 +50,7 @@ AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
     $target.html(response.button_text);
   }
   $target.find(".translation_missing").html(response.button_text);
+  $target.data("confirmation", response.confirmation);
 };
 
 AjaxHandler.prototype.handleDestroySucess = function($target, response) {
