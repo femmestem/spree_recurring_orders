@@ -1,5 +1,5 @@
 <% if @subscription.paused? %>
-  <%= link_to Spree.t(:activate), "javascript:void(0)", class: "btn ajax_handler #{ btn_class } btn-success", data: { url: unpause_subscription_path(@subscription), method: "PATCH", confirm: "Are you sure you want to activate this subscription?" } %>
+  <%= link_to Spree.t(:activate), "javascript:void(0)", class: "btn ajax_handler #{ btn_class } btn-success", data: { url: unpause_subscription_path(@subscription), method: "PATCH", confirmation: Spree.t("subscriptions.confirm.activate") } %>
 <% else %>
-  <%= link_to Spree.t(:pause), "javascript:void(0)", class: "btn #{ btn_class } ajax_handler btn-warning", data: { url: pause_subscription_path(@subscription), method: "PATCH", confirm: "Are you sure you want to pause this subscription?" } %>
+  <%= link_to Spree.t(:pause), "javascript:void(0)", class: "btn #{ btn_class } ajax_handler btn-warning", data: { url: pause_subscription_path(@subscription), method: "PATCH", confirmation: Spree.t("subscriptions.confirm.pause") } %>
 <% end %>
