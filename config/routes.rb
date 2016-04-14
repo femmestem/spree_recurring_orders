@@ -15,6 +15,7 @@ Spree::Core::Engine.routes.draw do
     member do
       patch 'pause'
       patch 'unpause'
+      patch 'cancel'
     end
   end
 

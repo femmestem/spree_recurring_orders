@@ -6,7 +6,7 @@
         <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
       </span>
       <span>
-        <%= link_to Spree.t(:archive), @subscription, method: :delete, class: 'btn-danger btn', data: { confirm: "Are you sure you want to archive this subscription." } %>
+        <%= link_to Spree.t("subscriptions.admin.cancel"), cancel_subscription_path(@subscription), method: :patch, class: 'btn-danger btn', data: { confirm: Spree.t("subscriptions.confirm.cancel") } %>
       </span>
     <% end %>
   </div>

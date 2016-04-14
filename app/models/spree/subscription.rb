@@ -19,10 +19,7 @@ module Spree
     has_many :complete_orders, -> { complete }, through: :orders_subscriptions, source: :order
 
     self.whitelisted_ransackable_associations = %w( parent_order )
-    self.whitelisted_ransackable_attributes = %w( archived )
 
-    scope :archived, -> { where(archived: true) }
-    scope :unarchived, -> { where(archived: false) }
     scope :paused, -> { where(paused: true) }
     scope :unpaused, -> { where(paused: false) }
     scope :disabled, -> { where(enabled: false) }
@@ -48,10 +45,10 @@ module Spree
     before_pause :can_pause?
     define_model_callbacks :unpause, only: [:before]
     before_unpause :can_unpause?
-    define_model_callbacks :archive, only: [:before]
-    before_archive :can_archive?
     define_model_callbacks :process, only: [:after]
     after_process :notify_reoccurrence, if: :reoccurrence_notifiable?
+    define_model_callbacks :cancel, only: [:before]
+    before_cancel :set_cancellation_reason, if: :can_set_cancellation_reason?
 
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
@@ -94,9 +91,10 @@ module Spree
       end
     end
 
-    def archive
-      run_callbacks :archive do
-        update_attributes(archived: true)
+    def cancel
+      self.cancelled = true
+      run_callbacks :cancel do
+        update_attributes(cancelled_at: Time.current)
       end
     end
 
@@ -105,7 +103,7 @@ module Spree
     end
 
     def not_changeable?
-      cancelled? || !deliveries_remaining? || archived?
+      cancelled? || !deliveries_remaining?
     end
 
     private
@@ -123,19 +121,15 @@ module Spree
       end
 
       def can_set_next_occurrence_at?
-        enabled? && next_occurrence_at.nil? && deliveries_remaining? && !archived?
+        enabled? && next_occurrence_at.nil? && deliveries_remaining?
       end
 
       def can_pause?
-        enabled? && !cancelled? && deliveries_remaining? && !paused? && !archived?
+        enabled? && !cancelled? && deliveries_remaining? && !paused?
       end
 
       def can_unpause?
-        enabled? && !cancelled? && deliveries_remaining? && paused? && !archived?
-      end
-
-      def can_archive?
-        enabled? && !cancelled? && deliveries_remaining?
+        enabled? && !cancelled? && deliveries_remaining? && paused?
       end
 
       def recreate_order
@@ -200,7 +194,15 @@ module Spree
       end
 
       def can_set_cancelled_at?
-        cancelled.present? && !archived? && deliveries_remaining?
+        cancelled.present? && deliveries_remaining?
+      end
+
+      def set_cancellation_reason
+        self.cancellation_reasons = "Cancelled By User"
+      end
+
+      def can_set_cancellation_reason?
+        cancelled.present? && deliveries_remaining? && cancellation_reasons.nil?
       end
 
       def notify_cancellation
@@ -212,7 +214,6 @@ module Spree
       end
 
       def reoccurrence_notifiable?
-
         next_occurrence_at_changed? && !!next_occurrence_at_was
       end
 

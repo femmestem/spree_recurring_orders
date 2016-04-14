@@ -5,34 +5,24 @@
   <td class="text-center"><%= subscription.frequency.title.titleize %></td>
   <td class="text-center"><%= subscription.delivery_number %></td>
   <td class="text-center"><%= subscription.number_of_deliveries_left %></td>
-  <td class="text-center">
-    <% if subscription.cancelled? %>
-      Cancelled
-    <% elsif subscription.archived? %>
-      Archived
-    <% elsif subscription.deliveries_remaining? %>
-      <%= link_to_with_icon('cancel', Spree.t(:cancel), cancellation_admin_subscription_path(subscription)) if can? :delete, subscription %>
-    <% else %>
-      Completed
-    <% end %>
-  </td>
   <td data-hook="admin_subscriptions_index_row_actions" class="actions actions-2 text-right">
     <% @subscription = subscription %>
-    <% if subscription.not_changeable? %>
+    <% if !subscription.deliveries_remaining? %>
       Completed
     <% elsif subscription.cancelled? %>
       Cancelled
-    <% elsif @subscription.archived? %>
-      Archived
     <% else %>
       <span id="pause_links">
-        <% if !@subscription.cancelled? && !@subscription.paused? %>
+        <% if !@subscription.paused? %>
           <%= button_link_to "", "javascript:void(0)", class: 'ajax_handler btn-warning btn-sm', icon: 'pause', data: { method: "PATCH", url: pause_admin_subscription_path(@subscription), confirmation: Spree.t("subscriptions.confirm.pause") }, title: "Pause" %>
-        <% elsif @subscription.paused? && !@subscription.cancelled? %>
+        <% else %>
           <%= button_link_to "", "javascript:void(0)", class: 'btn-success ajax_handler btn-sm', icon: 'play', data: { method: "PATCH", url: unpause_admin_subscription_path(@subscription), confirmation: Spree.t("subscriptions.confirm.activate") }, title: "Activate" %>
         <% end %>
       </span>
       <%= link_to_edit(subscription, no_text: true) if can? :edit, subscription %>
+      <span>
+        <%= button_link_to "", cancellation_admin_subscription_path(@subscription), class: 'btn-danger btn-sm', icon: 'cancel', title: "Cancel" %>
+      </span>
     <% end %>
   </td>
 </tr>

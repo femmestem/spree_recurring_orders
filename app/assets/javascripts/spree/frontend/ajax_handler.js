@@ -26,8 +26,8 @@ AjaxHandler.prototype.sendRequest = function($target, data) {
     dataType: "JSON",
     method: data.method,
     success: function(response) {
-      if (data.method == "DELETE") {
-        _this.handleDestroySucess($target, response);
+      if (response.method == "CANCEL") {
+        _this.handleCancelSuccess($target, response);
       } else {
         _this.handlePatchSuccess($target, response)
       }
@@ -53,10 +53,10 @@ AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   $target.data("confirmation", response.confirmation);
 };
 
-AjaxHandler.prototype.handleDestroySucess = function($target, response) {
+AjaxHandler.prototype.handleCancelSuccess = function($target, response) {
   this.hideFlashDivs();
   $("#success_flash_message").html(response.flash).removeClass("hidden");
-  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Deactivated");
+  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Subscription Cancelled");
 };
 
 AjaxHandler.prototype.handleErrorResponse = function($target, response) {

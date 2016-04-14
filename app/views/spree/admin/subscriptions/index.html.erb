@@ -15,17 +15,6 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class='field checkbox'>
-            <label>
-              <%= f.check_box :archived_eq, {}, '1', nil %>
-              <%= Spree.t(:show_archived) %>
-            </label>
-          </div>
-        </div>
-      </div>
-
       <div data-hook="admin_subscriptions_index_search_buttons" class="form-actions">
         <%= button Spree.t(:filter_results), 'search' %>
       </div>
@@ -43,7 +32,6 @@
         <th class="text-center"><%= Spree.t(:recurring_delivery_interval) %></th>
         <th class="text-center"><%= Spree.t(:total_deliveries) %></th>
         <th class="text-center"><%= Spree.t(:deliveries_left) %></th>
-        <th class="text-center"><%= Spree.t(:cancel_status) %></th>
         <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
       </tr>
     </thead>

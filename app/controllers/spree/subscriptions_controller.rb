@@ -17,21 +17,22 @@ module Spree
       end
     end
 
-    def destroy
+    def cancel
       respond_to do |format|
-        if @subscription.archive
+        if @subscription.cancel
           format.json { render json: {
               subscription_id: @subscription.id,
-              flash: t(".success")
+              flash: t(".success"),
+              method: "CANCEL"
             }, status: 200
           }
-          format.html { redirect_to account_path, success: t(".success") }
+          format.html { redirect_to edit_subscription_path(@subscription), success: t(".success") }
         else
           format.json { render json: {
               flash: t(".error")
             }, status: 422
           }
-          format.html { redirect_to :back, error: t(".error") }
+          format.html { redirect_to edit_subscription_path(@subscription), error: t(".error") }
         end
       end
     end

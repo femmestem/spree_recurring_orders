@@ -8,18 +8,14 @@
   <td class="text-center subscription-deliveries-left"><%= subscription.number_of_deliveries_left %></td>
   <td class="subscription-action-links">
     <% @subscription = subscription %>
-    <% if subscription.not_changeable? %>
-      <% if subscription.archived? %>
-        Archived
-      <% elsif subscription.cancelled? %>
-        Cancelled
-      <% else %>
+    <% if subscription.cancelled? %>
+        Subscription Cancelled
+    <% elsif !subscription.deliveries_remaining? %>
         Completed
-      <% end %>
     <% else %>
       <span id="pause_links"><%= render partial: 'spree/subscriptions/pause_links', locals: { btn_class: "btn-xs" } %></span>
       <%= link_to Spree.t(:edit), edit_subscription_path(subscription), class: "btn btn-xs btn-default" %>
-      <%= link_to Spree.t(:archive), "javascript:void(0)", class: "btn ajax_handler btn-xs btn-danger", data: { method: "DELETE", confirm: "Are you sure you want to archive this subscription.", url: subscription_path(subscription) } %>
+      <%= link_to Spree.t("subsriptions.admin.cancel"), "javascript:void(0)", class: "btn ajax_handler btn-xs btn-danger", data: { method: "PATCH", confirmation: Spree.t("subscriptions.confirm.cancel"), url: cancel_subscription_path(subscription) } %>
     <% end %>
   </td>
 </tr>
