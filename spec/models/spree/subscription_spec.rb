@@ -104,6 +104,11 @@ describe Spree::Subscription, type: :model do
     it { is_expected.to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
     it { is_expected.to callback(:not_cancelled?).before(:update) }
     it { is_expected.to callback(:notify_user).after(:update).if(:user_notifiable?) }
+    it { is_expected.to callback(:can_pause?).before(:pause) }
+    it { is_expected.to callback(:can_unpause?).before(:unpause) }
+    it { is_expected.to callback(:set_next_occurrence_at_after_unpause).before(:unpause) }
+    it { is_expected.to callback(:set_cancellation_reason).before(:cancel).if(:can_set_cancellation_reason?) }
+    it { is_expected.to callback(:notify_reoccurrence).after(:process).if(:reoccurrence_notifiable?) }
   end
 
   describe "attr_accessors" do
@@ -172,6 +177,17 @@ describe Spree::Subscription, type: :model do
       xit { expect(nil_attributes_subscription.next_occurrence_at).to_not be_nil }
     end
 
+    context "#set_cancellation_reason" do
+      before { nil_attributes_subscription.send :set_cancellation_reason }
+      it { expect(nil_attributes_subscription.cancellation_reasons).to eq "Cancelled By User" }
+    end
+
+    context "#can_set_cancellation_reason?" do
+      before { active_subscription.cancelled = true }
+      it { expect(active_subscription.send :can_set_cancellation_reason?).to eq true }
+      it { expect(cancelled_subscription.send :can_set_cancellation_reason?).to eq false }
+    end
+
     context "#can_set_next_occurrence_at?" do
       context "when enabled and next_occurrence_at present" do
         it { expect(active_subscription.send :can_set_next_occurrence_at?).to eq false }
@@ -232,8 +248,8 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#deliveries_remaining?" do
-      it { expect(subscription_with_recreated_orders.send :deliveries_remaining?).to eq true }
-      it { expect(active_subscription.send :deliveries_remaining?).to eq true }
+      it { expect(subscription_with_recreated_orders.deliveries_remaining?).to eq true }
+      it { expect(active_subscription.deliveries_remaining?).to eq true }
     end
 
     context "#number_of_deliveries_left" do
