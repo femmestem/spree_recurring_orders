@@ -26,7 +26,7 @@ module Spree
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
     scope :appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
-    scope :eligible_for_subscription, -> { unarchived.unpaused.active.not_cancelled.appropriate_delivery_time }
+    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled.appropriate_delivery_time }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -40,11 +40,12 @@ module Spree
       validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
       validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
+    validate :next_occurrence_at_range, if: -> { next_occurrence_at.present? }
 
     define_model_callbacks :pause, only: [:before]
     before_pause :can_pause?
     define_model_callbacks :unpause, only: [:before]
-    before_unpause :can_unpause?
+    before_unpause :can_unpause?, :set_next_occurrence_at_after_unpause
     define_model_callbacks :process, only: [:after]
     after_process :notify_reoccurrence, if: :reoccurrence_notifiable?
     define_model_callbacks :cancel, only: [:before]
@@ -53,6 +54,7 @@ module Spree
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
+    before_update :next_occurrence_at_not_changed?, if: :paused?
     after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
 
@@ -122,6 +124,10 @@ module Spree
 
       def can_set_next_occurrence_at?
         enabled? && next_occurrence_at.nil? && deliveries_remaining?
+      end
+
+      def set_next_occurrence_at_after_unpause
+        self.next_occurrence_at = (Time.current > next_occurrence_at) ? next_occurrence_at + frequency.months_count.month : next_occurrence_at
       end
 
       def can_pause?
@@ -227,6 +233,16 @@ module Spree
 
       def user_notifiable?
         enabled? && enabled_changed?
+      end
+
+      def next_occurrence_at_not_changed?
+        !next_occurrence_at_changed?
+      end
+
+      def next_occurrence_at_range
+        unless next_occurrence_at >= Time.current.to_date
+          errors[:next_occurrence_at] << "Next Occurrence cannot be not be before today's date"
+        end
       end
 
   end

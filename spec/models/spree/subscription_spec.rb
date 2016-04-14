@@ -101,7 +101,6 @@ describe Spree::Subscription, type: :model do
     it { is_expected.to callback(:set_next_occurrence_at).before(:validation).if(:can_set_next_occurrence_at?) }
     it { is_expected.to callback(:set_cancelled_at).before(:validation).if(:can_set_cancelled_at?) }
     it { is_expected.to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
-    it { is_expected.to callback(:notify_reoccurrence).after(:update).if(:reoccurrence_notifiable?) }
     it { is_expected.to callback(:not_cancelled?).before(:update) }
     it { is_expected.to callback(:notify_user).after(:update).if(:user_notifiable?) }
   end

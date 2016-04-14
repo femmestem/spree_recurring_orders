@@ -55,9 +55,10 @@ module Spree
     def unpause
       if @subscription.unpause
         render json: {
-          flash: t('.success'),
+          flash: t('.success', next_occurrence_at: @subscription.next_occurrence_at.to_date.to_formatted_s(:rfc822)),
           url: pause_subscription_path(@subscription),
           button_text: "Pause",
+          next_occurrence_at: @subscription.next_occurrence_at.to_date,
           confirmation: Spree.t("subscriptions.confirm.pause")
         }, status: 200
       else

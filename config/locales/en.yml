@@ -18,7 +18,7 @@ en:
         success: "Subscription is paused"
         error: "There was some failure in pausing the subscription"
       unpause:
-        success: "Subscription is active"
+        success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
         error: "There was some faiure in activating the subscription"
       cancel:
         success: "Subscription was successfully cancelled"
@@ -40,7 +40,7 @@ en:
           success: "Subscription is currently paused"
           failure: "There was some failure in pausing subscription"
         unpause:
-          success: "subscription is currently active"
+          success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
           failure: "There was some problem in activating subscription"
         cancel:
           success: "Subscription is cancelled"

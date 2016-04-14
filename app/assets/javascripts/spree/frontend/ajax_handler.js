@@ -41,6 +41,12 @@ AjaxHandler.prototype.sendRequest = function($target, data) {
 AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   this.hideFlashDivs();
   $target.data("url", response.url);
+  if (response.url.match("unpause")) {
+    $(".subscription_next_occurrence_at").attr("disabled", "disabled");
+  } else {
+    $(".subscription_next_occurrence_at").val(response.next_occurrence_at);
+    $(".subscription_next_occurrence_at").removeAttr("disabled");
+  }
   $target.toggleClass("btn-success");
   $target.toggleClass("btn-warning");
   $("#success_flash_message").html(response.flash).removeClass("hidden");
