@@ -4,7 +4,7 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
   stub_authorization!
 
-  let(:active_subscription) { mock_model(Spree::Subscription, id: 1, enabled: true) }
+  let(:active_subscription) { mock_model(Spree::Subscription, id: 1, enabled: true, next_occurrence_at: Time.current) }
   let(:cancelled_subscription) { mock_model(Spree::Subscription, id: 2, cancelled_at: Time.current, cancellation_reasons: "Test") }
 
   describe "#cancellation" do
@@ -29,6 +29,104 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
       before { do_cancellation params }
       it { expect(response).to have_http_status 200 }
       it { expect(response).to render_template :cancellation }
+    end
+  end
+
+  describe "pause" do
+    def do_pause
+      spree_post :pause, format: :json, id: active_subscription.id
+    end
+
+    before do
+      allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+      allow(active_subscription).to receive(:cancelled?).and_return(false)
+    end
+
+    describe "when pause returns success" do
+      before do
+        allow(active_subscription).to receive(:pause).and_return(true)
+      end
+
+      describe "expects to receive" do
+        after { do_pause }
+        it { expect(Spree::Subscription).to receive(:find).and_return(active_subscription) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
+        it { expect(active_subscription).to receive(:pause).and_return(true) }
+      end
+
+      describe "response" do
+        before { do_pause }
+        it { expect(response).to have_http_status 200 }
+        it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("admin.subscriptions.pause.success") }
+      end
+    end
+
+    describe "when pause is not successful" do
+      before do
+        allow(active_subscription).to receive(:pause).and_return(false)
+      end
+
+      describe "expects to receive" do
+        after { do_pause }
+        it { expect(Spree::Subscription).to receive(:find).and_return(active_subscription) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
+        it { expect(active_subscription).to receive(:pause).and_return(false) }
+      end
+
+      describe "response" do
+        before { do_pause }
+        it { expect(response).to have_http_status 422 }
+        it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("admin.subscriptions.pause.error") }
+      end
+    end
+  end
+
+  describe "unpause" do
+    def do_unpause
+      spree_post :unpause, format: :json, id: active_subscription.id
+    end
+
+    before do
+      allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
+      allow(active_subscription).to receive(:cancelled?).and_return(false)
+    end
+
+    describe "when unpause returns success" do
+      before do
+        allow(active_subscription).to receive(:unpause).and_return(true)
+      end
+
+      describe "expects to receive" do
+        after { do_unpause }
+        it { expect(Spree::Subscription).to receive(:find).and_return(active_subscription) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
+        it { expect(active_subscription).to receive(:unpause).and_return(true) }
+      end
+
+      describe "response" do
+        before { do_unpause }
+        it { expect(response).to have_http_status 200 }
+        it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("admin.subscriptions.unpause.success", next_occurrence_at: active_subscription.next_occurrence_at.to_date.to_formatted_s(:rfc822)) }
+      end
+    end
+
+    describe "when unpause is not successful" do
+      before do
+        allow(active_subscription).to receive(:unpause).and_return(false)
+      end
+
+      describe "expects to receive" do
+        after { do_unpause }
+        it { expect(Spree::Subscription).to receive(:find).and_return(active_subscription) }
+        it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
+        it { expect(active_subscription).to receive(:unpause).and_return(false) }
+      end
+
+      describe "response" do
+        before { do_unpause }
+        it { expect(response).to have_http_status 422 }
+        it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("admin.subscriptions.unpause.error") }
+      end
     end
   end
 

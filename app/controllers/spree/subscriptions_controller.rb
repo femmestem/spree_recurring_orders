@@ -3,7 +3,7 @@ module Spree
 
     add_flash_types :success, :error
     before_action :ensure_subscription
-    before_action :ensure_not_cancelled, only: [:update, :destroy, :pause, :unpause]
+    before_action :ensure_not_cancelled, only: [:update, :cancel, :pause, :unpause]
 
     def edit
     end

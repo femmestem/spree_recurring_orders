@@ -3,7 +3,7 @@ module Spree
     class SubscriptionsController < Spree::Admin::ResourceController
 
       add_flash_types :success, :error
-      before_action :ensure_not_cancelled, only: [:update, :cancel, :cancellation]
+      before_action :ensure_not_cancelled, only: [:update, :cancel, :cancellation, :pause, :unpause]
 
       def cancellation
       end

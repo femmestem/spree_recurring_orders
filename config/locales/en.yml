@@ -38,10 +38,10 @@ en:
       subscriptions:
         pause:
           success: "Subscription is currently paused"
-          failure: "There was some failure in pausing subscription"
+          error: "There was some failure in pausing subscription"
         unpause:
           success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
-          failure: "There was some problem in activating subscription"
+          error: "There was some problem in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:
