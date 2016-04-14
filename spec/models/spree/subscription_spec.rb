@@ -8,6 +8,7 @@ describe Spree::Subscription, type: :model do
   let(:nil_attributes_subscription) { build(:nil_attributes_subscription) }
   let(:active_subscription) { create(:valid_subscription, enabled: true, parent_order: order, next_occurrence_at: Time.current - 1.minute) }
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
+  let(:paused_subscription) { create(:valid_subscription, paused: true) }
   let(:cancelled_subscription) { create(:valid_subscription, cancelled_at: Time.current, cancellation_reasons: "Test") }
   let(:subscription_with_recreated_orders) { create(:valid_subscription, orders: orders, next_occurrence_at: Time.current - 1.minute) }
 
@@ -135,6 +136,16 @@ describe Spree::Subscription, type: :model do
     context ".with_parent_orders" do
       it { expect(Spree::Subscription.with_parent_orders(order)).to include active_subscription }
       it { expect(Spree::Subscription.with_parent_orders(order)).to_not include disabled_subscription }
+    end
+
+    context ".paused" do
+      it { expect(Spree::Subscription.paused).to include paused_subscription }
+      it { expect(Spree::Subscription.paused).to_not include active_subscription }
+    end
+
+    context ".unpaused" do
+      it { expect(Spree::Subscription.unpaused).to_not include paused_subscription }
+      it { expect(Spree::Subscription.unpaused).to include active_subscription }
     end
   end
 
