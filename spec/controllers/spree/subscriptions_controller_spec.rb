@@ -5,11 +5,216 @@ describe Spree::SubscriptionsController, type: :controller do
   stub_authorization!
 
   let(:active_subscription) { mock_model(Spree::Subscription, id: 1, enabled: true, next_occurrence_at: Time.current) }
-  let(:cancelled_subscription) { mock_model(Spree::Subscription, id: 2, cancelled_at: Time.current, cancellation_reasons: "Test") }
+  let(:cancelled_subscription) { mock_model(Spree::Subscription, id: 2, cancelled_at: Time.current, cancellation_reasons: "Test", enabled: true) }
   let(:subscriptions) { double(ActiveRecord::Relation) }
 
   describe "Callbacks" do
+    def do_cancel params
+      spree_post :cancel, params
+    end
 
+    describe "#ensure_subscription" do
+      context "html request" do
+        context "when subscription is present" do
+          let(:params) { { id: active_subscription.id } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(active_subscription)
+            allow(active_subscription).to receive(:not_changeable?).and_return(false)
+            allow(active_subscription).to receive(:cancel).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(active_subscription) }
+            it { expect(active_subscription).to receive(:not_changeable?).and_return(false) }
+            it { expect(active_subscription).to receive(:cancel).and_return(true) }
+          end
+
+          context "assigns" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 302 }
+            it { expect(flash[:error]).to be_nil }
+          end
+        end
+
+        context "when subscription is not present" do
+          let(:params) { { id: "" } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(nil)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(nil) }
+          end
+
+          context "assigns" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 302 }
+            it { expect(response).to redirect_to account_path }
+            it { expect(flash[:error]).to eq Spree.t("subscriptions.alert.missing") }
+          end
+        end
+      end
+
+      context "json request" do
+        context "when subscription is present" do
+          let(:params) { { id: active_subscription.id, format: :json } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(active_subscription)
+            allow(active_subscription).to receive(:not_changeable?).and_return(false)
+            allow(active_subscription).to receive(:cancel).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(active_subscription) }
+            it { expect(active_subscription).to receive(:not_changeable?).and_return(false) }
+            it { expect(active_subscription).to receive(:cancel).and_return(true) }
+          end
+
+          context "assigns" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 200 }
+            it { expect(JSON.parse(response.body)["flash"]).to_not eq Spree.t("subscriptions.alert.missing") }
+          end
+        end
+
+        context "when subscription is not present" do
+          let(:params) { { id: "", format: :json } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(nil)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(nil) }
+          end
+
+          context "assigns" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 422 }
+            it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("subscriptions.alert.missing") }
+          end
+        end
+      end
+    end
+
+    describe "#ensure_not_cancelled" do
+      context "html request" do
+        context "when subscription is cancelled" do
+          let(:params) { { id: cancelled_subscription.id } }
+
+          before do
+            request.env["HTTP_REFERER"] = account_path
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(cancelled_subscription)
+            allow(cancelled_subscription).to receive(:not_changeable?).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(cancelled_subscription) }
+            it { expect(cancelled_subscription).to receive(:not_changeable?).and_return(true) }
+          end
+
+          context "response" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 302 }
+            it { expect(response).to redirect_to account_path }
+            it { expect(flash[:error]).to eq Spree.t("subscriptions.error.not_changeable") }
+          end
+        end
+
+        context "when subscription is not cancelled" do
+          let(:params) { { id: active_subscription.id } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(active_subscription)
+            allow(active_subscription).to receive(:not_changeable?).and_return(false)
+            allow(active_subscription).to receive(:cancel).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(active_subscription) }
+            it { expect(active_subscription).to receive(:not_changeable?).and_return(false) }
+            it { expect(active_subscription).to receive(:cancel).and_return(true) }
+          end
+
+          context "response" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 302 }
+            it { expect(flash[:error]).to be_nil }
+          end
+        end
+      end
+
+      context "json request" do
+        context "when subscription is cancelled" do
+          let(:params) { { id: cancelled_subscription.id, format: :json } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(cancelled_subscription)
+            allow(cancelled_subscription).to receive(:not_changeable?).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(cancelled_subscription) }
+            it { expect(cancelled_subscription).to receive(:not_changeable?).and_return(true) }
+          end
+
+          context "response" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 422 }
+            it { expect(JSON.parse(response.body)["flash"]).to eq Spree.t("subscriptions.error.not_changeable") }
+          end
+        end
+
+        context "when subscription is not cancelled" do
+          let(:params) { { id: active_subscription.id, format: :json } }
+
+          before do
+            allow(Spree::Subscription).to receive(:active).and_return(subscriptions)
+            allow(subscriptions).to receive(:find_by).and_return(active_subscription)
+            allow(active_subscription).to receive(:not_changeable?).and_return(false)
+            allow(active_subscription).to receive(:cancel).and_return(true)
+          end
+
+          context "expects to receive" do
+            after { do_cancel params }
+            it { expect(Spree::Subscription).to receive(:active).and_return(subscriptions) }
+            it { expect(subscriptions).to receive(:find_by).and_return(active_subscription) }
+            it { expect(active_subscription).to receive(:not_changeable?).and_return(false) }
+            it { expect(active_subscription).to receive(:cancel).and_return(true) }
+          end
+
+          context "response" do
+            before { do_cancel params }
+            it { expect(response).to have_http_status 200 }
+            it { expect(JSON.parse(response.body)["flash"]).to_not eq Spree.t("subscriptions.error.not_changeable") }
+          end
+        end
+      end
+    end
   end
 
   describe "edit" do

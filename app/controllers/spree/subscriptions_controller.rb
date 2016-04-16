@@ -78,7 +78,10 @@ module Spree
       def ensure_subscription
         @subscription = Spree::Subscription.active.find_by(id: params[:id])
         unless @subscription
-          redirect_to account_path, error: Spree.t('subscriptions.alert.missing')
+          respond_to do |format|
+            format.html { redirect_to account_path, error: Spree.t('subscriptions.alert.missing') }
+            format.json { render json: { flash: Spree.t("subscriptions.alert.missing") }, status: 422 }
+          end
         end
       end
 
@@ -86,7 +89,7 @@ module Spree
         if @subscription.not_changeable?
           respond_to do |format|
             format.html { redirect_to :back, error: Spree.t("subscriptions.error.not_changeable") }
-            format.js { flash.now[:error] = Spree.t("subscriptions.error.not_changeable"); render partial: "spree/admin/shared/flash_messages" }
+            format.json { render json: { flash: Spree.t("subscriptions.error.not_changeable") }, status: 422 }
           end
         end
       end
