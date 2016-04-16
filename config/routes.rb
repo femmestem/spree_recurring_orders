@@ -1,7 +1,8 @@
 Spree::Core::Engine.routes.draw do
 
   namespace :admin do
-    resources :subscriptions do
+    resources :subscription_frequencies
+    resources :subscriptions, except: [:new, :destroy, :show] do
       member do
         patch :pause
         patch :unpause
@@ -11,7 +12,7 @@ Spree::Core::Engine.routes.draw do
     end
   end
 
-  resources :subscriptions do
+  resources :subscriptions, except: [:new, :destroy, :index, :show] do
     member do
       patch :pause
       patch :unpause

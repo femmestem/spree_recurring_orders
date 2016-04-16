@@ -1,0 +1,34 @@
+<% content_for :page_title do %>
+  <%= plural_resource_name(Spree::SubscriptionFrequency) %>
+<% end %>
+
+<% content_for :page_actions do %>
+  <%= button_link_to Spree.t(:new_subscription_frequency), new_object_url, icon: 'add', class: 'btn-success' %>
+<% end %>
+
+<% if @subscription_frequencies.present? %>
+  <table class="table">
+    <thead>
+      <th><%= Spree::SubscriptionFrequency.human_attribute_name :title %></th>
+      <th><%= Spree::SubscriptionFrequency.human_attribute_name :months_count %></th>
+      <th></th>
+    </thead>
+    <tbody>
+      <% @subscription_frequencies.each do |subscription_frequency| %>
+        <tr>
+          <td><%= subscription_frequency.title.titleize %></td>
+          <td><%= subscription_frequency.months_count %> months</td>
+          <td class="actions actions-2 text-right">
+            <%= link_to_edit subscription_frequency, no_text: true %>
+            <%= link_to_delete subscription_frequency, no_text: true %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="alert alert-info no-objects-found">
+    <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::SubscriptionFrequency)) %>,
+    <%= link_to Spree.t(:add_one), new_object_url %>!
+  </div>
+<% end %>
