@@ -5,6 +5,14 @@ module Spree
 
     include Spree::NumberGenerator
 
+    ACTION_REPRESENTATIONS = {
+                               pause: "Pause",
+                               unpause: "Activate",
+                               cancel: "Cancel"
+                             }
+
+    USER_DEFAULT_CANCELLATION_REASON = "Cancelled By User"
+
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
     belongs_to :parent_order, class_name: "Spree::Order"
@@ -37,10 +45,10 @@ module Spree
     end
     with_options presence: true do
       validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
-      validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
+      validates :cancellation_reasons, :cancelled_at, if: :cancelled
       validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
-    validate :next_occurrence_at_range, if: -> { next_occurrence_at.present? }
+    validate :next_occurrence_at_range, if: :next_occurrence_at
 
     define_model_callbacks :pause, only: [:before]
     before_pause :can_pause?
@@ -204,7 +212,7 @@ module Spree
       end
 
       def set_cancellation_reason
-        self.cancellation_reasons = "Cancelled By User"
+        self.cancellation_reasons = USER_DEFAULT_CANCELLATION_REASON
       end
 
       def can_set_cancellation_reason?
@@ -241,7 +249,7 @@ module Spree
 
       def next_occurrence_at_range
         unless next_occurrence_at >= Time.current.to_date
-          errors[:next_occurrence_at] << "Next Occurrence cannot be not be before today's date"
+          errors.add(:next_occurrence_at, Spree.t('subscriptions.error.out_of_range'))
         end
       end
 

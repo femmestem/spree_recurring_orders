@@ -246,7 +246,7 @@ describe Spree::Subscription, type: :model do
       before { active_subscription.cancel }
       it { expect(active_subscription.cancelled_at).to_not be_nil }
       it { expect(active_subscription.cancellation_reasons).to_not be_nil }
-      it { expect(active_subscription.cancellation_reasons).to eq "Cancelled By User" }
+      it { expect(active_subscription.cancellation_reasons).to eq Spree::Subscription::USER_DEFAULT_CANCELLATION_REASON }
     end
 
     context "#not_changeable?" do
@@ -286,9 +286,9 @@ describe Spree::Subscription, type: :model do
     context "#next_occurrence_at_range" do
       before do
         nil_attributes_subscription.next_occurrence_at = Time.current - 1.day
-        nil_attributes_subscription.save
+        nil_attributes_subscription.send :next_occurrence_at_range
       end
-      it { expect(nil_attributes_subscription.errors[:next_occurrence_at]).to include "Next Occurrence cannot be not be before today's date" }
+      it { expect(nil_attributes_subscription.errors[:next_occurrence_at]).to include Spree.t('subscriptions.error.out_of_range') }
     end
 
     context "#not_cancelled?" do

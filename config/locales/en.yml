@@ -28,6 +28,7 @@ en:
       alert:
         missing: "Subscription does not exist."
       error:
+        out_of_range: "Next Occurrence cannot be not be before today's date"
         not_changeable: "Subscription is either cancelled or all the deliveries are done."
       confirm:
         pause: "Are you sure you want to pause this subscription"

@@ -141,7 +141,7 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
 
       before do
         allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
-        allow(controller).to receive(:permitted_cancel_subscription_attributes).and_return(params[:subscription])
+        allow(controller).to receive(:cancel_subscription_attributes).and_return(params[:subscription])
         allow(active_subscription).to receive(:cancel_with_reason).and_return(true)
         allow(active_subscription).to receive(:cancelled?).and_return(false)
       end
@@ -149,8 +149,8 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
       context "expects to receive" do
         after { do_cancel params }
         it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
-        it { expect(controller).to receive(:permitted_cancel_subscription_attributes).and_call_original }
-        it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :permitted_cancel_subscription_attributes).and_return(true) }
+        it { expect(controller).to receive(:cancel_subscription_attributes).and_call_original }
+        it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :cancel_subscription_attributes).and_return(true) }
         it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
       end
 
@@ -169,7 +169,7 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
       before do
         allow(Spree::Subscription).to receive(:find).and_return(active_subscription)
         allow(active_subscription).to receive(:cancelled?).and_return(false)
-        allow(controller).to receive(:permitted_cancel_subscription_attributes).and_return(params[:subscription])
+        allow(controller).to receive(:cancel_subscription_attributes).and_return(params[:subscription])
         allow(active_subscription).to receive(:cancel_with_reason).and_return(false)
       end
 
@@ -177,8 +177,8 @@ describe Spree::Admin::SubscriptionsController, type: :controller do
         after { do_cancel params }
         it { expect(Spree::Subscription).to receive(:find).with(params[:id].to_s).and_return(active_subscription) }
         it { expect(active_subscription).to receive(:cancelled?).and_return(false) }
-        it { expect(controller).to receive(:permitted_cancel_subscription_attributes).and_call_original }
-        it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :permitted_cancel_subscription_attributes).and_return(false) }
+        it { expect(controller).to receive(:cancel_subscription_attributes).and_call_original }
+        it { expect(active_subscription).to receive(:cancel_with_reason).with(controller.send :cancel_subscription_attributes).and_return(false) }
       end
 
       context "response" do
