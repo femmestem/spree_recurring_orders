@@ -1,20 +1,22 @@
 Spree::Core::Engine.routes.draw do
 
   namespace :admin do
-    resources :subscriptions do
+    resources :subscription_frequencies
+    resources :subscriptions, except: [:new, :destroy, :show] do
       member do
-        patch 'pause'
-        patch 'unpause'
-        get 'cancellation'
-        patch 'cancel'
+        patch :pause
+        patch :unpause
+        get :cancellation
+        patch :cancel
       end
     end
   end
 
-  resources :subscriptions do
+  resources :subscriptions, except: [:new, :destroy, :index, :show] do
     member do
-      patch 'pause'
-      patch 'unpause'
+      patch :pause
+      patch :unpause
+      patch :cancel
     end
   end
 

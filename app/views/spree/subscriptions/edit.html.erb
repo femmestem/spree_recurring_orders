@@ -6,7 +6,7 @@
         <%= render partial: 'pause_links', locals: { btn_class: "btn" } %>
       </span>
       <span>
-        <%= link_to Spree.t(:archive), @subscription, method: :delete, class: 'btn-danger btn', data: { confirm: "Are you sure you want to archive this subscription." } %>
+        <%= link_to Spree.t("subscriptions.admin.cancel"), cancel_subscription_path(@subscription), method: :patch, class: 'btn-danger btn', data: { confirm: Spree.t("subscriptions.confirm.cancel") } %>
       </span>
     <% end %>
   </div>
@@ -18,10 +18,10 @@
   <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @subscription } %>
 
   <%= form_for @subscription do |f| %>
-    <%= render partial: 'payment_info', locals: { f: f } %>
-    <%= render partial: 'item', locals: { f: f } %>
-    <%= render partial: 'addresses', locals: { f: f } %>
     <%= render partial: 'summary', locals: { f: f } %>
+    <%= render partial: 'item', locals: { f: f } %>
+    <%= render partial: 'payment_info', locals: { f: f } %>
+    <%= render partial: 'addresses', locals: { f: f } %>
     <%= render partial: 'orders' %>
     <% unless @subscription.not_changeable? %>
       <div>

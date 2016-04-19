@@ -5,6 +5,14 @@ module Spree
 
     include Spree::NumberGenerator
 
+    ACTION_REPRESENTATIONS = {
+                               pause: "Pause",
+                               unpause: "Activate",
+                               cancel: "Cancel"
+                             }
+
+    USER_DEFAULT_CANCELLATION_REASON = "Cancelled By User"
+
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
     belongs_to :parent_order, class_name: "Spree::Order"
@@ -19,17 +27,14 @@ module Spree
     has_many :complete_orders, -> { complete }, through: :orders_subscriptions, source: :order
 
     self.whitelisted_ransackable_associations = %w( parent_order )
-    self.whitelisted_ransackable_attributes = %w( archived )
 
-    scope :archived, -> { where(archived: true) }
-    scope :unarchived, -> { where(archived: false) }
     scope :paused, -> { where(paused: true) }
     scope :unpaused, -> { where(paused: false) }
     scope :disabled, -> { where(enabled: false) }
     scope :active, -> { where(enabled: true) }
     scope :not_cancelled, -> { where(cancelled_at: nil) }
-    scope :appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
-    scope :eligible_for_subscription, -> { unarchived.unpaused.active.not_cancelled.appropriate_delivery_time }
+    scope :with_appropriate_delivery_time, -> { where("next_occurrence_at <= :current_date", current_date: Time.current) }
+    scope :eligible_for_subscription, -> { unpaused.active.not_cancelled.with_appropriate_delivery_time }
     scope :with_parent_orders, -> (orders) { where(parent_order: orders) }
 
     with_options allow_blank: true do
@@ -40,22 +45,24 @@ module Spree
     end
     with_options presence: true do
       validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
-      validates :cancellation_reasons, :cancelled_at, if: -> { cancelled.present? }
+      validates :cancellation_reasons, :cancelled_at, if: :cancelled
       validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
+    validate :next_occurrence_at_range, if: :next_occurrence_at
 
     define_model_callbacks :pause, only: [:before]
     before_pause :can_pause?
     define_model_callbacks :unpause, only: [:before]
-    before_unpause :can_unpause?
-    define_model_callbacks :archive, only: [:before]
-    before_archive :can_archive?
+    before_unpause :can_unpause?, :set_next_occurrence_at_after_unpause
     define_model_callbacks :process, only: [:after]
     after_process :notify_reoccurrence, if: :reoccurrence_notifiable?
+    define_model_callbacks :cancel, only: [:before]
+    before_cancel :set_cancellation_reason, if: :can_set_cancellation_reason?
 
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
+    before_update :next_occurrence_at_not_changed?, if: :paused?
     after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
 
@@ -94,9 +101,10 @@ module Spree
       end
     end
 
-    def archive
-      run_callbacks :archive do
-        update_attributes(archived: true)
+    def cancel
+      self.cancelled = true
+      run_callbacks :cancel do
+        update_attributes(cancelled_at: Time.current)
       end
     end
 
@@ -105,7 +113,7 @@ module Spree
     end
 
     def not_changeable?
-      cancelled? || !deliveries_remaining? || archived?
+      cancelled? || !deliveries_remaining?
     end
 
     private
@@ -123,19 +131,19 @@ module Spree
       end
 
       def can_set_next_occurrence_at?
-        enabled? && next_occurrence_at.nil? && deliveries_remaining? && !archived?
+        enabled? && next_occurrence_at.nil? && deliveries_remaining?
+      end
+
+      def set_next_occurrence_at_after_unpause
+        self.next_occurrence_at = (Time.current > next_occurrence_at) ? next_occurrence_at + frequency.months_count.month : next_occurrence_at
       end
 
       def can_pause?
-        enabled? && !cancelled? && deliveries_remaining? && !paused? && !archived?
+        enabled? && !cancelled? && deliveries_remaining? && !paused?
       end
 
       def can_unpause?
-        enabled? && !cancelled? && deliveries_remaining? && paused? && !archived?
-      end
-
-      def can_archive?
-        enabled? && !cancelled? && deliveries_remaining?
+        enabled? && !cancelled? && deliveries_remaining? && paused?
       end
 
       def recreate_order
@@ -200,7 +208,15 @@ module Spree
       end
 
       def can_set_cancelled_at?
-        cancelled.present? && !archived? && deliveries_remaining?
+        cancelled.present? && deliveries_remaining?
+      end
+
+      def set_cancellation_reason
+        self.cancellation_reasons = USER_DEFAULT_CANCELLATION_REASON
+      end
+
+      def can_set_cancellation_reason?
+        cancelled.present? && deliveries_remaining? && cancellation_reasons.nil?
       end
 
       def notify_cancellation
@@ -212,7 +228,6 @@ module Spree
       end
 
       def reoccurrence_notifiable?
-
         next_occurrence_at_changed? && !!next_occurrence_at_was
       end
 
@@ -226,6 +241,16 @@ module Spree
 
       def user_notifiable?
         enabled? && enabled_changed?
+      end
+
+      def next_occurrence_at_not_changed?
+        !next_occurrence_at_changed?
+      end
+
+      def next_occurrence_at_range
+        unless next_occurrence_at >= Time.current.to_date
+          errors.add(:next_occurrence_at, Spree.t('subscriptions.error.out_of_range'))
+        end
       end
 
   end

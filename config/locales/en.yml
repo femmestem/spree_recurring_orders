@@ -18,29 +18,31 @@ en:
         success: "Subscription is paused"
         error: "There was some failure in pausing the subscription"
       unpause:
-        success: "Subscription is active"
+        success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
         error: "There was some faiure in activating the subscription"
-      destroy:
-        success: "Subscription was successfully archived"
-        error: "There was some problem in archiving the subscription"
+      cancel:
+        success: "Subscription was successfully cancelled"
+        error: "There was some problem in cancelling the subscription"
       update:
         success: "Subscription was successfully updated"
       alert:
         missing: "Subscription does not exist."
       error:
+        out_of_range: "Next Occurrence cannot be not be before today's date"
         not_changeable: "Subscription is either cancelled or all the deliveries are done."
       confirm:
         pause: "Are you sure you want to pause this subscription"
         activate: "Are you sure you want to activate this subscription"
+        cancel: "Are you sure to cancel this subscription. One cancelled it cannot be started again."
 
     admin:
       subscriptions:
         pause:
           success: "Subscription is currently paused"
-          failure: "There was some failure in pausing subscription"
+          error: "There was some failure in pausing subscription"
         unpause:
-          success: "subscription is currently active"
-          failure: "There was some problem in activating subscription"
+          success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
+          error: "There was some problem in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:

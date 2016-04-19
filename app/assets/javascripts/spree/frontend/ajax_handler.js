@@ -26,8 +26,8 @@ AjaxHandler.prototype.sendRequest = function($target, data) {
     dataType: "JSON",
     method: data.method,
     success: function(response) {
-      if (data.method == "DELETE") {
-        _this.handleDestroySucess($target, response);
+      if (response.method == "CANCEL") {
+        _this.handleCancelSuccess($target, response);
       } else {
         _this.handlePatchSuccess($target, response)
       }
@@ -41,6 +41,12 @@ AjaxHandler.prototype.sendRequest = function($target, data) {
 AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   this.hideFlashDivs();
   $target.data("url", response.url);
+  if (response.url.match("unpause")) {
+    $(".subscription_next_occurrence_at").attr("disabled", "disabled");
+  } else {
+    $(".subscription_next_occurrence_at").val(response.next_occurrence_at);
+    $(".subscription_next_occurrence_at").removeAttr("disabled");
+  }
   $target.toggleClass("btn-success");
   $target.toggleClass("btn-warning");
   $("#success_flash_message").html(response.flash).removeClass("hidden");
@@ -53,10 +59,10 @@ AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   $target.data("confirmation", response.confirmation);
 };
 
-AjaxHandler.prototype.handleDestroySucess = function($target, response) {
+AjaxHandler.prototype.handleCancelSuccess = function($target, response) {
   this.hideFlashDivs();
   $("#success_flash_message").html(response.flash).removeClass("hidden");
-  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Deactivated");
+  $('[data-id="' + response.subscription_id + '"] .subscription-action-links').html("Subscription Cancelled");
 };
 
 AjaxHandler.prototype.handleErrorResponse = function($target, response) {

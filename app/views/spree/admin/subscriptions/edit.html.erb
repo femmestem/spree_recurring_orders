@@ -17,10 +17,10 @@
 <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @subscription } %>
 
 <%= form_for [:admin, @subscription] do |f| %>
-  <%= render partial: 'payment_info', locals: { f: f } %>
-  <%= render partial: 'item', locals: { f: f } %>
-  <%= render partial: 'addresses', locals: { f: f } %>
   <%= render partial: 'summary', locals: { f: f } %>
+  <%= render partial: 'item', locals: { f: f } %>
+  <%= render partial: 'payment_info', locals: { f: f } %>
+  <%= render partial: 'addresses', locals: { f: f } %>
   <%= render partial: 'orders' %>
   <% unless @subscription.not_changeable? %>
     <%= render partial: 'spree/admin/shared/edit_resource_links' %>
