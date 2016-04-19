@@ -157,9 +157,9 @@ describe Spree::Subscription, type: :model do
       it { expect(Spree::Subscription.unpaused).to include active_subscription }
     end
 
-    context ".appropriate_delivery_time" do
-      it { expect(Spree::Subscription.appropriate_delivery_time).to include active_subscription }
-      it { expect(Spree::Subscription.appropriate_delivery_time).to_not include disabled_subscription }
+    context ".with_appropriate_delivery_time" do
+      it { expect(Spree::Subscription.with_appropriate_delivery_time).to include active_subscription }
+      it { expect(Spree::Subscription.with_appropriate_delivery_time).to_not include disabled_subscription }
     end
   end
 
