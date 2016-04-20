@@ -31,7 +31,7 @@ Spree::LineItem.class_eval do
         delivery_number: delivery_number,
         variant: variant,
         quantity: quantity
-       }
+      }
     end
 
     def update_subscription_quantity
