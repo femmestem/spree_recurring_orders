@@ -103,6 +103,7 @@ describe Spree::Subscription, type: :model do
   describe "callbacks" do
     it { is_expected.to callback(:set_next_occurrence_at).before(:validation).if(:can_set_next_occurrence_at?) }
     it { is_expected.to callback(:set_cancelled_at).before(:validation).if(:can_set_cancelled_at?) }
+    it { is_expected.to callback(:update_price_with_variant).before(:update).if(:variant_id_changed?) }
     it { is_expected.to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
     it { is_expected.to callback(:not_cancelled?).before(:update) }
     it { is_expected.to callback(:next_occurrence_at_not_changed?).before(:update).if(:paused?) }

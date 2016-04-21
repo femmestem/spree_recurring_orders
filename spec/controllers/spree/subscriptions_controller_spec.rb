@@ -290,10 +290,17 @@ describe Spree::SubscriptionsController, type: :controller do
         end
 
         describe "response" do
-          before { do_update(params) }
-          it { expect(response).to have_http_status 302 }
-          it { expect(response).to redirect_to edit_subscription_path(active_subscription) }
-          it { expect(flash[:success]).to eq Spree.t("subscriptions.update.success") }
+          context 'when request.json?' do
+            before { do_update(params.merge(format: :json)) }
+            it { expect(response).to have_http_status 200 }
+            it { expect(response.body['subscription']).not_to be_nil }
+          end
+          context 'when request.html?' do
+            before { do_update(params) }
+            it { expect(response).to have_http_status 302 }
+            it { expect(response).to redirect_to edit_subscription_path(active_subscription) }
+            it { expect(flash[:success]).to eq Spree.t("subscriptions.update.success") }
+          end
         end
       end
 
@@ -316,9 +323,15 @@ describe Spree::SubscriptionsController, type: :controller do
         end
 
         describe "response" do
-          before { do_update(params) }
-          it { expect(response).to have_http_status 200 }
-          it { expect(response).to render_template :edit }
+          context 'when request.json?' do
+            before { do_update(params.merge(format: :json)) }
+            it { expect(response.body['errors']).not_to be_nil }
+          end
+          context 'when request.html?' do
+            before { do_update(params) }
+            it { expect(response).to have_http_status 200 }
+            it { expect(response).to render_template :edit }
+          end
         end
       end
     end

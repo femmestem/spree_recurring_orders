@@ -9,9 +9,15 @@ module Spree
 
     def update
       if @subscription.update(subscription_attributes)
-        redirect_to edit_subscription_path(@subscription), success: t('.success')
+        respond_to do |format|
+          format.html { redirect_to edit_subscription_path(@subscription), success: t('.success') }
+          format.json { render json: { subscription: { price: @subscription.price, id: @subscription.id } } }
+        end
       else
-        render :edit
+        respond_to do |format|
+          format.html { render :edit }
+          format.json { render json: { errors: @subscription.errors.full_messages.to_sentence } }
+        end
       end
     end
 
@@ -70,7 +76,7 @@ module Spree
 
       def subscription_attributes
         params.require(:subscription).permit(:quantity, :next_occurrence_at, :delivery_number,
-         :subscription_frequency_id, :prior_notification_days_gap, :ship_address_attributes, :bill_address_attributes)
+         :subscription_frequency_id, :variant_id, :prior_notification_days_gap, :ship_address_attributes, :bill_address_attributes)
       end
 
       def ensure_subscription

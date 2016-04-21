@@ -1,5 +1,6 @@
-function AjaxHandler(targets) {
+function AjaxHandler(targets, lineItemsTable) {
   this.targets = targets;
+  this.lineItemsTable = lineItemsTable;
 }
 
 AjaxHandler.prototype.init = function() {
@@ -8,6 +9,7 @@ AjaxHandler.prototype.init = function() {
 
 AjaxHandler.prototype.bindEvents = function() {
   var _this = this;
+
   $.each(_this.targets, function(index, target) {
     var $target = $(target);
     $target.unbind('click').on('click', function() {
@@ -16,6 +18,35 @@ AjaxHandler.prototype.bindEvents = function() {
         _this.sendRequest($target, data);
       }
     });
+  });
+
+  _this.lineItemsTable.on('change', '#subscription_variant_id', function(){
+    _this.updateVariant(this);
+  });
+
+};
+
+AjaxHandler.prototype.updateVariant = function(variant_select) {
+  var _this = this;
+  $.ajax({
+    url: '/subscriptions/' + $(variant_select).data('subscription-id'),
+    dataType: "JSON",
+    method: 'PUT',
+    data: {
+      id: $(variant_select).data('subscription-id'),
+      subscription: {
+        variant_id: $(variant_select).children(':selected').val()
+      }
+    },
+    success: function(response) {
+      var subscription = response['subscription'];
+      var $lineItemPrice = _this.lineItemsTable.find('td.line-item-price')
+        .find('[data-subscription-id="'+ subscription['id'] +'"]');
+      $lineItemPrice.html(subscription['price']);
+    },
+    error: function(response) {
+      show_flash('danger', 'Subscription variant was not updated.');
+    }
   });
 };
 
@@ -78,6 +109,6 @@ AjaxHandler.prototype.hideFlashDivs = function() {
 };
 
 $(function (){
-  var ajaxHandler = new AjaxHandler($('.ajax_handler'));
+  var ajaxHandler = new AjaxHandler($('.ajax_handler'), $('table.line-items'));
   ajaxHandler.init();
 });

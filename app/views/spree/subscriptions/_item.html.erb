@@ -24,10 +24,10 @@
             <%= mini_image(@subscription.variant) %>
           </td>
           <td class="line-item-name text-center">
-            <%= @subscription.variant.name %><br><%= "(" + variant_options(@subscription.variant) + ")" unless @subscription.variant.option_values.empty? %>
+            <%= collection_select(:subscription, :variant_id, @subscription.variant.product.variants_including_master, :id, :name, {}, data: { subscription_id: @subscription.id }) %>
           </td>
           <td class="line-item-price text-center">
-            <div data-hook="admin_subscription_price_form">
+            <div data-hook="admin_subscription_price_form" data-subscription-id="<%= @subscription.id %>">
               <%= @subscription.price %>
             </div>
           </td>

@@ -62,6 +62,7 @@ module Spree
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
+    before_update :update_price_with_variant, if: :variant_id_changed?
     before_update :next_occurrence_at_not_changed?, if: :paused?
     after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
