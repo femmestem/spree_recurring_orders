@@ -130,12 +130,16 @@ module Spree
       end
       
       def update_price
-        variant_was = Spree::Variant.find_by(id: variant_id_was)
-        if variant.present? && variant_was.try(:product_id) == variant.product_id
+        if valid_variant?
           self.price = variant.price
         else
-          self.errors.add(:variant_id, "does not exist for current product.")
+          self.errors.add(:variant_id, :does_not_belong_to_product)
         end
+      end
+
+      def valid_variant?
+        variant_was = Spree::Variant.find_by(id: variant_id_was)
+        variant.present? && variant_was.try(:product_id) == variant.product_id
       end
 
       def set_cancelled_at

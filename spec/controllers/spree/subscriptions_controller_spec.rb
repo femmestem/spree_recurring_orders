@@ -325,6 +325,7 @@ describe Spree::SubscriptionsController, type: :controller do
         describe "response" do
           context 'when request.json?' do
             before { do_update(params.merge(format: :json)) }
+            it { expect(response).to have_http_status 422 }
             it { expect(response.body['errors']).not_to be_nil }
           end
           context 'when request.html?' do
