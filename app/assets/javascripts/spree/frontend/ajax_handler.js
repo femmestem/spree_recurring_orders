@@ -45,7 +45,8 @@ AjaxHandler.prototype.updateVariant = function(variant_select) {
       $lineItemPrice.html(subscription['price']);
     },
     error: function(response) {
-      show_flash('danger', 'Subscription variant was not updated.');
+      errors = JSON.parse(response.responseText).errors
+      show_flash('danger', errors);
     }
   });
 };

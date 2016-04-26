@@ -62,7 +62,7 @@ module Spree
     before_validation :set_next_occurrence_at, if: :can_set_next_occurrence_at?
     before_validation :set_cancelled_at, if: :can_set_cancelled_at?
     before_update :not_cancelled?
-    before_update :update_price_with_variant, if: :variant_id_changed?
+    before_validation :update_price, on: :update, if: :variant_id_changed?
     before_update :next_occurrence_at_not_changed?, if: :paused?
     after_update :notify_user, if: :user_notifiable?
     after_update :notify_cancellation, if: :cancellation_notifiable?
@@ -127,6 +127,15 @@ module Spree
 
       def eligible_for_prior_notification?
         (next_occurrence_at.to_date - Time.current.to_date).round == prior_notification_days_gap
+      end
+      
+      def update_price
+        variant_was = Spree::Variant.find_by(id: variant_id_was)
+        if variant.present? && variant_was.try(:product_id) == variant.product_id
+          self.price = variant.price
+        else
+          self.errors.add(:variant_id, "does not exist for current product.")
+        end
       end
 
       def set_cancelled_at

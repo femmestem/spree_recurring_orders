@@ -11,12 +11,12 @@ module Spree
       if @subscription.update(subscription_attributes)
         respond_to do |format|
           format.html { redirect_to edit_subscription_path(@subscription), success: t('.success') }
-          format.json { render json: { subscription: { price: @subscription.price, id: @subscription.id } } }
+          format.json { render json: { subscription: { price: @subscription.price, id: @subscription.id } }, status: 200 }
         end
       else
         respond_to do |format|
           format.html { render :edit }
-          format.json { render json: { errors: @subscription.errors.full_messages.to_sentence } }
+          format.json { render json: { errors: @subscription.errors.full_messages.to_sentence }, status: 422 }
         end
       end
     end
