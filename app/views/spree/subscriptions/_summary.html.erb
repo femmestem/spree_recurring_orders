@@ -44,6 +44,19 @@
         </td>
       </tr>
       <tr>
+        <td>
+          <strong><%= Spree.t(:prior_notification_days_gap) %></strong>
+        </td>
+        <td>
+          <div data-hook="prior_notification_days_gap">
+            <%= f.field_container :prior_notification_days_gap, class: ["form-group"] do %>
+              <%= number_field :subscription, :prior_notification_days_gap, class: "form-control", disabled: @subscription.not_changeable? %>
+              <%= f.error_message_on :prior_notification_days_gap %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr>
         <td><strong><%= Spree.t(:deliveries_left) %></strong></td>
         <td><%= @subscription.number_of_deliveries_left %></td>
       </tr>
