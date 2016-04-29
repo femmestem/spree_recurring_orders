@@ -1,0 +1,18 @@
+<p>Hi <%= @subscription.parent_order.email %></p>
+<div>
+  <p>
+    <%= Spree.t('subscription_notifier.notify_for_next_delivery.order_details') %>
+  </p>
+  <% variant = @subscription.variant %>
+  <b>PRODUCT CODE</b>: <%= variant.sku %><br>
+  <b>SUBSCRIBED PRODUCT</b>: <%= raw( variant.product.name) %><br>
+  <b>SELECTION</b>: <%= raw( variant.options_text) %><br>
+  <b>QUANTITY</b>: <%= @subscription.quantity %><br>
+  <b><%= Spree.t(:item_price) %></b>: <%= @subscription.price %><br>
+</div>
+
+<p>
+  Your <b>next order</b> is going to be delivered in <b><%= @subscription.prior_notification_days_gap %></b> days.
+  Your <%= @subscription.frequency.title.capitalize %>(every <%= @subscription.frequency.months_count.to_s %>) subscription has <%= @subscription.number_of_deliveries_left %> deliveries left.
+</p>
+<p>Regards</p>

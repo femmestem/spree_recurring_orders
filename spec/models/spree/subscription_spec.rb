@@ -491,6 +491,22 @@ describe Spree::Subscription, type: :model do
       context "#notify_user" do
         it { expect { active_subscription.send :notify_user }.to change { ActionMailer::Base.deliveries.count }.by 1 }
       end
+
+      context "#send_prior_notification" do
+        before do
+          active_subscription.next_occurrence_at = just_passed_time + 3.days
+          active_subscription.prior_notification_days_gap = active_subscription.next_occurrence_at.to_date - Time.current.to_date
+        end
+        context "is eligible_for_prior_notification" do
+          it { expect { active_subscription.send :send_prior_notification }.to change { ActionMailer::Base.deliveries.count }.by 1 }
+        end
+        context "is not eligible_for_prior_notification" do
+          before do
+            active_subscription.prior_notification_days_gap = 1.day
+          end
+          it { expect { active_subscription.send :send_prior_notification }.to change { ActionMailer::Base.deliveries.count }.by 0 }
+        end
+      end
     end
   end
 
