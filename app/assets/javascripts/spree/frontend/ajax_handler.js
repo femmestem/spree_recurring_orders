@@ -43,9 +43,10 @@ AjaxHandler.prototype.updateVariant = function(variant_select) {
       var $lineItemPrice = _this.lineItemsTable.find('td.line-item-price')
         .find('[data-subscription-id="'+ subscription['id'] +'"]');
       $lineItemPrice.html(subscription['price']);
+      show_flash('success', 'Variant has been updated.');
     },
     error: function(response) {
-      errors = JSON.parse(response.responseText).errors
+      errors = JSON.parse(response.responseText).errors;
       show_flash('danger', errors);
     }
   });
@@ -69,6 +70,15 @@ AjaxHandler.prototype.sendRequest = function($target, data) {
     }
   });
 };
+
+show_flash = function(type, message) {
+  var flash_div = $('.flash.' + type);
+  if (flash_div.length == 0) {
+    flash_div = $('<div class="alert alert-' + type + '" />');
+    $('#content').prepend(flash_div);
+  }
+  flash_div.html(message).show().delay(5000).slideUp();
+}
 
 AjaxHandler.prototype.handlePatchSuccess = function($target, response) {
   this.hideFlashDivs();

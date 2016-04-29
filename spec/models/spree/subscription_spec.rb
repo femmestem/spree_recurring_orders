@@ -183,13 +183,13 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#update_price" do
-      let(:variant1) { create(:base_variant, product_id: 1) }
-      let(:variant2) { create(:base_variant, product_id: 1) }
-      let(:variant3) { create(:base_variant, product_id: 2) }
+      let(:subscription_variant) { create(:base_variant, product_id: 1) }
+      let(:subscription_variant_with_same_product) { create(:base_variant, product_id: 1) }
+      let(:subscription_variant_with_different_product) { create(:base_variant, product_id: 2) }
 
       before do
-        active_subscription.update_column(:variant_id, variant2.id)
-        active_subscription.variant_id = variant1.id
+        active_subscription.update_column(:variant_id, subscription_variant_with_same_product.id)
+        active_subscription.variant_id = subscription_variant.id
         active_subscription.send :update_price
       end
       context "when changed variant is valid" do
@@ -198,7 +198,7 @@ describe Spree::Subscription, type: :model do
 
       context "when changed variant is not valid" do
         before do
-          active_subscription.variant_id = variant3.id
+          active_subscription.variant_id = subscription_variant_with_different_product.id
           active_subscription.send :update_price
         end
         it { expect(active_subscription.errors.present?).to eq true }
