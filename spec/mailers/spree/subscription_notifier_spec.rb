@@ -10,7 +10,7 @@ RSpec.describe Spree::SubscriptionNotifier do
 
   describe 'notify_for_next_delivery' do
 
-    let(:mail) { described_class.notify_for_next_delivery(active_subscription).deliver_now }
+    let(:mail) { described_class.notify_for_next_delivery(active_subscription) }
     before do
       allow(active_subscription).to receive(:parent_order).and_return(order)
       allow(active_subscription).to receive(:frequency).and_return(subscription_frequency)

@@ -119,7 +119,7 @@ module Spree
     def send_prior_notification
       if eligible_for_prior_notification?
         SubscriptionNotifier.notify_for_next_delivery(self).deliver_later
-      end 
+      end
     end
 
     private
@@ -127,7 +127,7 @@ module Spree
       def eligible_for_prior_notification?
         (next_occurrence_at.to_date - Time.current.to_date).round == prior_notification_days_gap
       end
-      
+
       def set_cancelled_at
         self.cancelled_at = Time.current
       end
