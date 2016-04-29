@@ -103,6 +103,7 @@ describe Spree::Subscription, type: :model do
   describe "callbacks" do
     it { is_expected.to callback(:set_next_occurrence_at).before(:validation).if(:can_set_next_occurrence_at?) }
     it { is_expected.to callback(:set_cancelled_at).before(:validation).if(:can_set_cancelled_at?) }
+    it { is_expected.to callback(:update_price).before(:validation).on(:update).if(:variant_id_changed?) }
     it { is_expected.to callback(:notify_cancellation).after(:update).if(:cancellation_notifiable?) }
     it { is_expected.to callback(:not_cancelled?).before(:update) }
     it { is_expected.to callback(:next_occurrence_at_not_changed?).before(:update).if(:paused?) }
@@ -179,6 +180,29 @@ describe Spree::Subscription, type: :model do
     context "#set_cancelled_at" do
       before { nil_attributes_subscription.send :set_cancelled_at }
       it { expect(nil_attributes_subscription.cancelled_at).to_not be_nil }
+    end
+
+    context "#update_price" do
+      let(:subscription_variant) { create(:base_variant, product_id: 1) }
+      let(:subscription_variant_with_same_product) { create(:base_variant, product_id: 1) }
+      let(:subscription_variant_with_different_product) { create(:base_variant, product_id: 2) }
+
+      before do
+        active_subscription.update_column(:variant_id, subscription_variant_with_same_product.id)
+        active_subscription.variant_id = subscription_variant.id
+        active_subscription.send :update_price
+      end
+      context "when changed variant is valid" do
+        it { expect(active_subscription.price).to eq active_subscription.variant.price }
+      end
+
+      context "when changed variant is not valid" do
+        before do
+          active_subscription.variant_id = subscription_variant_with_different_product.id
+          active_subscription.send :update_price
+        end
+        it { expect(active_subscription.errors.present?).to eq true }
+      end
     end
 
     context "#set_next_occurrence_at" do
