@@ -9,7 +9,7 @@ Spree::Admin::PaymentsController.class_eval do
     end
 
     def available_payment_methods
-      @order.subscriptions.any? ? Spree::Gateway.active.available(:backend) : Spree::PaymentMethod.available(:backend)
+      @order.subscriptions.any? ? Spree::Gateway.available_on_back_end : Spree::PaymentMethod.available_on_back_end
     end
 
 end
