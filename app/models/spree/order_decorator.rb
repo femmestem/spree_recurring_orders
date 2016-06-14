@@ -12,9 +12,9 @@ Spree::Order.class_eval do
 
   def available_payment_methods
     if subscriptions.exists?
-      @available_payment_methods = Spree::Gateway.active
+      @available_payment_methods = Spree::Gateway.active.available_on_front_end
     else
-      @available_payment_methods ||= Spree::PaymentMethod.active
+      @available_payment_methods ||= Spree::PaymentMethod.active.available_on_front_end
     end
   end
 
