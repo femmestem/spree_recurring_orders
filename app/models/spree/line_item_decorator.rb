@@ -18,6 +18,18 @@ Spree::LineItem.class_eval do
     }
   end
 
+  def subscribable?
+    subscribe.present? && subscribe != "0"
+  end
+
+  def subscription?
+    !!subscription
+  end
+
+  def subscription
+    order.subscriptions.find_by(variant: variant)
+  end
+
   private
 
     def create_subscription!
@@ -40,18 +52,6 @@ Spree::LineItem.class_eval do
 
     def update_subscription_attributes
       subscription.update(updatable_subscription_attributes)
-    end
-
-    def subscribable?
-      subscribe.present? && subscribe != "0"
-    end
-
-    def subscription?
-      !!subscription
-    end
-
-    def subscription
-      order.subscriptions.find_by(variant: variant)
     end
 
     def destroy_associated_subscription!
