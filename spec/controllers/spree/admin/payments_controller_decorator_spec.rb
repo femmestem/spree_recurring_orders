@@ -29,8 +29,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
       context "when subscriptions are present" do
         before do
           allow(subscriptions).to receive(:any?).and_return(true)
-          allow(Spree::Gateway).to receive(:active).and_return(payment_methods_without_check)
-          allow(payment_methods_without_check).to receive(:available).and_return(payment_methods_without_check)
+          allow(Spree::Gateway).to receive(:available_on_back_end).and_return(payment_methods_without_check)
         end
 
         context "expects to receive" do
@@ -39,8 +38,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
           it { expect(orders).to receive(:find).and_return(order) }
           it { expect(order).to receive(:subscriptions).and_return(subscriptions) }
           it { expect(subscriptions).to receive(:any?).and_return(true) }
-          it { expect(Spree::Gateway).to receive(:active).and_return(payment_methods_without_check) }
-          it { expect(payment_methods_without_check).to receive(:available).with(:backend).and_return(payment_methods_without_check) }
+          it { expect(Spree::Gateway).to receive(:available_on_back_end).and_return(payment_methods_without_check) }
         end
 
         context "assigns" do
@@ -52,7 +50,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
       context "when subscriptions are not present" do
         before do
           allow(subscriptions).to receive(:any?).and_return(false)
-          allow(Spree::PaymentMethod).to receive(:available).and_return(payment_methods)
+          allow(Spree::PaymentMethod).to receive(:available_on_back_end).and_return(payment_methods)
         end
 
         context "expects to receive" do
@@ -61,7 +59,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
           it { expect(orders).to receive(:find).and_return(order) }
           it { expect(order).to receive(:subscriptions).and_return(subscriptions) }
           it { expect(subscriptions).to receive(:any?).and_return(false) }
-          it { expect(Spree::PaymentMethod).to receive(:available).with(:backend).and_return(payment_methods) }
+          it { expect(Spree::PaymentMethod).to receive(:available_on_back_end).and_return(payment_methods) }
         end
 
         context "assigns" do
@@ -75,8 +73,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
       context "when subscriptions are present" do
         before do
           allow(subscriptions).to receive(:any?).and_return(true)
-          allow(Spree::Gateway).to receive(:active).and_return(payment_methods_without_check)
-          allow(payment_methods_without_check).to receive(:available).and_return(payment_methods_without_check)
+          allow(Spree::Gateway).to receive(:available_on_back_end).and_return(payment_methods_without_check)
         end
 
         context "expects to receive" do
@@ -85,8 +82,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
           it { expect(orders).to receive(:find).and_return(order) }
           it { expect(order).to receive(:subscriptions).and_return(subscriptions) }
           it { expect(subscriptions).to receive(:any?).and_return(true) }
-          it { expect(Spree::Gateway).to receive(:active).and_return(payment_methods_without_check) }
-          it { expect(payment_methods_without_check).to receive(:available).with(:backend).and_return(payment_methods_without_check) }
+          it { expect(Spree::Gateway).to receive(:available_on_back_end).and_return(payment_methods_without_check) }
         end
 
         context "returns" do
@@ -99,7 +95,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
       context "when subscriptions are not present" do
         before do
           allow(subscriptions).to receive(:any?).and_return(false)
-          allow(Spree::PaymentMethod).to receive(:available).and_return(payment_methods)
+          allow(Spree::PaymentMethod).to receive(:available_on_back_end).and_return(payment_methods)
         end
 
         context "expects to receive" do
@@ -108,7 +104,7 @@ describe Spree::Admin::PaymentsController, type: :controller do
           it { expect(orders).to receive(:find).and_return(order) }
           it { expect(order).to receive(:subscriptions).and_return(subscriptions) }
           it { expect(subscriptions).to receive(:any?).and_return(false) }
-          it { expect(Spree::PaymentMethod).to receive(:available).with(:backend).and_return(payment_methods) }
+          it { expect(Spree::PaymentMethod).to receive(:available_on_back_end).and_return(payment_methods) }
         end
 
         context "returns" do
