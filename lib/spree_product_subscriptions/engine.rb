@@ -1,8 +1,8 @@
-module SpreeItemsSubscriptions
+module SpreeProductSubscriptions
   class Engine < Rails::Engine
     require 'spree/core'
     isolate_namespace Spree
-    engine_name 'spree_items_subscriptions'
+    engine_name 'spree_product_subscriptions'
 
     # use rspec for tests
     config.generators do |g|
