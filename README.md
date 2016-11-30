@@ -55,6 +55,7 @@ Working
   ```
   This will inform users that they have a subscription that is coming up in 'x' days. The number of days can be changed on subscription edit page.
 
+**Here is a detailed article with screenshot http://vinsol.com/spreecommerce-subscription**
 Testing
 -------
 
