@@ -1,14 +1,14 @@
 # encoding: UTF-8
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
-  s.name        = 'spree_product_subscriptions'
+  s.name        = 'spree_recurring_orders'
   s.version     = '3.1.0'
   s.summary     = 'Add gem summary here'
   s.description = 'Add (optional) gem description here'
   s.required_ruby_version = '>= 2.1.0'
 
-  s.author    = 'Vinay'
-  s.email     = 'vinay@vinsol.com'
+  s.author    = 'Christine'
+  s.email     = 'christine@christine.codes'
   # s.homepage  = 'http://www.spreecommerce.com'
 
   #s.files       = `git ls-files`.split("\n")
