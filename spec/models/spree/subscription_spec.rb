@@ -8,7 +8,6 @@ describe Spree::Subscription, type: :model do
   let(:nil_attributes_subscription) { build(:nil_attributes_subscription) }
   let(:active_subscription) { create(:valid_subscription, enabled: true, parent_order: order, next_occurrence_at: just_passed_time) }
   let(:disabled_subscription) { create(:valid_subscription, enabled: false) }
-  let(:completed_subscription) { create(:valid_subscription, enabled: true, delivery_number: 1, next_occurrence_at: just_passed_time) }
   let(:paused_subscription) { create(:valid_subscription, paused: true, enabled: true, next_occurrence_at: just_passed_time) }
   let(:cancelled_subscription) { create(:valid_subscription, cancelled_at: Time.current, cancellation_reasons: "Test") }
   let(:subscription_with_recreated_orders) { create(:valid_subscription, orders: orders, next_occurrence_at: just_passed_time) }
@@ -16,7 +15,6 @@ describe Spree::Subscription, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:quantity) }
-    it { is_expected.to validate_presence_of(:delivery_number) }
     it { is_expected.to validate_presence_of(:price) }
     context "validates presence of number" do
       context "when number is absent" do
@@ -83,7 +81,6 @@ describe Spree::Subscription, type: :model do
     end
     it { is_expected.to validate_numericality_of(:price).is_greater_than_or_equal_to(0).allow_nil }
     it { is_expected.to validate_numericality_of(:quantity).is_greater_than(0).only_integer.allow_nil }
-    it { is_expected.to validate_numericality_of(:delivery_number).is_greater_than_or_equal_to(subject.send :recurring_orders_size).only_integer.allow_nil }
   end
 
   describe "associations" do
@@ -214,10 +211,6 @@ describe Spree::Subscription, type: :model do
       context "when deliveries remaining" do
         it { expect(active_subscription.send :next_occurrence_at_value).to_not eq active_subscription.next_occurrence_at }
       end
-
-      context "when deliveries are not remaining" do
-        it { expect(completed_subscription.send :next_occurrence_at_value).to eq completed_subscription.next_occurrence_at }
-      end
     end
 
     context "#set_cancellation_reason" do
@@ -277,7 +270,6 @@ describe Spree::Subscription, type: :model do
       it { expect(active_subscription).to_not be_not_changeable }
       it { expect(paused_subscription).to_not be_not_changeable }
       it { expect(cancelled_subscription).to be_not_changeable }
-      it { expect(completed_subscription).to be_not_changeable }
     end
 
     context "#can_pause?" do
@@ -293,7 +285,6 @@ describe Spree::Subscription, type: :model do
       it { expect(paused_subscription.send :can_unpause?).to eq true }
       it { expect(cancelled_subscription.send :can_unpause?).to eq false }
       it { expect(disabled_subscription.send :can_unpause?).to eq false }
-      it { expect(completed_subscription.send :can_unpause?).to eq false }
     end
 
     context "#next_occurrence_at_not_changed?" do
@@ -358,16 +349,6 @@ describe Spree::Subscription, type: :model do
       end
     end
 
-    context "#deliveries_remaining?" do
-      it { expect(subscription_with_recreated_orders.deliveries_remaining?).to eq true }
-      it { expect(active_subscription.deliveries_remaining?).to eq true }
-    end
-
-    context "#number_of_deliveries_left" do
-      let(:completed_order) { create(:completed_order_with_totals) }
-      it { expect { active_subscription.complete_orders << completed_order }.to change { active_subscription.number_of_deliveries_left }.by -1 }
-    end
-
     context "#cancellation_notifiable?" do
       context "when cancelled at present and not changed" do
         it { expect(cancelled_subscription.send :cancellation_notifiable?).to eq false }
@@ -381,11 +362,6 @@ describe Spree::Subscription, type: :model do
         before { active_subscription.cancelled_at = Time.current }
         it { expect(active_subscription.send :cancellation_notifiable?).to eq true }
       end
-    end
-
-    context "#recurring_orders_size" do
-      let(:completed_order) { create(:completed_order_with_totals) }
-      it { expect { active_subscription.complete_orders << completed_order }.to change { active_subscription.send :recurring_orders_size }.by 1 }
     end
 
     context "#user_notifiable?" do
@@ -484,18 +460,6 @@ describe Spree::Subscription, type: :model do
     end
 
     context "#process" do
-      context "when no deliveries remaining" do
-        before do
-          active_subscription.delivery_number = 1
-          active_subscription.process
-        end
-        it { expect(active_subscription.reload.complete_orders.count).to eq 0 }
-        it { expect(active_subscription).to_not be_next_occurrence_at_changed }
-      end
-
-      context "when deliveries_remaining" do
-        it { expect { active_subscription.process }.to change { active_subscription.complete_orders.count }.by 1 }
-      end
     end
 
     context "mail sending methods" do

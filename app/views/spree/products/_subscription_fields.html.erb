@@ -8,12 +8,6 @@
     </span>
     <br>
     <span>
-      <%= label_tag :subscription, Spree.t(:total_deliveries) %><span class="required">*</span>
-      <br>
-      <%= number_field :subscription, :delivery_number, class: "form-control", min: 1, value: 1 %>
-    </span>
-    <br>
-    <span>
       <%= label_tag :subscription, Spree.t(:quantity) %><span class="required">*</span>
       <br>
       <%= number_field_tag :quantity, 1, class: 'title form-control', min: 1 %>

@@ -40,11 +40,10 @@ module Spree
     with_options allow_blank: true do
       validates :price, numericality: { greater_than_or_equal_to: 0 }
       validates :quantity, numericality: { greater_than: 0, only_integer: true }
-      validates :delivery_number, numericality: { greater_than_or_equal_to: :recurring_orders_size, only_integer: true }
       validates :parent_order, uniqueness: { scope: :variant }
     end
     with_options presence: true do
-      validates :quantity, :delivery_number, :price, :number, :variant, :parent_order, :frequency
+      validates :quantity, :price, :number, :variant, :parent_order, :frequency
       validates :cancellation_reasons, :cancelled_at, if: :cancelled
       validates :ship_address, :bill_address, :next_occurrence_at, :source, if: :enabled?
     end
@@ -68,7 +67,7 @@ module Spree
     after_update :notify_cancellation, if: :cancellation_notifiable?
 
     def process
-      new_order = recreate_order if deliveries_remaining?
+      new_order = recreate_order
       update(next_occurrence_at: next_occurrence_at_value) if new_order.try :completed?
     end
 
@@ -79,10 +78,6 @@ module Spree
 
     def cancelled?
       !!cancelled_at_was
-    end
-
-    def number_of_deliveries_left
-      delivery_number.to_i - complete_orders.size - 1
     end
 
     def pause
@@ -104,12 +99,8 @@ module Spree
       end
     end
 
-    def deliveries_remaining?
-      number_of_deliveries_left > 0
-    end
-
     def not_changeable?
-      cancelled? || !deliveries_remaining?
+      cancelled?
     end
 
     def send_prior_notification
@@ -123,7 +114,7 @@ module Spree
       def eligible_for_prior_notification?
         (next_occurrence_at.to_date - Time.current.to_date).round == prior_notification_days_gap
       end
-      
+
       def update_price
         if valid_variant?
           self.price = variant.price
@@ -146,11 +137,11 @@ module Spree
       end
 
       def next_occurrence_at_value
-        deliveries_remaining? ? Time.current + frequency.months_count.month : next_occurrence_at
+        Time.current + frequency.months_count.month
       end
 
       def can_set_next_occurrence_at?
-        enabled? && next_occurrence_at.nil? && deliveries_remaining?
+        enabled? && next_occurrence_at.nil?
       end
 
       def set_next_occurrence_at_after_unpause
@@ -158,11 +149,11 @@ module Spree
       end
 
       def can_pause?
-        enabled? && !cancelled? && deliveries_remaining? && !paused?
+        enabled? && !cancelled? && !paused?
       end
 
       def can_unpause?
-        enabled? && !cancelled? && deliveries_remaining? && paused?
+        enabled? && !cancelled? && paused?
       end
 
       def recreate_order
@@ -227,7 +218,7 @@ module Spree
       end
 
       def can_set_cancelled_at?
-        cancelled.present? && deliveries_remaining?
+        cancelled.present?
       end
 
       def set_cancellation_reason
@@ -235,7 +226,7 @@ module Spree
       end
 
       def can_set_cancellation_reason?
-        cancelled.present? && deliveries_remaining? && cancellation_reasons.nil?
+        cancelled.present? && cancellation_reasons.nil?
       end
 
       def notify_cancellation
@@ -252,10 +243,6 @@ module Spree
 
       def notify_reoccurrence
         SubscriptionNotifier.notify_reoccurrence(self).deliver_later
-      end
-
-      def recurring_orders_size
-        complete_orders.size + 1
       end
 
       def user_notifiable?
