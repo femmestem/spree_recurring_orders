@@ -1,33 +1,33 @@
-Spree Product Subscriptions
+Spree Recurring Orders
 ===========================
 
-Spree Product Subscriptions is an extension to let users have time interval based subscription of products in a spree application.
+Spree Recurring Orders is an extension to let users have time interval based subscription of products in a spree application.
 
 * This extension allows the admin to create a subscribable product on the Admin end.
 
 * This product can then be bought one-time or as a subscription.
 
-* Once subscribed, subscription orders will automatically be created for the user at the selected time interval.
+* Once subscribed, subscription orders will automatically be created for the customer at the selected time interval until cancelled by the customer or admin.
 
 Installation
 ------------
 
-Add spree_product_subscriptions to your Gemfile:
+Add spree_recurring_orders to your Gemfile:
 
 ```ruby
-gem 'spree_product_subscriptions', github: 'vinsol-spree-contrib/spree_product_subscriptions'
+gem 'spree_recurring_orders', github: 'femmestem/spree_recurring_orders'
 ```
 
 Bundle your dependencies and run the installation generator:
 
 ```shell
 bundle
-bundle exec rails g spree_product_subscriptions:install
+bundle exec rails g spree_recurring_orders:install
 ```
 
 You can also seed the default data with:
 ```shell
-bundle exec rails g spree_product_subscriptions:seed
+bundle exec rails g spree_recurring_orders:seed
 ```
 
 Working
@@ -37,9 +37,9 @@ Working
 
 * Subscription frequencies are created by default when you seed data. You can also add subscription frequencies through `Admin -> Configurations -> Subscription Frequencies -> New` page.
 
-* When user is purchasing a subscribable product, he gets an option to make it a 'One Time Order' or a 'Subscription Order'.
+* When purchasing a subscribable product, user is given an option to make it a 'One Time Order' or a 'Subscription Order'.
 
-* When making a 'Subscription Order', the user will have to choose Delivery Interval, Total Deliveries, and Quantity. The first order will be made on checkout and remaining orders will automatically be created for the user at the selected time intervals.
+* When making a 'Subscription Order', the user will have to choose Quantity and Delivery Interval. The first order will be made on checkout and recurring orders will automatically be created for the user at the selected time intervals.
 
 * The users can check their subscriptions on the 'My Account' page. They can update subscription info, pause or cancel their subscriptions via the `Subscription -> Edit` page.
 
@@ -55,7 +55,6 @@ Working
   ```
   This will inform users that they have a subscription that is coming up in 'x' days. The number of days can be changed on subscription edit page.
 
-**Here is a detailed article with screenshot http://vinsol.com/spreecommerce-subscription**
 Testing
 -------
 
@@ -71,11 +70,12 @@ When testing your applications integration with this extension you may use it's 
 Simply add this require statement to your spec_helper:
 
 ```ruby
-require 'spree_product_subscriptions/factories'
+require 'spree_recurring_orders/factories'
 ```
 
 Credits
 -------
+Copyright (c) 2016 Christine Feaster [christine.codes](http://christine.codes)
 
 [![vinsol.com: Ruby on Rails, iOS and Android developers](http://vinsol.com/themes/vinsoldotcom-theme/images/new_img/vin_logo.png "Ruby on Rails, iOS and Android developers")](http://vinsol.com)
 
