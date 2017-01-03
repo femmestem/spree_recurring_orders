@@ -25,7 +25,7 @@ en:
         error: "There was an error in activating the subscription"
       cancel:
         success: "Subscription was successfully cancelled"
-        error: "There was some problem in cancelling the subscription"
+        error: "There was an error in cancelling the subscription"
       update:
         success: "Subscription was successfully updated"
       alert:
@@ -45,7 +45,7 @@ en:
           error: "There was an error in pausing subscription"
         unpause:
           success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
-          error: "There was some problem in activating subscription"
+          error: "There was an error in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:
