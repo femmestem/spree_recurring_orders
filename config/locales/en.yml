@@ -19,13 +19,13 @@ en:
     subscriptions:
       pause:
         success: "Subscription is paused"
-        error: "There was some failure in pausing the subscription"
+        error: "There was an error in pausing the subscription"
       unpause:
         success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
-        error: "There was some faiure in activating the subscription"
+        error: "There was an error in activating the subscription"
       cancel:
         success: "Subscription was successfully cancelled"
-        error: "There was some problem in cancelling the subscription"
+        error: "There was an error in cancelling the subscription"
       update:
         success: "Subscription was successfully updated"
       alert:
@@ -42,10 +42,10 @@ en:
       subscriptions:
         pause:
           success: "Subscription is currently paused"
-          error: "There was some failure in pausing subscription"
+          error: "There was an error in pausing subscription"
         unpause:
           success: "Subscription is active. Your next occurrence will be on %{next_occurrence_at}"
-          error: "There was some problem in activating subscription"
+          error: "There was an error in activating subscription"
         cancel:
           success: "Subscription is cancelled"
         cancellation:
@@ -57,7 +57,7 @@ en:
       models:
         spree/subscription:
           attributes:
-            variant_id: 
+            variant_id:
               does_not_belong_to_product: 'does not belong to current product'
 
-    required_authentication: 'Please Login Before Proceeding.'
+    required_authentication: 'Please login before proceeding'
