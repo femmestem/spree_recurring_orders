@@ -12,7 +12,6 @@
 </div>
 
 <p>
-  Your <b>next order</b> is going to be delivered in <b><%= @subscription.prior_notification_days_gap %></b> days.
-  Your <%= @subscription.frequency.title.capitalize %>(every <%= @subscription.frequency.months_count.to_s %>) subscription has <%= @subscription.number_of_deliveries_left %> deliveries left.
+  Your <b>next order</b> will be delivered in <b><%= @subscription.prior_notification_days_gap %></b> days.
 </p>
 <p>Regards</p>

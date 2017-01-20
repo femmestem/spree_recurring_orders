@@ -3,7 +3,7 @@
 <div data-hook="account_my_subscriptions" class="account-my-subscriptions">
 
   <h3><%= Spree.t(:my_subscriptions) %></h3>
-  <% if @subscriptions.present? %>
+  <% #if @subscriptions.present? %>
     <table class="table table-striped subscription-summary">
       <thead class="active">
       <tr>
@@ -12,18 +12,17 @@
         <th class="subscription-price"><%= Spree.t(:price) %></th>
         <th class="subscription-started"><%= Spree.t(:started_at) %></th>
         <th class="subscription-frequency"><%= Spree.t(:recurring_delivery_interval) %></th>
-        <th class="subscription-delivery-number"><%= Spree.t(:total_deliveries) %></th>
-        <th class="subscription-deliveries-left"><%= Spree.t(:deliveries_left) %></th>
         <th class="subscription-actions"><%= Spree.t(:action_links) %></th>
       </tr>
       </thead>
       <tbody id="user_subscriptions">
+        <%= @subscriptions %>
         <%= render @subscriptions %>
       </tbody>
     </table>
-  <% else %>
+  <% #else %>
     <div class="alert alert-info"><%= Spree.t(:you_have_no_subscriptions_yet) %></div>
-  <% end %>
+  <% #end %>
   <br />
 
 </div>
