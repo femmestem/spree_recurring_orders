@@ -3,7 +3,7 @@
     <br><br>
     <% subscription = Spree::Subscription.new %>
     <span>
-      <%= label_tag :subscription, Spree.t(:recurring_delivery_interval) %><span class="required">*</span>
+      <%= label_tag :subscription, Spree.t(:delivery_schedule) %><span class="required">*</span>
       <%= collection_select :subscription, :subscription_frequency_id, @product.subscription_frequencies, :id, :title, {}, { class: "form-control" } %>
     </span>
     <br>
